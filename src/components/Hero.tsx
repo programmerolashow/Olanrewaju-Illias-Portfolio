@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowDown, Github, Linkedin, Mail } from "lucide-react";
+import gdg from "../assets/gdg.jpeg";
 
 const Hero = () => {
   return (
@@ -27,8 +28,16 @@ const Hero = () => {
         />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-5 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
+          <motion.img
+            src={gdg}
+            alt="Profile"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            className="w-60 h-60 rounded-full object-cover mt-20 mb-10 mx-auto block"
+          />
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -44,7 +53,7 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6"
           >
-            <span className="text-foreground">Your Name</span>
+            <span className="text-foreground">Olanrewaju Illias</span>
           </motion.h1>
 
           <motion.div
@@ -74,9 +83,9 @@ const Hero = () => {
             className="flex items-center justify-center gap-6 mb-16"
           >
             {[
-              { icon: Github, href: "#", label: "GitHub" },
-              { icon: Linkedin, href: "#", label: "LinkedIn" },
-              { icon: Mail, href: "#contact", label: "Email" },
+              { icon: Github, href: "https://github.com/programmerolashow", label: "GitHub" },
+              { icon: Linkedin, href: "https://www.linkedin.com/in/olanrewaju-illias-993a982bb", label: "LinkedIn" },
+              { icon: Mail, href: "mailto:olanrewajuillias@gmail.com", label: "Email" },
             ].map(({ icon: Icon, href, label }) => (
               <motion.a
                 key={label}
