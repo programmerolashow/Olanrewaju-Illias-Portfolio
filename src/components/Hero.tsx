@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowDown, Github, Linkedin, Mail } from "lucide-react";
-import gdg from "../assets/gdg.jpeg";
+import gdg from "../../public/image.jpeg";
 
 const Hero = () => {
   return (
