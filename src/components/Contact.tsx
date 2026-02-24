@@ -63,7 +63,7 @@ const Contact = () => {
                 <div>
                   <p className="text-muted-foreground text-sm">Email</p>
                   <p className="text-foreground font-medium">
-                    hello@yourname.dev
+                    olanrewajuillias@gmail.com
                   </p>
                 </div>
               </div>
@@ -77,7 +77,7 @@ const Contact = () => {
                 <div>
                   <p className="text-muted-foreground text-sm">Location</p>
                   <p className="text-foreground font-medium">
-                    Your City, Country
+                    Lagos State, Nigeria
                   </p>
                 </div>
               </div>
@@ -91,7 +91,7 @@ const Contact = () => {
                 <div>
                   <p className="text-muted-foreground text-sm">Phone</p>
                   <p className="text-foreground font-medium">
-                    +1 (234) 567-8900
+                    +1 (234) 906-5219-168
                   </p>
                 </div>
               </div>

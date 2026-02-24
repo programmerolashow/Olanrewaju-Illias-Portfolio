@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
-import { Github, Linkedin, Twitter, Heart } from "lucide-react";
+import { Github, Linkedin, Instagram} from "lucide-react";
 
 const socialLinks = [
-  { icon: Github, href: "#", label: "GitHub" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Twitter, href: "#", label: "Twitter" },
+  { icon: Github, href: "https://github.com/programmerolashow", label: "GitHub" },
+  { icon: Linkedin, href: "https://www.linkedin.com/in/olanrewaju-illias-993a982bb", label: "LinkedIn" },
+  { icon: Instagram, href: "https://www.instagram.com/programmer_olashow", label: "Instagram" },
 ];
 
 const Footer = () => {
@@ -17,7 +17,7 @@ const Footer = () => {
             className="text-xl font-bold gradient-text"
             whileHover={{ scale: 1.05 }}
           >
-            {"<Dev />"}
+            {"<Frontend Dev />"}
           </motion.a>
 
           <div className="flex items-center gap-6">
@@ -36,7 +36,7 @@ const Footer = () => {
           </div>
 
           <p className="text-muted-foreground text-sm flex items-center gap-1">
-            Built with <Heart size={14} className="text-primary" /> by Your Name
+            Olanrewaju Illias
           </p>
         </div>
       </div>

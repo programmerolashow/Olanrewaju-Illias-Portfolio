@@ -4,8 +4,8 @@ import { useRef } from "react";
 import { Code2, Palette, Zap, Globe } from "lucide-react";
 
 const skills = [
-  "HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Vue.js",
-  "Tailwind CSS", "SASS", "Next.js", "Git", "Figma", "REST APIs"
+  "HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Vite",
+  "Tailwind CSS", "Git", "Github", "VisualBasic"
 ];
 
 const features = [
