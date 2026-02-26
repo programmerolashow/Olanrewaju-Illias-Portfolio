@@ -9,7 +9,7 @@ const projects = [
       "An admin dashboard that enables admins to manage users, products, and analytics efficiently. Features include user/product search, dynamic data handling, and responsive design. This project strengthened my skills in scalable React apps, reusable components, TypeScript, and building real-world interactive web applications.",
     tags: ["React.js", "TypeScript", "Tailwind CSS", "Vite"],
     github: "https://github.com/programmerolashow/HomeKit-Admin-Dashboard",
-    live: "https://homekit-admin-dashboard.netlify.app/auth",
+    live: "https://homekit-admin-dashboard.netlify.app",
     featured: true,
   },
   {
@@ -18,7 +18,7 @@ const projects = [
       "A modern web application inspired by Netflix. It allows users to explore movies and TV shows through a clean, responsive, and interactive interface. This project improved my skills in UI design, component structuring, responsiveness, and building smooth user experiences.",
     tags: ["React.js", "Tailwind CSS", "TypeScript", "Vite"],
     github: "https://github.com/programmerolashow/stream-central",
-    live: "https://stream-center.netlify.app",
+    live: "https://stream-central-three.vercel.app/",
     featured: true,
   },
   {
