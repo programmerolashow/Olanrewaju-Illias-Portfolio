@@ -22,6 +22,14 @@ const projects = [
     featured: true,
   },
   {
+    title: "VidMage - Personality Generator",
+    description: "an intelligent personality analysis and generation platform that leverages advanced AI to interpret facial expressions, body language, and visual style cues from user-provided images. The platform transforms visual data into meaningful personality insights, offering users a unique, interactive, and engaging experienc",
+    tags: ["React.js", "Tailwind CSS", "TypeScript", "Lovable"],
+    github: "https://github.com/programmerolashow/VidMage",
+    live: "https://vid-mage.vercel.app",
+    featured: true,
+  },
+  {
     title: "Xiamine Cargo",
     description:
       "Xiamine Cargo is a frontend web project focused on building a modern, responsive logistics website with a strong emphasis on clean UI structure and reusable design patterns. The project showcases a well-structured Home Page and an in-progress Service Page, designed to clearly communicate logistics services while maintaining visual clarity and performance.",
@@ -34,7 +42,7 @@ const projects = [
     title: "Simple Portfolio Template",
     description:
       "This project is a fully responsive personal portfolio website built to showcase my skills, projects, and professional profile as a frontend developer. The goal was to create a clean, modern interface that feels engaging while remaining simple, accessible, and performance-focused.",
-    tags: ["Next.js", "Framer Motion", "Tailwind"],
+    tags: ["HTML5","CSS3"],
     github: "https://github.com/programmerolashow/My-Portfolio",
     live: "https://illias-portfolio.netlify.app",
     featured: false,
