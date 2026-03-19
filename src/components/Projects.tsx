@@ -13,6 +13,14 @@ const projects = [
     featured: true,
   },
   {
+    title: "Backend User Authentication",
+    description:
+      "implementation a fully functional CRUD system, enabling data to be created, retrieved, updated, and deleted efficiently. I also developed an authentication system with user registration, login, and logout features, ensuring secure access and user management.",
+    tags: ["Javascript", "Node.js", "MongoDB", "Postman"],
+    github: "https://github.com/programmerolashow/Backend-Tutorial",
+    featured: true,
+  },
+  {
     title: "Stream-Central",
     description:
       "A modern web application inspired by Netflix. It allows users to explore movies and TV shows through a clean, responsive, and interactive interface. This project improved my skills in UI design, component structuring, responsiveness, and building smooth user experiences.",
@@ -23,7 +31,7 @@ const projects = [
   },
   {
     title: "VidMage - Personality Generator",
-    description: "an intelligent personality analysis and generation platform that leverages advanced AI to interpret facial expressions, body language, and visual style cues from user-provided images. The platform transforms visual data into meaningful personality insights, offering users a unique, interactive, and engaging experienc",
+    description: "an intelligent personality analysis and generation platform that leverages advanced AI to interpret facial expressions, body language, and visual style cues from user-provided images. The platform transforms visual data into meaningful personality insights, offering users a unique, interactive, and engaging experiences.",
     tags: ["React.js", "Tailwind CSS", "TypeScript", "Lovable"],
     github: "https://github.com/programmerolashow/VidMage",
     live: "https://vid-mage.vercel.app",
@@ -39,12 +47,12 @@ const projects = [
     featured: true,
   },
   {
-    title: "Simple Portfolio Template",
+    title: "Student-Konnect-Hub",
     description:
-      "This project is a fully responsive personal portfolio website built to showcase my skills, projects, and professional profile as a frontend developer. The goal was to create a clean, modern interface that feels engaging while remaining simple, accessible, and performance-focused.",
-    tags: ["HTML5","CSS3"],
-    github: "https://github.com/programmerolashow/My-Portfolio",
-    live: "https://illias-portfolio.netlify.app",
+      "Student-Konnect-Hub is a modern web application designed to connect students across higher education institutions worldwide. The platform provides a seamless space for students to network, collaborate, and share knowledge regardless of geographical boundaries. Users can create profiles, join communities based on their interests or courses, and engage in meaningful discussions.",
+    tags: ["React","Typescript", "PLpgSQL", "CSS"],
+    github: "https://github.com/programmerolashow/student-konnect-hub",
+    live: "https://student-konnect-hub.vercel.app/",
     featured: false,
   },
   {
