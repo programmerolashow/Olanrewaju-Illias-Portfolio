@@ -17,7 +17,7 @@ const Footer = () => {
             className="text-xl font-bold gradient-text"
             whileHover={{ scale: 1.05 }}
           >
-            {"<Frontend Dev />"}
+            {"<Fullstack Developer />"}
           </motion.a>
 
           <div className="flex items-center gap-6">
