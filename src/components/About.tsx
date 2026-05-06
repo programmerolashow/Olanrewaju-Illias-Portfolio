@@ -5,7 +5,7 @@ import { Code2, Palette, Zap, Globe } from "lucide-react";
 
 const skills = [
   "HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Vite",
-  "Tailwind CSS", "Git", "Github", "VisualBasic"
+  "Tailwind CSS", "Git", "Github", "VisualBasic", "Node.js", "MongoDB", "Postman"
 ];
 
 const features = [

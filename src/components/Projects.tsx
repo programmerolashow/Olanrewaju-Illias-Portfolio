@@ -21,12 +21,12 @@ const projects = [
     featured: true,
   },
   {
-    title: "Stream-Central",
+    title: "E-MassCom-AI-Powered-Email-Client",
     description:
-      "A modern web application inspired by Netflix. It allows users to explore movies and TV shows through a clean, responsive, and interactive interface. This project improved my skills in UI design, component structuring, responsiveness, and building smooth user experiences.",
-    tags: ["React.js", "Tailwind CSS", "TypeScript", "Vite"],
-    github: "https://github.com/programmerolashow/stream-central",
-    live: "https://stream-central-three.vercel.app/",
+      "E-MassCom is a modern, full-scale email marketing and automation platform built to help businesses communicate smarter and grow faster. It empowers users to design, manage, and optimize high-performing email campaigns through an intuitive interface, real-time analytics, and scalable delivery infrastructure. Beyond basic scheduling, E-MassCom integrates intelligent automation workflows, audience segmentation, and performance tracking to ensure personalized engagement at scale. Designed with speed, flexibility, and reliability in mind, it enables teams to turn data into actionable insights and consistently improve campaign outcomes.",
+    tags: ["Next.js", "Prisma", "PostgreSQL", "TypeScript", "Clerk", "OpenAI API", "NeonDB", "shadcn/ui", "Third Party APIs"],
+    github: "https://github.com/programmerolashow/E-MassCom-AI-Powered-Email-Client",
+    live: "https://email-application-hj8v.vercel.app/",
     featured: true,
   },
   {
@@ -50,7 +50,7 @@ const projects = [
     title: "Student-Konnect-Hub",
     description:
       "Student-Konnect-Hub is a modern web application designed to connect students across higher education institutions worldwide. The platform provides a seamless space for students to network, collaborate, and share knowledge regardless of geographical boundaries. Users can create profiles, join communities based on their interests or courses, and engage in meaningful discussions.",
-    tags: ["React","Typescript", "PLpgSQL", "CSS"],
+    tags: ["React", "Typescript", "PLpgSQL", "CSS"],
     github: "https://github.com/programmerolashow/student-konnect-hub",
     live: "https://student-konnect-hub.vercel.app/",
     featured: false,
@@ -65,12 +65,12 @@ const projects = [
     featured: false,
   },
   {
-    title: "Simple Calculator",
+    title: "Stream-Central",
     description:
-      "This project is a responsive, modern calculator built using HTML, CSS, and JavaScript, designed to combine clean functionality with a visually engaging glassmorphism UI. The goal was to move beyond a basic calculator and focus on user experience, responsiveness, and interactive feedback.",
-    tags: ["JavaScript", "REST API", "CSS Grid"],
-    github: "https://github.com/programmerolashow/Simple-Calculator",
-    live: "https://calculator-web-ap.netlify.app",
+      "A modern web application inspired by Netflix. It allows users to explore movies and TV shows through a clean, responsive, and interactive interface. This project improved my skills in UI design, component structuring, responsiveness, and building smooth user experiences.",
+    tags: ["React.js", "Tailwind CSS", "TypeScript", "Vite"],
+    github: "https://github.com/programmerolashow/stream-central",
+    live: "https://stream-central-three.vercel.app/",
     featured: false,
   },
 ];
