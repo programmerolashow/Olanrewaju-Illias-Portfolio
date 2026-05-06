@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { Code2, Palette, Zap, Globe } from "lucide-react";
+import { Code2, Palette, Zap, Globe, Server, Database } from "lucide-react";
 
 const skills = [
-  "HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Vite",
-  "Tailwind CSS", "Git", "Github", "VisualBasic", "Node.js", "MongoDB", "Postman"
+  "HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Vite", "Python", "Streamlite", "Shadcn/UI", "PostgreSQL", "Framer Motion", "Material UI",
+  "Tailwind CSS", "Git", "Github", "VisualBasic", "Node.js", "MongoDB", "Postman", "Next.js", "Nodemailer", "Stripe", "React Native (Expo)"
 ];
 
 const features = [
@@ -27,7 +27,17 @@ const features = [
   {
     icon: Globe,
     title: "Responsive",
-    description: "Building websites that work on all devices.",
+    description: "Building websites that work seamlessly across all devices.",
+  },
+  {
+    icon: Server,
+    title: "Backend Development",
+    description: "Building secure, scalable APIs and server-side systems.",
+  },
+  {
+    icon: Database,
+    title: "Database Management",
+    description: "Designing and managing efficient, structured data systems.",
   },
 ];
 
@@ -47,7 +57,7 @@ const About = () => {
           <p className="text-primary font-mono text-sm mb-4">About Me</p>
           <h2 className="section-heading">
             Passionate About{" "}
-            <span className="gradient-text">Web Development</span>
+            <span className="gradient-text">Software Development</span>
           </h2>
         </motion.div>
 
@@ -59,15 +69,10 @@ const About = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <p className="text-muted-foreground text-lg leading-relaxed mb-6">
-              I'm a frontend developer with a passion for creating beautiful and
-              functional web applications. With expertise in modern JavaScript
-              frameworks and a keen eye for design, I transform ideas into
-              engaging digital experiences.
+              I specialize in building scalable web and mobile applications with clean, efficient, and maintainable code. I focus on crafting responsive, high-performance user experiences using modern technologies across the entire stack, from intuitive frontends to robust backend systems. I enjoy turning complex ideas into practical, scalable, and user-focused digital solutions.
             </p>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8">
-              My journey in web development started with curiosity and has
-              evolved into a professional pursuit of excellence. I constantly
-              explore new technologies and best practices to deliver
+              I’m driven by curiosity and a commitment to excellence. I constantly explore new technologies, embrace challenges, and stay updated with industry best practices to deliver cutting-edge solutions that make a difference.
               cutting-edge solutions.
             </p>
 

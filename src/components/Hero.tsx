@@ -62,7 +62,7 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-2xl md:text-4xl lg:text-5xl font-bold mb-8"
           >
-            <span className="gradient-text">Frontend Developer</span>
+            <span className="gradient-text">Full-Stack Developer</span>
           </motion.div>
 
           <motion.p
@@ -71,7 +71,7 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-12"
           >
-            I craft beautiful, responsive, and user-friendly web experiences
+            I craft beautiful, responsive, and user-friendly web and mobile applications
             using modern technologies. Let's build something amazing together.
           </motion.p>
 
