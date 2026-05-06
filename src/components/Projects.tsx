@@ -38,12 +38,12 @@ const projects = [
     featured: true,
   },
   {
-    title: "Xiamine Cargo",
+    title: "FraudGuard – Receipt Verification & Fraud Detection System",
     description:
-      "Xiamine Cargo is a frontend web project focused on building a modern, responsive logistics website with a strong emphasis on clean UI structure and reusable design patterns. The project showcases a well-structured Home Page and an in-progress Service Page, designed to clearly communicate logistics services while maintaining visual clarity and performance.",
-    tags: ["HTML5", "CSS3", "JavaScript"],
-    github: "https://github.com/programmerolashow/Xiamine-Cargo",
-    live: "https://xiamine-cargo-w.netlify.app",
+      "FraudGuard is an intelligent receipt verification and fraud detection system built with Python, designed to detect anomalies and validate transactional receipts with high accuracy. It leverages rule-based logic and data validation techniques to identify suspicious patterns, reduce fraudulent submissions, and improve trust in digital transaction workflows. The system focuses on reliability, security, and extensibility, making it suitable for financial verification and automated fraud screening use cases.",
+    tags: ["Python", "Data Validation", "Fraud Detection", "Automation"],
+    github: "https://github.com/programmerolashow/Fraud-Check",
+    live: "https://fraud-check-2gfd.vercel.app",
     featured: true,
   },
   {
