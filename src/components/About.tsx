@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { Code2, Palette, Zap, Globe, Server, Database } from "lucide-react";
 
 const skills = [
-  "HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Vite", "Python", "Streamlite", "Shadcn/UI", "PostgreSQL", "Framer Motion", "Material UI",
+  "HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Vite", "Python", "Streamlite", "Shadcn/UI", "PostgreSQL", "Framer Motion", "Material UI", "Redux", "Angular",
   "Tailwind CSS", "Git", "Github", "VisualBasic", "Node.js", "MongoDB", "Postman", "Next.js", "Nodemailer", "Stripe", "React Native (Expo)", "Express.js"
 ];
 
