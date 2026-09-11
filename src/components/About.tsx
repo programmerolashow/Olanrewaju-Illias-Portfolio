@@ -4,8 +4,18 @@ import { useRef, useState } from "react";
 import { Code2, Palette, Zap, Globe, Server, Database, GitPullRequest, HeartHandshake, ExternalLink } from "lucide-react";
 
 const skills = [
-  "HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Vite", "Python", "Streamlite", "Shadcn/UI", "PostgreSQL", "Framer Motion", "Material UI", "Redux", "Angular",
-  "Tailwind CSS", "Git", "Github", "VisualBasic", "Node.js", "MongoDB", "Postman", "Next.js", "Nodemailer", "Stripe", "React Native (Expo)", "Express.js"
+  // Frontend
+  "HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Next.js", "Angular", "Vite", "Tailwind CSS", "Shadcn/UI", "Material UI", "Redux", "Framer Motion",
+  // Backend
+  "Node.js", "Express.js", "Python", "Django", "PHP",
+  // Databases
+  "PostgreSQL", "MySQL", "MongoDB", "Prisma", "Neon",
+  // Mobile
+  "React Native", "Expo",
+  // Tools / APIs
+  "Git", "GitHub", "Postman", "Stripe", "Nodemailer", "Supabase", "OpenAI",
+  // Other
+  "Visual Basic", "REST APIs", "Authentication", "OAuth", "Webhooks", "AI integrations"
 ];
 
 // Unique vibrant color themes for each skill card to ensure high visual distinction and crisp text legibility
@@ -15,58 +25,86 @@ const skillColorMap: Record<string, { bg: string; border: string; text: string; 
   "JavaScript": { bg: "rgba(247, 223, 30, 0.22)", border: "rgba(247, 223, 30, 0.7)", text: "#FACC15", glow: "0 6px 22px rgba(247, 223, 30, 0.4)" },
   "TypeScript": { bg: "rgba(49, 120, 198, 0.22)", border: "rgba(49, 120, 198, 0.7)", text: "#38BDF8", glow: "0 6px 22px rgba(49, 120, 198, 0.4)" },
   "React": { bg: "rgba(97, 218, 251, 0.22)", border: "rgba(97, 218, 251, 0.7)", text: "#22D3EE", glow: "0 6px 22px rgba(97, 218, 251, 0.4)" },
+  "Next.js": { bg: "rgba(255, 255, 255, 0.22)", border: "rgba(255, 255, 255, 0.7)", text: "#FFFFFF", glow: "0 6px 22px rgba(255, 255, 255, 0.35)" },
+  "Angular": { bg: "rgba(221, 0, 49, 0.22)", border: "rgba(221, 0, 49, 0.7)", text: "#F87171", glow: "0 6px 22px rgba(221, 0, 49, 0.4)" },
   "Vite": { bg: "rgba(100, 108, 255, 0.22)", border: "rgba(100, 108, 255, 0.7)", text: "#818CF8", glow: "0 6px 22px rgba(100, 108, 255, 0.4)" },
-  "Python": { bg: "rgba(55, 118, 171, 0.22)", border: "rgba(55, 118, 171, 0.7)", text: "#FCD34D", glow: "0 6px 22px rgba(55, 118, 171, 0.4)" },
-  "Streamlite": { bg: "rgba(255, 75, 75, 0.22)", border: "rgba(255, 75, 75, 0.7)", text: "#FF6B6B", glow: "0 6px 22px rgba(255, 75, 75, 0.4)" },
+  "Tailwind CSS": { bg: "rgba(6, 182, 212, 0.22)", border: "rgba(6, 182, 212, 0.7)", text: "#2DD4BF", glow: "0 6px 22px rgba(6, 182, 212, 0.4)" },
   "Shadcn/UI": { bg: "rgba(14, 165, 233, 0.22)", border: "rgba(14, 165, 233, 0.7)", text: "#7DD3FC", glow: "0 6px 22px rgba(14, 165, 233, 0.4)" },
-  "PostgreSQL": { bg: "rgba(65, 105, 225, 0.22)", border: "rgba(65, 105, 225, 0.7)", text: "#93C5FD", glow: "0 6px 22px rgba(65, 105, 225, 0.4)" },
-  "Framer Motion": { bg: "rgba(255, 0, 128, 0.22)", border: "rgba(255, 0, 128, 0.7)", text: "#F472B6", glow: "0 6px 22px rgba(255, 0, 128, 0.4)" },
   "Material UI": { bg: "rgba(0, 127, 255, 0.22)", border: "rgba(0, 127, 255, 0.7)", text: "#60A5FA", glow: "0 6px 22px rgba(0, 127, 255, 0.4)" },
   "Redux": { bg: "rgba(118, 74, 188, 0.22)", border: "rgba(118, 74, 188, 0.7)", text: "#C084FC", glow: "0 6px 22px rgba(118, 74, 188, 0.4)" },
-  "Angular": { bg: "rgba(221, 0, 49, 0.22)", border: "rgba(221, 0, 49, 0.7)", text: "#F87171", glow: "0 6px 22px rgba(221, 0, 49, 0.4)" },
-  "Tailwind CSS": { bg: "rgba(6, 182, 212, 0.22)", border: "rgba(6, 182, 212, 0.7)", text: "#2DD4BF", glow: "0 6px 22px rgba(6, 182, 212, 0.4)" },
-  "Git": { bg: "rgba(240, 80, 50, 0.22)", border: "rgba(240, 80, 50, 0.7)", text: "#FB923C", glow: "0 6px 22px rgba(240, 80, 50, 0.4)" },
-  "Github": { bg: "rgba(168, 85, 247, 0.22)", border: "rgba(168, 85, 247, 0.7)", text: "#E9D5FF", glow: "0 6px 22px rgba(168, 85, 247, 0.4)" },
-  "VisualBasic": { bg: "rgba(147, 51, 234, 0.22)", border: "rgba(147, 51, 234, 0.7)", text: "#D8B4FE", glow: "0 6px 22px rgba(147, 51, 234, 0.4)" },
+  "Framer Motion": { bg: "rgba(255, 0, 128, 0.22)", border: "rgba(255, 0, 128, 0.7)", text: "#F472B6", glow: "0 6px 22px rgba(255, 0, 128, 0.4)" },
+
   "Node.js": { bg: "rgba(95, 160, 78, 0.22)", border: "rgba(95, 160, 78, 0.7)", text: "#4ADE80", glow: "0 6px 22px rgba(95, 160, 78, 0.4)" },
-  "MongoDB": { bg: "rgba(71, 162, 72, 0.22)", border: "rgba(71, 162, 72, 0.7)", text: "#34D399", glow: "0 6px 22px rgba(71, 162, 72, 0.4)" },
-  "Postman": { bg: "rgba(255, 108, 55, 0.22)", border: "rgba(255, 108, 55, 0.7)", text: "#F97316", glow: "0 6px 22px rgba(255, 108, 55, 0.4)" },
-  "Next.js": { bg: "rgba(255, 255, 255, 0.22)", border: "rgba(255, 255, 255, 0.7)", text: "#FFFFFF", glow: "0 6px 22px rgba(255, 255, 255, 0.35)" },
-  "Nodemailer": { bg: "rgba(34, 197, 94, 0.22)", border: "rgba(34, 197, 94, 0.7)", text: "#86EFAC", glow: "0 6px 22px rgba(34, 197, 94, 0.4)" },
-  "Stripe": { bg: "rgba(99, 91, 255, 0.22)", border: "rgba(99, 91, 255, 0.7)", text: "#A5B4FC", glow: "0 6px 22px rgba(99, 91, 255, 0.4)" },
-  "React Native (Expo)": { bg: "rgba(0, 129, 200, 0.22)", border: "rgba(0, 129, 200, 0.7)", text: "#38BDF8", glow: "0 6px 22px rgba(0, 129, 200, 0.4)" },
   "Express.js": { bg: "rgba(234, 179, 8, 0.22)", border: "rgba(234, 179, 8, 0.7)", text: "#FDE047", glow: "0 6px 22px rgba(234, 179, 8, 0.4)" },
+  "Python": { bg: "rgba(55, 118, 171, 0.22)", border: "rgba(55, 118, 171, 0.7)", text: "#FCD34D", glow: "0 6px 22px rgba(55, 118, 171, 0.4)" },
+  "Django": { bg: "rgba(9, 76, 50, 0.25)", border: "rgba(43, 138, 89, 0.7)", text: "#4ADE80", glow: "0 6px 22px rgba(43, 138, 89, 0.4)" },
+  "PHP": { bg: "rgba(119, 123, 179, 0.22)", border: "rgba(119, 123, 179, 0.7)", text: "#A5B4FC", glow: "0 6px 22px rgba(119, 123, 179, 0.4)" },
+
+  "PostgreSQL": { bg: "rgba(65, 105, 225, 0.22)", border: "rgba(65, 105, 225, 0.7)", text: "#93C5FD", glow: "0 6px 22px rgba(65, 105, 225, 0.4)" },
+  "MySQL": { bg: "rgba(0, 117, 143, 0.22)", border: "rgba(0, 117, 143, 0.7)", text: "#38BDF8", glow: "0 6px 22px rgba(0, 117, 143, 0.4)" },
+  "MongoDB": { bg: "rgba(71, 162, 72, 0.22)", border: "rgba(71, 162, 72, 0.7)", text: "#34D399", glow: "0 6px 22px rgba(71, 162, 72, 0.4)" },
+  "Prisma": { bg: "rgba(90, 103, 216, 0.22)", border: "rgba(90, 103, 216, 0.7)", text: "#818CF8", glow: "0 6px 22px rgba(90, 103, 216, 0.4)" },
+  "Neon": { bg: "rgba(0, 229, 153, 0.22)", border: "rgba(0, 229, 153, 0.7)", text: "#34D399", glow: "0 6px 22px rgba(0, 229, 153, 0.4)" },
+
+  "React Native": { bg: "rgba(0, 129, 200, 0.22)", border: "rgba(0, 129, 200, 0.7)", text: "#38BDF8", glow: "0 6px 22px rgba(0, 129, 200, 0.4)" },
+  "Expo": { bg: "rgba(168, 85, 247, 0.22)", border: "rgba(168, 85, 247, 0.7)", text: "#C084FC", glow: "0 6px 22px rgba(168, 85, 247, 0.4)" },
+
+  "Git": { bg: "rgba(240, 80, 50, 0.22)", border: "rgba(240, 80, 50, 0.7)", text: "#FB923C", glow: "0 6px 22px rgba(240, 80, 50, 0.4)" },
+  "GitHub": { bg: "rgba(168, 85, 247, 0.22)", border: "rgba(168, 85, 247, 0.7)", text: "#E9D5FF", glow: "0 6px 22px rgba(168, 85, 247, 0.4)" },
+  "Postman": { bg: "rgba(255, 108, 55, 0.22)", border: "rgba(255, 108, 55, 0.7)", text: "#F97316", glow: "0 6px 22px rgba(255, 108, 55, 0.4)" },
+  "Stripe": { bg: "rgba(99, 91, 255, 0.22)", border: "rgba(99, 91, 255, 0.7)", text: "#A5B4FC", glow: "0 6px 22px rgba(99, 91, 255, 0.4)" },
+  "Nodemailer": { bg: "rgba(34, 197, 94, 0.22)", border: "rgba(34, 197, 94, 0.7)", text: "#86EFAC", glow: "0 6px 22px rgba(34, 197, 94, 0.4)" },
+  "Supabase": { bg: "rgba(62, 207, 142, 0.22)", border: "rgba(62, 207, 142, 0.7)", text: "#4ADE80", glow: "0 6px 22px rgba(62, 207, 142, 0.4)" },
+  "OpenAI": { bg: "rgba(16, 163, 127, 0.22)", border: "rgba(16, 163, 127, 0.7)", text: "#2DD4BF", glow: "0 6px 22px rgba(16, 163, 127, 0.4)" },
+
+  "Visual Basic": { bg: "rgba(147, 51, 234, 0.22)", border: "rgba(147, 51, 234, 0.7)", text: "#D8B4FE", glow: "0 6px 22px rgba(147, 51, 234, 0.4)" },
+  "REST APIs": { bg: "rgba(14, 165, 233, 0.22)", border: "rgba(14, 165, 233, 0.7)", text: "#38BDF8", glow: "0 6px 22px rgba(14, 165, 233, 0.4)" },
+  "Authentication": { bg: "rgba(236, 72, 153, 0.22)", border: "rgba(236, 72, 153, 0.7)", text: "#F472B6", glow: "0 6px 22px rgba(236, 72, 153, 0.4)" },
+  "OAuth": { bg: "rgba(168, 85, 247, 0.22)", border: "rgba(168, 85, 247, 0.7)", text: "#E9D5FF", glow: "0 6px 22px rgba(168, 85, 247, 0.4)" },
+  "Webhooks": { bg: "rgba(245, 158, 11, 0.22)", border: "rgba(245, 158, 11, 0.7)", text: "#FCD34D", glow: "0 6px 22px rgba(245, 158, 11, 0.4)" },
+  "AI integrations": { bg: "rgba(187, 94, 48, 0.22)", border: "rgba(187, 94, 48, 0.7)", text: "#38BDF8", glow: "0 6px 22px rgba(187, 94, 48, 0.4)" },
 };
 
 // Floor resting scatter positions (partially resting at the bottom/floor area)
-const scatterPositions = [
-  { x: -28, y: 35, rotate: -14, scale: 0.96, zIndex: 1 },
-  { x: 36, y: 42, rotate: 12, scale: 1.02, zIndex: 2 },
-  { x: -48, y: 28, rotate: -8, scale: 0.98, zIndex: 3 },
-  { x: 18, y: 52, rotate: 18, scale: 1.05, zIndex: 4 },
-  { x: 55, y: 38, rotate: -15, scale: 0.93, zIndex: 5 },
-  { x: -16, y: 48, rotate: 6, scale: 1.01, zIndex: 6 },
-  { x: 42, y: 32, rotate: -20, scale: 0.97, zIndex: 7 },
-  { x: -52, y: 45, rotate: 15, scale: 1.04, zIndex: 8 },
-  { x: 8, y: 30, rotate: -5, scale: 0.97, zIndex: 9 },
-  { x: 58, y: 50, rotate: 10, scale: 0.94, zIndex: 10 },
-  { x: -36, y: 25, rotate: -16, scale: 1.03, zIndex: 11 },
-  { x: 24, y: 40, rotate: 14, scale: 0.95, zIndex: 12 },
-  { x: -62, y: 36, rotate: -10, scale: 1.01, zIndex: 13 },
-  { x: 48, y: 48, rotate: 8, scale: 0.99, zIndex: 14 },
-  { x: -8, y: 22, rotate: -12, scale: 1.02, zIndex: 15 },
-  { x: 32, y: 34, rotate: 19, scale: 0.96, zIndex: 16 },
-  { x: -42, y: 55, rotate: -7, scale: 1.04, zIndex: 17 },
-  { x: 62, y: 28, rotate: 11, scale: 0.92, zIndex: 18 },
-  { x: -22, y: 42, rotate: -18, scale: 1.03, zIndex: 19 },
-  { x: 12, y: 26, rotate: 5, scale: 0.98, zIndex: 20 },
-  { x: 45, y: 46, rotate: -14, scale: 0.96, zIndex: 21 },
-  { x: -58, y: 32, rotate: 13, scale: 1.02, zIndex: 22 },
-  { x: 20, y: 38, rotate: -9, scale: 0.97, zIndex: 23 },
-  { x: -32, y: 50, rotate: 17, scale: 1.04, zIndex: 24 },
-  { x: 52, y: 24, rotate: -11, scale: 0.94, zIndex: 25 },
-  { x: -12, y: 44, rotate: 7, scale: 1.01, zIndex: 26 },
+const seedPositions = [
+  { x: -28, y: 35, rotate: -14, scale: 0.96 },
+  { x: 36, y: 42, rotate: 12, scale: 1.02 },
+  { x: -48, y: 28, rotate: -8, scale: 0.98 },
+  { x: 18, y: 52, rotate: 18, scale: 1.05 },
+  { x: 55, y: 38, rotate: -15, scale: 0.93 },
+  { x: -16, y: 48, rotate: 6, scale: 1.01 },
+  { x: 42, y: 32, rotate: -20, scale: 0.97 },
+  { x: -52, y: 45, rotate: 15, scale: 1.04 },
+  { x: 8, y: 30, rotate: -5, scale: 0.97 },
+  { x: 58, y: 50, rotate: 10, scale: 0.94 },
+  { x: -36, y: 25, rotate: -16, scale: 1.03 },
+  { x: 24, y: 40, rotate: 14, scale: 0.95 },
+  { x: -62, y: 36, rotate: -10, scale: 1.01 },
+  { x: 48, y: 48, rotate: 8, scale: 0.99 },
+  { x: -8, y: 22, rotate: -12, scale: 1.02 },
+  { x: 32, y: 34, rotate: 19, scale: 0.96 },
+  { x: -42, y: 55, rotate: -7, scale: 1.04 },
+  { x: 62, y: 28, rotate: 11, scale: 0.92 },
+  { x: -22, y: 42, rotate: -18, scale: 1.03 },
+  { x: 12, y: 26, rotate: 5, scale: 0.98 },
+  { x: 45, y: 46, rotate: -14, scale: 0.96 },
+  { x: -58, y: 32, rotate: 13, scale: 1.02 },
+  { x: 20, y: 38, rotate: -9, scale: 0.97 },
+  { x: -32, y: 50, rotate: 17, scale: 1.04 },
+  { x: 52, y: 24, rotate: -11, scale: 0.94 },
+  { x: -12, y: 44, rotate: 7, scale: 1.01 },
 ];
+
+const scatterPositions = Array.from({ length: skills.length }, (_, i) => {
+  const s = seedPositions[i % seedPositions.length];
+  return {
+    x: s.x,
+    y: s.y,
+    rotate: s.rotate,
+    scale: s.scale,
+    zIndex: i + 1,
+  };
+});
 
 const features = [
   {
@@ -152,7 +190,7 @@ const About = () => {
             {/* Skills Floor Area with Depth-Sequenced 1.5s Staggered Throw Physics */}
             <div className="space-y-3">
               <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest block">
-                Technical Expertise ({skills.length})
+                Technical Expertise
               </span>
 
               <div 
@@ -170,7 +208,7 @@ const About = () => {
                   
                   // Calculate launch delay based on card depth (zIndex):
                   // Cards at the back (lower zIndex) launch first, front cards follow over a 1.5s delay window
-                  const maxZ = 26;
+                  const maxZ = skills.length;
                   const zDelay = ((scatter.zIndex - 1) / (maxZ - 1)) * 1.5;
 
                   return (
