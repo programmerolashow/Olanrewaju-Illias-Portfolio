@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { Code2, Palette, Zap, Globe, Server, Database } from "lucide-react";
+import { Code2, Palette, Zap, Globe, Server, Database, GitPullRequest, HeartHandshake, ExternalLink } from "lucide-react";
 
 const skills = [
   "HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Vite", "Python", "Streamlite", "Shadcn/UI", "PostgreSQL", "Framer Motion", "Material UI", "Redux", "Angular",
@@ -259,10 +259,124 @@ const About = () => {
             ))}
           </motion.div>
         </div>
+
+        {/* Open Source & Community Advocacy Showcase */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="mt-20 pt-16 border-t border-border/50"
+        >
+          <div className="text-center mb-12">
+            <span className="text-xs font-mono text-primary uppercase tracking-widest block mb-2">
+              Impact & Ecosystems
+            </span>
+            <h3 className="text-2xl md:text-3xl font-bold text-foreground">
+              Open Source & <span className="gradient-text">Community Advocacy</span>
+            </h3>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Card 1: GSoC 2026 & Joplin */}
+            <motion.div
+              whileHover={{ y: -6 }}
+              className="glass-card rounded-2xl p-6 md:p-8 relative overflow-hidden border border-border/80 hover:border-primary/50 transition-all duration-300 shadow-xl group flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors">
+                      <GitPullRequest className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">
+                        Google Summer of Code (GSoC) 2026
+                      </h4>
+                      <p className="text-xs font-mono text-primary/90 font-medium">
+                        Contributor @ Joplin & Open-Source Ecosystems
+                      </p>
+                    </div>
+                  </div>
+                  <a
+                    href="https://discourse.joplinapp.org/t/welcome-to-gsoc-2026-with-joplin/48974/64"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-lg bg-secondary/80 text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
+                    aria-label="View Joplin Discourse GSoC Announcement"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </div>
+
+                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                  Participated as an open-source contributor with the note-taking application{" "}
+                  <a
+                    href="https://discourse.joplinapp.org/t/welcome-to-gsoc-2026-with-joplin/48974/64"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline font-medium inline-flex items-center gap-1"
+                  >
+                    Joplin <ExternalLink className="w-3 h-3 inline" />
+                  </a>
+                  . Actively engaged with open-source ecosystems like <strong>Moose</strong>, driving exploration in AST meta-modelling, static site generation, and fault localization.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-border/40 mt-4">
+                {["GSoC 2026", "Joplin Open-Source", "Moose Ecosystem", "AST Meta-Modelling", "Static Site Generation", "Fault Localization"].map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-primary/10 text-primary border border-primary/20"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Card 2: Tech Community Builder & Advocate */}
+            <motion.div
+              whileHover={{ y: -6 }}
+              className="glass-card rounded-2xl p-6 md:p-8 relative overflow-hidden border border-border/80 hover:border-accent/50 transition-all duration-300 shadow-xl group flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent group-hover:bg-accent/20 transition-colors">
+                    <HeartHandshake className="w-5 h-5 text-accent" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-foreground text-lg group-hover:text-accent transition-colors">
+                      Tech Community Builder & Advocate
+                    </h4>
+                    <p className="text-xs font-mono text-accent/90 font-medium">
+                      Engineering Principles over Tutorial Reliance
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                  Frequently advocates for robust software engineering fundamentals over tutorial-reliant learning. Regularly publishes insights regarding deep debugging, code execution flow, structural fintech logic, and developer community empowerment.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-border/40 mt-4">
+                {["Engineering Principles", "Deep Debugging", "Code Execution Flow", "Fintech Logic", "Developer Community"].map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-accent/10 text-accent border border-accent/20"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
 };
 
 export default About;
+
 
