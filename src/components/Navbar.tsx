@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
+import { useTheme } from "./ThemeProvider";
 
 const navItems = [
   { name: "Home", href: "#home" },
@@ -13,6 +14,7 @@ const navItems = [
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,29 +43,47 @@ const Navbar = () => {
           {"<Programmer Olashow />"}
         </motion.a>
 
-        {/* Desktop Menu */}
-        <ul className="hidden md:flex items-center gap-8">
-          {navItems.map((item, index) => (
-            <motion.li
-              key={item.name}
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 + 0.3 }}
-            >
-              <a href={item.href} className="nav-link font-medium">
-                {item.name}
-              </a>
-            </motion.li>
-          ))}
-        </ul>
+        <div className="flex items-center gap-4 md:gap-6">
+          {/* Desktop Menu */}
+          <ul className="hidden md:flex items-center gap-8">
+            {navItems.map((item, index) => (
+              <motion.li
+                key={item.name}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 + 0.3 }}
+              >
+                <a href={item.href} className="nav-link font-medium">
+                  {item.name}
+                </a>
+              </motion.li>
+            ))}
+          </ul>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden text-foreground p-2"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+          {/* Theme Toggle Button */}
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={toggleTheme}
+            className="p-2.5 rounded-full border border-border bg-secondary/80 text-foreground hover:text-primary hover:border-primary transition-all duration-300 shadow-sm flex items-center justify-center cursor-pointer"
+            aria-label="Toggle theme"
+            title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          >
+            {theme === "dark" ? (
+              <Sun className="w-4 h-4 text-amber-400" />
+            ) : (
+              <Moon className="w-4 h-4 text-sky-600" />
+            )}
+          </motion.button>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden text-foreground p-2"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}

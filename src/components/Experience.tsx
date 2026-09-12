@@ -83,6 +83,32 @@ const experiences: ExperienceItem[] = [
     ],
   },
   {
+    id: "neominds",
+    role: "Fullstack Developer",
+    company: "Neominds EduTech Ltd",
+    type: "Full-time",
+    period: "Apr 2026 - Aug 2026 · 5 mos",
+    location: "Nigeria · Remote",
+    description:
+      "In this role, I contribute to building scalable, user-focused applications across both web and mobile platforms. My work involves designing and developing end-to-end solutions—transforming ideas into functional products while ensuring performance, usability, and maintainability.",
+    responsibilities: [
+      "Develop and optimize full-stack applications using modern technologies.",
+      "Build responsive and intuitive user interfaces for web and mobile.",
+      "Collaborate with cross-functional teams to deliver impactful solutions.",
+      "Continuously improve system design, problem-solving, and development workflow.",
+      "Deliver high-performance solutions that create real value for users across web and mobile platforms.",
+    ],
+    skills: [
+      "React Native",
+      "Next.js",
+      "Full-Stack Development",
+      "Web & Mobile Apps",
+      "System Design",
+      "UI/UX Optimization",
+      "Cross-Functional Collaboration",
+    ],
+  },
+  {
     id: "freelance",
     role: "Freelance | Self-Employed",
     company: "Self-Employed",

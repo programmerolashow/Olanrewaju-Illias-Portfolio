@@ -25,7 +25,7 @@ const skillColorMap: Record<string, { bg: string; border: string; text: string; 
   "JavaScript": { bg: "rgba(247, 223, 30, 0.22)", border: "rgba(247, 223, 30, 0.7)", text: "#FACC15", glow: "0 6px 22px rgba(247, 223, 30, 0.4)" },
   "TypeScript": { bg: "rgba(49, 120, 198, 0.22)", border: "rgba(49, 120, 198, 0.7)", text: "#38BDF8", glow: "0 6px 22px rgba(49, 120, 198, 0.4)" },
   "React": { bg: "rgba(97, 218, 251, 0.22)", border: "rgba(97, 218, 251, 0.7)", text: "#22D3EE", glow: "0 6px 22px rgba(97, 218, 251, 0.4)" },
-  "Next.js": { bg: "rgba(255, 255, 255, 0.22)", border: "rgba(255, 255, 255, 0.7)", text: "#FFFFFF", glow: "0 6px 22px rgba(255, 255, 255, 0.35)" },
+  "Next.js": { bg: "var(--secondary)", border: "var(--border)", text: "var(--foreground)", glow: "0 6px 22px var(--glow-primary)" },
   "Angular": { bg: "rgba(221, 0, 49, 0.22)", border: "rgba(221, 0, 49, 0.7)", text: "#F87171", glow: "0 6px 22px rgba(221, 0, 49, 0.4)" },
   "Vite": { bg: "rgba(100, 108, 255, 0.22)", border: "rgba(100, 108, 255, 0.7)", text: "#818CF8", glow: "0 6px 22px rgba(100, 108, 255, 0.4)" },
   "Tailwind CSS": { bg: "rgba(6, 182, 212, 0.22)", border: "rgba(6, 182, 212, 0.7)", text: "#2DD4BF", glow: "0 6px 22px rgba(6, 182, 212, 0.4)" },
@@ -50,7 +50,7 @@ const skillColorMap: Record<string, { bg: string; border: string; text: string; 
   "Expo": { bg: "rgba(168, 85, 247, 0.22)", border: "rgba(168, 85, 247, 0.7)", text: "#C084FC", glow: "0 6px 22px rgba(168, 85, 247, 0.4)" },
 
   "Git": { bg: "rgba(240, 80, 50, 0.22)", border: "rgba(240, 80, 50, 0.7)", text: "#FB923C", glow: "0 6px 22px rgba(240, 80, 50, 0.4)" },
-  "GitHub": { bg: "rgba(168, 85, 247, 0.22)", border: "rgba(168, 85, 247, 0.7)", text: "#E9D5FF", glow: "0 6px 22px rgba(168, 85, 247, 0.4)" },
+  "GitHub": { bg: "var(--secondary)", border: "var(--border)", text: "var(--foreground)", glow: "0 6px 22px var(--glow-accent)" },
   "Postman": { bg: "rgba(255, 108, 55, 0.22)", border: "rgba(255, 108, 55, 0.7)", text: "#F97316", glow: "0 6px 22px rgba(255, 108, 55, 0.4)" },
   "Stripe": { bg: "rgba(99, 91, 255, 0.22)", border: "rgba(99, 91, 255, 0.7)", text: "#A5B4FC", glow: "0 6px 22px rgba(99, 91, 255, 0.4)" },
   "Nodemailer": { bg: "rgba(34, 197, 94, 0.22)", border: "rgba(34, 197, 94, 0.7)", text: "#86EFAC", glow: "0 6px 22px rgba(34, 197, 94, 0.4)" },

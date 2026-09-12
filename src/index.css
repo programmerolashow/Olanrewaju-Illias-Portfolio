@@ -6,6 +6,48 @@
 
 @layer base {
   :root {
+    /* Light Mode Variables */
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 190 90% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 30% 93%;
+    --muted-foreground: 215 20% 35%;
+
+    --accent: 275 80% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 214 32% 85%;
+    --input: 214 32% 85%;
+    --ring: 190 90% 40%;
+
+    --radius: 0.75rem;
+
+    /* Custom tokens for Light mode */
+    --gradient-primary: linear-gradient(135deg, hsl(190 90% 38%), hsl(275 80% 48%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 20% 96%));
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(148, 163, 184, 0.35);
+    --glow-primary: 0 8px 32px rgba(2, 132, 199, 0.15);
+    --glow-accent: 0 8px 32px rgba(139, 92, 246, 0.15);
+  }
+
+  .dark {
+    /* Dark Mode Variables */
     --background: 240 10% 4%;
     --foreground: 0 0% 98%;
 
@@ -22,7 +64,7 @@
     --secondary-foreground: 0 0% 98%;
 
     --muted: 240 10% 15%;
-    --muted-foreground: 240 5% 55%;
+    --muted-foreground: 240 5% 65%;
 
     --accent: 280 85% 65%;
     --accent-foreground: 0 0% 98%;
@@ -34,20 +76,13 @@
     --input: 240 10% 18%;
     --ring: 187 94% 48%;
 
-    --radius: 0.75rem;
-
-    /* Custom tokens */
+    /* Custom tokens for Dark mode */
     --gradient-primary: linear-gradient(135deg, hsl(187 94% 48%), hsl(280 85% 65%));
     --gradient-card: linear-gradient(180deg, hsl(240 10% 8%), hsl(240 10% 5%));
     --glass-bg: hsla(240, 10%, 8%, 0.8);
     --glass-border: hsla(240, 10%, 20%, 0.5);
     --glow-primary: 0 0 60px hsla(187, 94%, 48%, 0.3);
     --glow-accent: 0 0 40px hsla(280, 85%, 65%, 0.2);
-  }
-
-  .dark {
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
   }
 }
 
