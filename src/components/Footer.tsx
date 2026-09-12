@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
-import { Github, Linkedin, Instagram} from "lucide-react";
+import { Github, Linkedin, Instagram, Gitlab} from "lucide-react";
 
 const socialLinks = [
   { icon: Github, href: "https://github.com/programmerolashow", label: "GitHub" },
+  { icon: Gitlab, href: "https://gitlab.com/olanrewajuillias", label: "GitLab" },
   { icon: Linkedin, href: "https://www.linkedin.com/in/olanrewaju-illias-993a982bb", label: "LinkedIn" },
   { icon: Instagram, href: "https://www.instagram.com/programmer_olashow", label: "Instagram" },
 ];
