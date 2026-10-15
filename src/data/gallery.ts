@@ -21,12 +21,25 @@
  *   location  optional, free text e.g. "Lagos, Nigeria"
  *   size      card shape in the grid:
  *               "square" (default) 1x1, "tall" 1x2, "wide" 2x1, "large" 2x2
+ *   focus     optional CSS object-position for cropping, e.g. "top", "center 30%"
+ *             (use it when a card crops off someone's head)
  *
  * Tips:
  *   - Compress images to ~300–500 KB (JPG/WebP, ~1600px on the long edge).
  *   - Keep videos short (5–30s), MP4 (H.264), under ~8 MB. They autoplay muted
  *     when scrolled into view; visitors can open them full-size with sound.
  *   - Mix sizes: 1 "large", a couple of "tall"/"wide", the rest "square" looks best.
+ *
+ * Example video entry:
+ *   {
+ *     type: "video",
+ *     src: "/gallery/project-pitch.mp4",
+ *     poster: "/gallery/project-pitch-poster.jpg",
+ *     title: "Project Pitch",
+ *     caption: "Presenting a product concept to a panel",
+ *     category: "Speaking",
+ *     size: "wide",
+ *   },
  */
 
 export type GalleryItemType = "image" | "video";
@@ -42,36 +55,138 @@ export interface GalleryItem {
   date?: string;
   location?: string;
   size?: GalleryItemSize;
+  focus?: string;
 }
 
 export const gallery: GalleryItem[] = [
   {
     type: "image",
-    src: "/image.jpeg",
-    title: "Olanrewaju Illias",
-    caption: "Full-Stack Product Engineer",
-    category: "Portrait",
+    src: "/gallery/build-with-ai-group.jpg",
+    title: "Build with AI 2026",
+    caption: "The Google Developer Groups community at Build with AI",
+    category: "Community",
+    date: "2026",
     size: "large",
   },
-
-  // --- Examples: copy, uncomment and edit ---------------------------------
-  // {
-  //   type: "image",
-  //   src: "/gallery/devfest-lagos.jpg",
-  //   title: "DevFest Lagos",
-  //   caption: "Talking developer community and open source",
-  //   category: "Events",
-  //   date: "Nov 2025",
-  //   location: "Lagos, Nigeria",
-  //   size: "tall",
-  // },
-  // {
-  //   type: "video",
-  //   src: "/gallery/project-pitch.mp4",
-  //   poster: "/gallery/project-pitch-poster.jpg",
-  //   title: "Project Pitch",
-  //   caption: "Presenting a product concept to a panel",
-  //   category: "Speaking",
-  //   size: "wide",
-  // },
+  {
+    type: "image",
+    src: "/gallery/gemini-lagos.jpg",
+    title: "Gemini Lagos",
+    caption: "Connecting with the Google Gemini community",
+    category: "Events",
+    location: "Lagos, Nigeria",
+    size: "tall",
+    focus: "center 25%",
+  },
+  {
+    type: "image",
+    src: "/gallery/ilorin-innovation-hub-building.jpg",
+    title: "Heads Down, Building",
+    caption: "Hands-on build session at Ilorin Innovation Hub",
+    category: "Workshops",
+    location: "Ilorin, Nigeria",
+    size: "square",
+  },
+  {
+    type: "image",
+    src: "/gallery/devfest-ilorin-duo.jpg",
+    title: "DevFest Ilorin 2025",
+    caption: "Google Developer Groups' flagship developer festival",
+    category: "Events",
+    date: "2025",
+    location: "Ilorin, Nigeria",
+    size: "square",
+    focus: "center 30%",
+  },
+  {
+    type: "image",
+    src: "/gallery/build-with-ai-stage.jpg",
+    title: "On Stage at Build with AI",
+    caption: "A panel moment at Build with AI 2026",
+    category: "Events",
+    date: "2026",
+    size: "wide",
+  },
+  {
+    type: "image",
+    src: "/gallery/portrait-yellow-wall.jpg",
+    title: "Olanrewaju Illias",
+    caption: "Full-Stack Product Engineer",
+    category: "Portraits",
+    size: "tall",
+    focus: "center 20%",
+  },
+  {
+    type: "image",
+    src: "/gallery/ilorin-innovation-hub-session.jpg",
+    title: "Ilorin Innovation Hub",
+    caption: "Learning sessions with the local tech community",
+    category: "Workshops",
+    location: "Ilorin, Nigeria",
+    size: "wide",
+  },
+  {
+    type: "image",
+    src: "/gallery/malhub-career-event.jpg",
+    title: "MALhub Tech Career Event",
+    caption: "Empowering Africa's next tech talent",
+    category: "Events",
+    size: "square",
+    focus: "center 30%",
+  },
+  {
+    type: "image",
+    src: "/gallery/careerfest-stage.jpg",
+    title: "CareerFest",
+    caption: "On stage with fellow participants at a GDG CareerFest",
+    category: "Events",
+    size: "wide",
+  },
+  {
+    type: "image",
+    src: "/gallery/careerfest-portrait.jpg",
+    title: "Between Sessions",
+    caption: "CareerFest",
+    category: "Portraits",
+    size: "tall",
+    focus: "center 35%",
+  },
+  {
+    type: "image",
+    src: "/gallery/ilorin-innovation-hub-audience.jpg",
+    title: "In the Room",
+    caption: "Learning alongside the developer community",
+    category: "Community",
+    location: "Ilorin, Nigeria",
+    size: "square",
+  },
+  {
+    type: "image",
+    src: "/gallery/with-colleagues.jpg",
+    title: "With the Team",
+    caption: "Good people, good work",
+    category: "Community",
+    size: "square",
+    focus: "center 35%",
+  },
+  {
+    type: "image",
+    src: "/gallery/devfest-ilorin-portrait.jpg",
+    title: "DevFest Ilorin",
+    caption: "Showing up for the developer community",
+    category: "Portraits",
+    date: "2025",
+    location: "Ilorin, Nigeria",
+    size: "square",
+    focus: "center 40%",
+  },
+  {
+    type: "image",
+    src: "/gallery/build-with-ai-audience.jpg",
+    title: "Build with AI, Front Row",
+    caption: "Taking it all in at Build with AI 2026",
+    category: "Community",
+    date: "2026",
+    size: "square",
+  },
 ];

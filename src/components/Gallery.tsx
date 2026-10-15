@@ -50,6 +50,7 @@ const CardVideo = ({ item, hovered }: { item: GalleryItem; hovered: boolean }) =
       loop
       playsInline
       preload="metadata"
+      style={{ objectPosition: item.focus }}
       className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
     />
   );
@@ -147,6 +148,7 @@ const GalleryCard = ({ item, index, onOpen }: GalleryCardProps) => {
               alt={item.title}
               loading="lazy"
               decoding="async"
+              style={{ objectPosition: item.focus }}
               className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             />
           )}
