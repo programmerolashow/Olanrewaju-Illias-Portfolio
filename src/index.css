@@ -170,6 +170,18 @@
     mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
   }
 
+  /* Thin ring: keeps only the outer 2px of a circle */
+  .ring-mask {
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
+  }
+
+  /* Fades the bottom of the hero portrait into the page */
+  .portrait-fade {
+    -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 99%);
+    mask-image: linear-gradient(to bottom, #000 78%, transparent 99%);
+  }
+
   .marquee-mask {
     -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
     mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
