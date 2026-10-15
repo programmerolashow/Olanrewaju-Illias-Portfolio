@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { Code2, Palette, Zap, Globe, Server, Database, GitPullRequest, HeartHandshake, ExternalLink } from "lucide-react";
+import { Bot, Code2, Palette, Server, Database, ShieldCheck, GitPullRequest, HeartHandshake, ExternalLink } from "lucide-react";
 
 const skills = [
   // Frontend
@@ -109,33 +109,33 @@ const scatterPositions = Array.from({ length: skills.length }, (_, i) => {
 const features = [
   {
     icon: Code2,
-    title: "Clean Code",
-    description: "Writing maintainable, scalable, and well-documented code.",
+    title: "Full-Stack Delivery",
+    description: "Owning features end to end, from UI to API to database.",
+  },
+  {
+    icon: Bot,
+    title: "AI Integration",
+    description: "LLM features with solid prompts, context and validation.",
   },
   {
     icon: Palette,
-    title: "UI/UX Design",
-    description: "Creating intuitive and visually appealing interfaces.",
-  },
-  {
-    icon: Zap,
-    title: "Performance",
-    description: "Optimizing for speed and best user experience.",
-  },
-  {
-    icon: Globe,
-    title: "Responsive",
-    description: "Building websites that work seamlessly across all devices.",
+    title: "UI/UX Implementation",
+    description: "Responsive, accessible interfaces with purposeful motion.",
   },
   {
     icon: Server,
-    title: "Backend Development",
-    description: "Building secure, scalable APIs and server-side systems.",
+    title: "APIs & Auth",
+    description: "Secure REST APIs, JWT/Clerk auth and integrations.",
   },
   {
     icon: Database,
-    title: "Database Management",
-    description: "Designing and managing efficient, structured data systems.",
+    title: "Data & Modernization",
+    description: "Schema design, migrations and upgrading legacy code.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Quality & CI/CD",
+    description: "Testing, type checks, reviews and GitLab pipelines.",
   },
 ];
 
@@ -180,17 +180,19 @@ const About = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <p className="text-muted-foreground text-lg leading-relaxed mb-6">
-              I specialize in building scalable web and mobile applications with clean, efficient, and maintainable code. I focus on crafting responsive, high-performance user experiences using modern technologies across the entire stack, from intuitive frontends to robust backend systems. I enjoy turning complex ideas into practical, scalable, and user-focused digital solutions.
+              I'm a <strong className="text-foreground font-semibold">Full-Stack Product Engineer</strong> who builds web and mobile applications from the interface down to the database. I take features from requirements to production: responsive React and Next.js frontends, typed Node, Express, Django and FastAPI services, and well-modelled PostgreSQL, MySQL and MongoDB data layers.
+            </p>
+            <p className="text-muted-foreground text-lg leading-relaxed mb-6">
+              Much of my recent work is <strong className="text-foreground font-semibold">AI application engineering</strong>: integrating OpenAI and Gemini into real product workflows, with careful prompt and context design and deterministic business rules that keep the output reliable. I also modernize existing codebases, from JavaScript-to-TypeScript migrations to moving database technologies.
             </p>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8">
-              I’m driven by curiosity and a commitment to excellence. I constantly explore new technologies, embrace challenges, and stay updated with industry best practices to deliver cutting-edge solutions that make a difference.
-              cutting-edge solutions.
+              I care about shipping well as a team: Git-based reviews, CI/CD on GitLab, Docker, testing and clear technical communication. Outside work, I contribute to open source and help grow developer communities.
             </p>
 
             {/* Skills Floor Area with Depth-Sequenced 1.5s Staggered Throw Physics */}
             <div className="space-y-3">
               <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest block">
-                Technical Expertise
+                Core Toolkit <span className="normal-case tracking-normal text-muted-foreground/70">(hover to toss)</span>
               </span>
 
               <div 

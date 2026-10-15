@@ -6,8 +6,10 @@ import { useTheme } from "./ThemeProvider";
 const navItems = [
   { name: "Home", href: "#home" },
   { name: "About", href: "#about" },
+  { name: "Skills", href: "#skills" },
   { name: "Experience", href: "#experience" },
   { name: "Projects", href: "#projects" },
+  { name: "Moments", href: "#moments" },
   { name: "Contact", href: "#contact" },
 ];
 
@@ -45,7 +47,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-4 md:gap-6">
           {/* Desktop Menu */}
-          <ul className="hidden md:flex items-center gap-8">
+          <ul className="hidden lg:flex items-center gap-7">
             {navItems.map((item, index) => (
               <motion.li
                 key={item.name}
@@ -78,8 +80,9 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-foreground p-2"
+            className="lg:hidden text-foreground p-2"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -93,7 +96,7 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden glass-card mt-2 mx-4 rounded-xl overflow-hidden"
+            className="lg:hidden glass-card mt-2 mx-4 rounded-xl overflow-hidden"
           >
             <ul className="flex flex-col p-4 gap-4">
               {navItems.map((item) => (

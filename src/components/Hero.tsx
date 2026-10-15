@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowDown, Github, Gitlab, Linkedin, Mail, Briefcase, GraduationCap, MapPin, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowRight, Github, Gitlab, Linkedin, Mail, Briefcase, GraduationCap, MapPin, Sparkles } from "lucide-react";
 const gdg = "/image.jpeg";
 
 const Hero = () => {
@@ -82,9 +82,17 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg md:text-2xl lg:text-3xl font-bold gradient-text mb-8 leading-snug max-w-3xl mx-auto"
+            className="mb-8 max-w-3xl mx-auto"
           >
-            Full-Stack Product Engineer | Software Engineer | Tech Community Builder & Advocate | Open Source & Developer Community
+            <p className="text-xl md:text-3xl lg:text-4xl font-bold gradient-text leading-snug mb-3">
+              Full-Stack Product Engineer
+            </p>
+            <p className="text-sm md:text-lg text-muted-foreground leading-relaxed">
+              I build full-stack products end to end and bring AI into them where it actually helps.
+              <span className="block mt-1 font-mono text-xs md:text-sm text-foreground/70">
+                AI Application Engineering · Open Source · Developer Community
+              </span>
+            </p>
           </motion.div>
 
           {/* Key Meta Badges */}
@@ -108,6 +116,33 @@ const Hero = () => {
               <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>Lagos State, Nigeria</span>
             </div>
+          </motion.div>
+
+          {/* Calls to Action */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10"
+          >
+            <motion.a
+              href="#projects"
+              whileHover={{ scale: 1.04, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center gap-2 rounded-full px-7 py-3 font-semibold text-primary-foreground"
+              style={{ background: "var(--gradient-primary)" }}
+            >
+              View My Work
+              <ArrowRight className="w-4 h-4" />
+            </motion.a>
+            <motion.a
+              href="#contact"
+              whileHover={{ scale: 1.04, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/60 px-7 py-3 font-semibold text-foreground hover:border-primary hover:text-primary transition-colors"
+            >
+              Let's Talk
+            </motion.a>
           </motion.div>
 
           {/* Social Links */}
