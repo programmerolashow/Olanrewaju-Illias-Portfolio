@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { ExternalLink, Github, Folder } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const projects = [
   {
@@ -123,8 +124,13 @@ const Projects = () => {
                 transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
                 className="project-card group"
               >
+                {/* Screenshot: banner on top for phones; right-hand backdrop fading in from its left edge on wider screens,
+                    so it never sits behind the text (no washed-out "ghost" text in light mode) */}
                 {project.image && (
-                  <div aria-hidden className="pointer-events-none absolute inset-0">
+                  <div
+                    aria-hidden
+                    className="project-shot pointer-events-none relative h-44 overflow-hidden sm:h-56 md:absolute md:inset-y-0 md:right-0 md:h-auto md:w-[48%]"
+                  >
                     <img
                       src={project.image}
                       alt=""
@@ -133,40 +139,14 @@ const Projects = () => {
                       style={{ objectPosition: project.imageFocus }}
                       className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
                     />
-                    {/* Keeps the text readable: solid behind the copy on phones, fading to reveal the screenshot on wider screens */}
-                    <div className="absolute inset-0 bg-card/85 transition-colors duration-500 md:bg-transparent md:bg-gradient-to-r md:from-card md:via-card/90 md:to-card/20 md:group-hover:to-card/0" />
                   </div>
                 )}
-                <div className="relative p-5 sm:p-8 lg:p-10">
-                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
-                    <div>
-                      <p className="text-primary font-mono text-sm mb-2">
-                        Featured Project
-                      </p>
-                      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground group-hover:text-primary transition-colors">
-                        {project.title}
-                      </h3>
-                    </div>
-                    <div className="flex gap-4">
-                      <motion.a
-                        href={project.github}
-                        whileHover={{ scale: 1.1, y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="text-muted-foreground hover:text-primary transition-colors"
-                        aria-label="View on GitHub"
-                      >
-                        <Github size={22} />
-                      </motion.a>
-                      <motion.a
-                        href={project.live}
-                        whileHover={{ scale: 1.1, y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="text-muted-foreground hover:text-primary transition-colors"
-                        aria-label="View live site"
-                      >
-                        <ExternalLink size={22} />
-                      </motion.a>
-                    </div>
+                <div className={cn("relative p-5 sm:p-8 lg:p-10", project.image && "-mt-10 sm:-mt-12 md:mt-0 md:w-[56%]")}>
+                  <div className="mb-4 md:mb-6">
+                    <p className="text-primary font-mono text-sm mb-2">Featured Project</p>
+                    <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground group-hover:text-primary transition-colors">
+                      {project.title}
+                    </h3>
                   </div>
 
                   <p className="text-muted-foreground text-sm sm:text-base md:text-lg mb-5 md:mb-6 max-w-3xl">
@@ -182,6 +162,34 @@ const Projects = () => {
                         {tag}
                       </span>
                     ))}
+                  </div>
+
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    {project.live && (
+                      <motion.a
+                        href={project.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.04, y: -2 }}
+                        whileTap={{ scale: 0.96 }}
+                        className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+                        style={{ background: "var(--gradient-primary)" }}
+                      >
+                        Live Demo
+                        <ExternalLink className="h-4 w-4" />
+                      </motion.a>
+                    )}
+                    <motion.a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.04, y: -2 }}
+                      whileTap={{ scale: 0.96 }}
+                      className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-5 py-2.5 text-sm font-semibold text-foreground backdrop-blur-sm transition-colors hover:border-primary hover:text-primary"
+                    >
+                      <Github className="h-4 w-4" />
+                      Source Code
+                    </motion.a>
                   </div>
                 </div>
               </motion.div>

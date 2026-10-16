@@ -207,7 +207,7 @@ const FeatureArt = ({ name, className }: { name: FeatureArtName; className?: str
       viewBox="0 0 220 160"
       preserveAspectRatio="xMaxYMin meet"
       className={cn(
-        "feature-art pointer-events-none absolute right-0 top-0 h-[78%] w-[82%] opacity-45 transition-all duration-700 ease-out group-hover:-translate-x-1 group-hover:translate-y-1 group-hover:scale-105 group-hover:opacity-90",
+        "feature-art pointer-events-none absolute right-0 top-0 h-[78%] w-[82%] opacity-80 transition-all duration-700 ease-out group-hover:-translate-x-1 group-hover:translate-y-1 group-hover:scale-105 group-hover:opacity-100 dark:opacity-45 dark:group-hover:opacity-90",
         className,
       )}
     >

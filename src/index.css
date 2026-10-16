@@ -197,11 +197,62 @@
     mask-image: linear-gradient(to bottom, #000 78%, transparent 99%);
   }
 
+  /* Featured project screenshot: fades out at the bottom on phones (banner), and in from the left on wider screens */
+  .project-shot {
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  }
+
+  @media (min-width: 768px) {
+    .project-shot {
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 32%);
+      mask-image: linear-gradient(to right, transparent 0%, #000 32%);
+    }
+  }
+
+  /* About "hover to toss" chips. Each chip sets --chip-rgb (brand colour) and --chip-text-dark inline. */
+  .skill-chip {
+    /* Light mode: solid tinted fill (no see-through blending where chips overlap), deep brand-coloured text */
+    background-color: color-mix(in srgb, rgb(var(--chip-rgb)) 12%, #ffffff);
+    border-color: rgba(var(--chip-rgb), 0.45);
+    color: var(--chip-text-light, color-mix(in srgb, rgb(var(--chip-rgb)) 58%, #0f172a));
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.06),
+      0 6px 16px -6px rgba(var(--chip-rgb), 0.35);
+  }
+
+  .skill-chip:hover {
+    border-color: rgba(var(--chip-rgb), 0.8);
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.06),
+      0 10px 24px -8px rgba(var(--chip-rgb), 0.55);
+  }
+
+  .dark .skill-chip {
+    /* Dark mode: translucent neon glass (the original look) */
+    background-color: rgba(var(--chip-rgb), 0.22);
+    border-color: rgba(var(--chip-rgb), 0.7);
+    color: var(--chip-text-dark);
+    box-shadow: 0 6px 22px rgba(var(--chip-rgb), 0.4);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .dark .skill-chip:hover {
+    box-shadow: 0 8px 28px rgba(var(--chip-rgb), 0.6);
+  }
+
   /* About card illustrations: fade out towards the card's text (bottom-left) */
   .feature-art {
     -webkit-mask-image: radial-gradient(ellipse 95% 95% at 100% 0%, #000 45%, transparent 85%);
     mask-image: radial-gradient(ellipse 95% 95% at 100% 0%, #000 45%, transparent 85%);
     transform-origin: top right;
+  }
+
+  /* Light mode: wider, softer fade so the drawing reads as a whole on the white card */
+  :root:not(.dark) .feature-art {
+    -webkit-mask-image: radial-gradient(ellipse 120% 115% at 100% 0%, #000 55%, transparent 92%);
+    mask-image: radial-gradient(ellipse 120% 115% at 100% 0%, #000 55%, transparent 92%);
   }
 
   /* Illustration motion only plays while the card is hovered */

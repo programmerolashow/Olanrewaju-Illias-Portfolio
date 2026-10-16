@@ -19,51 +19,52 @@ const skills = [
   "Visual Basic", "REST APIs", "Authentication", "OAuth", "Webhooks", "AI integrations"
 ];
 
-// Unique vibrant color themes for each skill card to ensure high visual distinction and crisp text legibility
-const skillColorMap: Record<string, { bg: string; border: string; text: string; glow: string }> = {
-  "HTML5": { bg: "rgba(228, 77, 38, 0.22)", border: "rgba(228, 77, 38, 0.7)", text: "#FF7A59", glow: "0 6px 22px rgba(228, 77, 38, 0.4)" },
-  "CSS3": { bg: "rgba(38, 77, 228, 0.22)", border: "rgba(38, 77, 228, 0.7)", text: "#60A5FA", glow: "0 6px 22px rgba(38, 77, 228, 0.4)" },
-  "JavaScript": { bg: "rgba(247, 223, 30, 0.22)", border: "rgba(247, 223, 30, 0.7)", text: "#FACC15", glow: "0 6px 22px rgba(247, 223, 30, 0.4)" },
-  "TypeScript": { bg: "rgba(49, 120, 198, 0.22)", border: "rgba(49, 120, 198, 0.7)", text: "#38BDF8", glow: "0 6px 22px rgba(49, 120, 198, 0.4)" },
-  "React": { bg: "rgba(97, 218, 251, 0.22)", border: "rgba(97, 218, 251, 0.7)", text: "#22D3EE", glow: "0 6px 22px rgba(97, 218, 251, 0.4)" },
-  "Next.js": { bg: "var(--secondary)", border: "var(--border)", text: "var(--foreground)", glow: "0 6px 22px var(--glow-primary)" },
-  "Angular": { bg: "rgba(221, 0, 49, 0.22)", border: "rgba(221, 0, 49, 0.7)", text: "#F87171", glow: "0 6px 22px rgba(221, 0, 49, 0.4)" },
-  "Vite": { bg: "rgba(100, 108, 255, 0.22)", border: "rgba(100, 108, 255, 0.7)", text: "#818CF8", glow: "0 6px 22px rgba(100, 108, 255, 0.4)" },
-  "Tailwind CSS": { bg: "rgba(6, 182, 212, 0.22)", border: "rgba(6, 182, 212, 0.7)", text: "#2DD4BF", glow: "0 6px 22px rgba(6, 182, 212, 0.4)" },
-  "Shadcn/UI": { bg: "rgba(14, 165, 233, 0.22)", border: "rgba(14, 165, 233, 0.7)", text: "#7DD3FC", glow: "0 6px 22px rgba(14, 165, 233, 0.4)" },
-  "Material UI": { bg: "rgba(0, 127, 255, 0.22)", border: "rgba(0, 127, 255, 0.7)", text: "#60A5FA", glow: "0 6px 22px rgba(0, 127, 255, 0.4)" },
-  "Redux": { bg: "rgba(118, 74, 188, 0.22)", border: "rgba(118, 74, 188, 0.7)", text: "#C084FC", glow: "0 6px 22px rgba(118, 74, 188, 0.4)" },
-  "Framer Motion": { bg: "rgba(255, 0, 128, 0.22)", border: "rgba(255, 0, 128, 0.7)", text: "#F472B6", glow: "0 6px 22px rgba(255, 0, 128, 0.4)" },
+// Brand colour per skill chip. `rgb` drives the tint, border and glow; `text` is the dark-mode label colour.
+// In light mode the label is a deeper shade of `rgb` (see .skill-chip in index.css), or `lightText` when set.
+const skillColorMap: Record<string, { rgb: string; text: string; lightText?: string }> = {
+  "HTML5": { rgb: "228, 77, 38", text: "#FF7A59" },
+  "CSS3": { rgb: "38, 77, 228", text: "#60A5FA" },
+  "JavaScript": { rgb: "234, 179, 8", text: "#FACC15", lightText: "#A16207" },
+  "TypeScript": { rgb: "49, 120, 198", text: "#38BDF8" },
+  "React": { rgb: "97, 218, 251", text: "#22D3EE", lightText: "#0E7490" },
+  "Next.js": { rgb: "148, 163, 184", text: "#F8FAFC" },
+  "Angular": { rgb: "221, 0, 49", text: "#F87171" },
+  "Vite": { rgb: "100, 108, 255", text: "#818CF8" },
+  "Tailwind CSS": { rgb: "6, 182, 212", text: "#2DD4BF" },
+  "Shadcn/UI": { rgb: "14, 165, 233", text: "#7DD3FC" },
+  "Material UI": { rgb: "0, 127, 255", text: "#60A5FA" },
+  "Redux": { rgb: "118, 74, 188", text: "#C084FC" },
+  "Framer Motion": { rgb: "255, 0, 128", text: "#F472B6" },
 
-  "Node.js": { bg: "rgba(95, 160, 78, 0.22)", border: "rgba(95, 160, 78, 0.7)", text: "#4ADE80", glow: "0 6px 22px rgba(95, 160, 78, 0.4)" },
-  "Express.js": { bg: "rgba(234, 179, 8, 0.22)", border: "rgba(234, 179, 8, 0.7)", text: "#FDE047", glow: "0 6px 22px rgba(234, 179, 8, 0.4)" },
-  "Python": { bg: "rgba(55, 118, 171, 0.22)", border: "rgba(55, 118, 171, 0.7)", text: "#FCD34D", glow: "0 6px 22px rgba(55, 118, 171, 0.4)" },
-  "Django": { bg: "rgba(9, 76, 50, 0.25)", border: "rgba(43, 138, 89, 0.7)", text: "#4ADE80", glow: "0 6px 22px rgba(43, 138, 89, 0.4)" },
-  "PHP": { bg: "rgba(119, 123, 179, 0.22)", border: "rgba(119, 123, 179, 0.7)", text: "#A5B4FC", glow: "0 6px 22px rgba(119, 123, 179, 0.4)" },
+  "Node.js": { rgb: "95, 160, 78", text: "#4ADE80" },
+  "Express.js": { rgb: "202, 138, 4", text: "#FDE047", lightText: "#854D0E" },
+  "Python": { rgb: "55, 118, 171", text: "#FCD34D", lightText: "#2B5B84" },
+  "Django": { rgb: "43, 138, 89", text: "#4ADE80" },
+  "PHP": { rgb: "119, 123, 179", text: "#A5B4FC" },
 
-  "PostgreSQL": { bg: "rgba(65, 105, 225, 0.22)", border: "rgba(65, 105, 225, 0.7)", text: "#93C5FD", glow: "0 6px 22px rgba(65, 105, 225, 0.4)" },
-  "MySQL": { bg: "rgba(0, 117, 143, 0.22)", border: "rgba(0, 117, 143, 0.7)", text: "#38BDF8", glow: "0 6px 22px rgba(0, 117, 143, 0.4)" },
-  "MongoDB": { bg: "rgba(71, 162, 72, 0.22)", border: "rgba(71, 162, 72, 0.7)", text: "#34D399", glow: "0 6px 22px rgba(71, 162, 72, 0.4)" },
-  "Prisma": { bg: "rgba(90, 103, 216, 0.22)", border: "rgba(90, 103, 216, 0.7)", text: "#818CF8", glow: "0 6px 22px rgba(90, 103, 216, 0.4)" },
-  "Neon": { bg: "rgba(0, 229, 153, 0.22)", border: "rgba(0, 229, 153, 0.7)", text: "#34D399", glow: "0 6px 22px rgba(0, 229, 153, 0.4)" },
+  "PostgreSQL": { rgb: "65, 105, 225", text: "#93C5FD" },
+  "MySQL": { rgb: "0, 117, 143", text: "#38BDF8" },
+  "MongoDB": { rgb: "71, 162, 72", text: "#34D399" },
+  "Prisma": { rgb: "90, 103, 216", text: "#818CF8" },
+  "Neon": { rgb: "0, 229, 153", text: "#34D399", lightText: "#047857" },
 
-  "React Native": { bg: "rgba(0, 129, 200, 0.22)", border: "rgba(0, 129, 200, 0.7)", text: "#38BDF8", glow: "0 6px 22px rgba(0, 129, 200, 0.4)" },
-  "Expo": { bg: "rgba(168, 85, 247, 0.22)", border: "rgba(168, 85, 247, 0.7)", text: "#C084FC", glow: "0 6px 22px rgba(168, 85, 247, 0.4)" },
+  "React Native": { rgb: "0, 129, 200", text: "#38BDF8" },
+  "Expo": { rgb: "168, 85, 247", text: "#C084FC" },
 
-  "Git": { bg: "rgba(240, 80, 50, 0.22)", border: "rgba(240, 80, 50, 0.7)", text: "#FB923C", glow: "0 6px 22px rgba(240, 80, 50, 0.4)" },
-  "GitHub": { bg: "var(--secondary)", border: "var(--border)", text: "var(--foreground)", glow: "0 6px 22px var(--glow-accent)" },
-  "Postman": { bg: "rgba(255, 108, 55, 0.22)", border: "rgba(255, 108, 55, 0.7)", text: "#F97316", glow: "0 6px 22px rgba(255, 108, 55, 0.4)" },
-  "Stripe": { bg: "rgba(99, 91, 255, 0.22)", border: "rgba(99, 91, 255, 0.7)", text: "#A5B4FC", glow: "0 6px 22px rgba(99, 91, 255, 0.4)" },
-  "Nodemailer": { bg: "rgba(34, 197, 94, 0.22)", border: "rgba(34, 197, 94, 0.7)", text: "#86EFAC", glow: "0 6px 22px rgba(34, 197, 94, 0.4)" },
-  "Supabase": { bg: "rgba(62, 207, 142, 0.22)", border: "rgba(62, 207, 142, 0.7)", text: "#4ADE80", glow: "0 6px 22px rgba(62, 207, 142, 0.4)" },
-  "OpenAI": { bg: "rgba(16, 163, 127, 0.22)", border: "rgba(16, 163, 127, 0.7)", text: "#2DD4BF", glow: "0 6px 22px rgba(16, 163, 127, 0.4)" },
+  "Git": { rgb: "240, 80, 50", text: "#FB923C" },
+  "GitHub": { rgb: "148, 163, 184", text: "#F8FAFC" },
+  "Postman": { rgb: "255, 108, 55", text: "#F97316" },
+  "Stripe": { rgb: "99, 91, 255", text: "#A5B4FC" },
+  "Nodemailer": { rgb: "34, 197, 94", text: "#86EFAC" },
+  "Supabase": { rgb: "62, 207, 142", text: "#4ADE80", lightText: "#15803D" },
+  "OpenAI": { rgb: "16, 163, 127", text: "#2DD4BF" },
 
-  "Visual Basic": { bg: "rgba(147, 51, 234, 0.22)", border: "rgba(147, 51, 234, 0.7)", text: "#D8B4FE", glow: "0 6px 22px rgba(147, 51, 234, 0.4)" },
-  "REST APIs": { bg: "rgba(14, 165, 233, 0.22)", border: "rgba(14, 165, 233, 0.7)", text: "#38BDF8", glow: "0 6px 22px rgba(14, 165, 233, 0.4)" },
-  "Authentication": { bg: "rgba(236, 72, 153, 0.22)", border: "rgba(236, 72, 153, 0.7)", text: "#F472B6", glow: "0 6px 22px rgba(236, 72, 153, 0.4)" },
-  "OAuth": { bg: "rgba(168, 85, 247, 0.22)", border: "rgba(168, 85, 247, 0.7)", text: "#E9D5FF", glow: "0 6px 22px rgba(168, 85, 247, 0.4)" },
-  "Webhooks": { bg: "rgba(245, 158, 11, 0.22)", border: "rgba(245, 158, 11, 0.7)", text: "#FCD34D", glow: "0 6px 22px rgba(245, 158, 11, 0.4)" },
-  "AI integrations": { bg: "rgba(187, 94, 48, 0.22)", border: "rgba(187, 94, 48, 0.7)", text: "#38BDF8", glow: "0 6px 22px rgba(187, 94, 48, 0.4)" },
+  "Visual Basic": { rgb: "147, 51, 234", text: "#D8B4FE" },
+  "REST APIs": { rgb: "14, 165, 233", text: "#38BDF8" },
+  "Authentication": { rgb: "236, 72, 153", text: "#F472B6" },
+  "OAuth": { rgb: "168, 85, 247", text: "#E9D5FF" },
+  "Webhooks": { rgb: "245, 158, 11", text: "#FCD34D", lightText: "#B45309" },
+  "AI integrations": { rgb: "139, 92, 246", text: "#C4B5FD" },
 };
 
 // Floor resting scatter positions (partially resting at the bottom/floor area)
@@ -208,10 +209,8 @@ const About = () => {
               >
                 {skills.map((skill, index) => {
                   const style = skillColorMap[skill] || {
-                    bg: "rgba(187, 94, 48, 0.22)",
-                    border: "rgba(187, 94, 48, 0.7)",
+                    rgb: "14, 165, 233",
                     text: "#38BDF8",
-                    glow: "0 6px 22px rgba(187, 94, 48, 0.4)"
                   };
                   const scatter = scatterPositions[index % scatterPositions.length];
                   
@@ -261,13 +260,14 @@ const About = () => {
                             }
                       }
                       onMouseEnter={triggerThrowAnimation}
-                      style={{
-                        backgroundColor: style.bg,
-                        borderColor: style.border,
-                        color: style.text,
-                        boxShadow: style.glow,
-                      }}
-                      className="inline-flex items-center justify-center rounded-full border px-3.5 py-2 text-xs sm:px-5 sm:py-2.5 sm:text-sm xl:px-6 xl:py-3 font-semibold shadow-xl backdrop-blur-md cursor-pointer select-none whitespace-nowrap tracking-wide leading-none transition-shadow duration-300"
+                      style={
+                        {
+                          "--chip-rgb": style.rgb,
+                          "--chip-text-dark": style.text,
+                          ...(style.lightText ? { "--chip-text-light": style.lightText } : {}),
+                        } as React.CSSProperties
+                      }
+                      className="skill-chip inline-flex items-center justify-center rounded-full border px-3.5 py-2 text-xs sm:px-5 sm:py-2.5 sm:text-sm xl:px-6 xl:py-3 font-semibold cursor-pointer select-none whitespace-nowrap tracking-wide leading-none transition-shadow duration-300"
                     >
                       {skill}
                     </motion.span>
@@ -291,7 +291,7 @@ const About = () => {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
                 whileHover={{ y: -5 }}
-                className="glass-card relative overflow-hidden rounded-xl p-5 sm:p-6 group flex flex-col lg:p-7 transition-colors duration-300 hover:border-primary/40"
+                className="glass-card relative overflow-hidden rounded-xl p-5 sm:p-6 group flex flex-col lg:p-7 transition-colors duration-300 hover:border-primary/40 bg-gradient-to-br from-primary/[0.04] via-transparent to-accent/[0.07] dark:bg-none"
               >
                 <FeatureArt name={feature.art} />
                 <div className="relative w-12 h-12 lg:w-14 lg:h-14 rounded-lg bg-primary/10 backdrop-blur-sm flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
