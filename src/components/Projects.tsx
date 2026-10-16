@@ -90,13 +90,13 @@ const Projects = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="projects" className="py-32 relative" ref={ref}>
-      <div className="container mx-auto px-6">
+    <section id="projects" className="section-padding relative" ref={ref}>
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16"
         >
           <p className="text-primary font-mono text-sm mb-4">My Work</p>
           <h2 className="section-heading">
@@ -105,7 +105,7 @@ const Projects = () => {
         </motion.div>
 
         {/* Featured Projects */}
-        <div className="grid gap-8 mb-16">
+        <div className="grid gap-5 md:gap-8 mb-12 md:mb-16">
           {projects
             .filter((p) => p.featured)
             .map((project, index) => (
@@ -116,13 +116,13 @@ const Projects = () => {
                 transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
                 className="project-card group"
               >
-                <div className="p-8 md:p-10">
+                <div className="p-5 sm:p-8 lg:p-10">
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
                     <div>
                       <p className="text-primary font-mono text-sm mb-2">
                         Featured Project
                       </p>
-                      <h3 className="text-2xl md:text-3xl font-bold text-foreground group-hover:text-primary transition-colors">
+                      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground group-hover:text-primary transition-colors">
                         {project.title}
                       </h3>
                     </div>
@@ -148,7 +148,7 @@ const Projects = () => {
                     </div>
                   </div>
 
-                  <p className="text-muted-foreground text-lg mb-6 max-w-2xl">
+                  <p className="text-muted-foreground text-sm sm:text-base md:text-lg mb-5 md:mb-6 max-w-3xl">
                     {project.description}
                   </p>
 
@@ -156,7 +156,7 @@ const Projects = () => {
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-3 py-1 text-sm font-mono text-primary bg-primary/10 rounded-full"
+                        className="px-2.5 py-1 text-xs sm:px-3 sm:text-sm font-mono text-primary bg-primary/10 rounded-full"
                       >
                         {tag}
                       </span>
@@ -172,12 +172,12 @@ const Projects = () => {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="text-2xl font-bold text-center mb-8"
+          className="text-xl sm:text-2xl font-bold text-center mb-6 md:mb-8"
         >
           Other Noteworthy Projects
         </motion.h3>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {projects
             .filter((p) => !p.featured)
             .map((project, index) => (
@@ -187,10 +187,10 @@ const Projects = () => {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
                 whileHover={{ y: -8 }}
-                className="glass-card rounded-xl p-6 group cursor-pointer"
+                className="glass-card rounded-xl p-5 sm:p-6 group cursor-pointer"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <Folder className="w-10 h-10 text-primary" />
+                  <Folder className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
                   <div className="flex gap-3">
                     <a
                       href={project.github}
@@ -209,7 +209,7 @@ const Projects = () => {
                   </div>
                 </div>
 
-                <h4 className="text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors">
+                <h4 className="text-lg sm:text-xl font-semibold text-foreground mb-2 sm:mb-3 group-hover:text-primary transition-colors">
                   {project.title}
                 </h4>
                 <p className="text-muted-foreground text-sm mb-4 line-clamp-3">

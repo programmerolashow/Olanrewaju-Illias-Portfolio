@@ -10,18 +10,18 @@ const socialLinks = [
 
 const Footer = () => {
   return (
-    <footer className="py-12 border-t border-border">
-      <div className="container mx-auto px-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+    <footer className="py-8 md:py-12 border-t border-border">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 text-center">
           <motion.a
             href="#home"
-            className="text-xl font-bold gradient-text"
+            className="text-lg sm:text-xl font-bold gradient-text"
             whileHover={{ scale: 1.05 }}
           >
             {"<Fullstack Developer />"}
           </motion.a>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-5 sm:gap-6">
             {socialLinks.map(({ icon: Icon, href, label }) => (
               <motion.a
                 key={label}

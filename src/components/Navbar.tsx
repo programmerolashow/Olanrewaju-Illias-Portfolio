@@ -32,22 +32,22 @@ const Navbar = () => {
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? "glass-card py-4" : "bg-transparent py-6"
+        isScrolled ? "glass-card py-3 md:py-4" : "bg-transparent py-4 md:py-6"
       }`}
     >
-      <div className="container mx-auto flex items-center justify-between px-6">
+      <div className="container mx-auto flex items-center justify-between gap-3 px-4 sm:px-6">
         <motion.a
           href="#home"
-          className="text-2xl font-bold gradient-text"
+          className="text-base font-bold gradient-text sm:text-xl xl:text-2xl whitespace-nowrap"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
           {"<Programmer Olashow />"}
         </motion.a>
 
-        <div className="flex items-center gap-4 md:gap-6">
+        <div className="flex items-center gap-2 sm:gap-4 xl:gap-6">
           {/* Desktop Menu */}
-          <ul className="hidden lg:flex items-center gap-7">
+          <ul className="hidden lg:flex items-center gap-5 xl:gap-8">
             {navItems.map((item, index) => (
               <motion.li
                 key={item.name}
@@ -55,7 +55,7 @@ const Navbar = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 + 0.3 }}
               >
-                <a href={item.href} className="nav-link font-medium">
+                <a href={item.href} className="nav-link font-medium text-sm xl:text-base">
                   {item.name}
                 </a>
               </motion.li>

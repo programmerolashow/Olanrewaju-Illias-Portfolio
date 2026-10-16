@@ -14,7 +14,7 @@ const Index = () => {
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, mass: 0.3 });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background [overflow-x:clip]">
       <motion.div
         aria-hidden
         style={{ scaleX: progress, background: "var(--gradient-primary)" }}

@@ -236,7 +236,7 @@ const Marquee = ({ items, reverse = false }: { items: string[]; reverse?: boolea
         <span
           key={`${item}-${i}`}
           aria-hidden={i >= items.length}
-          className="whitespace-nowrap rounded-full border border-border bg-secondary/60 px-5 py-2 font-mono text-sm text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+          className="whitespace-nowrap rounded-full border border-border bg-secondary/60 px-3.5 py-1.5 font-mono text-xs text-muted-foreground sm:px-5 sm:py-2 sm:text-sm transition-colors hover:border-primary hover:text-primary"
         >
           {item}
         </span>
@@ -261,7 +261,7 @@ const StackCard = ({ stack, index, inView }: { stack: (typeof stacks)[number]; i
         mx.set(e.clientX - rect.left);
         my.set(e.clientY - rect.top);
       }}
-      className="glass-card group relative overflow-hidden rounded-2xl p-6 transition-colors duration-300 hover:border-primary/50"
+      className="glass-card group relative overflow-hidden rounded-2xl p-5 transition-colors sm:p-6 duration-300 hover:border-primary/50"
     >
       <motion.div
         aria-hidden
@@ -278,7 +278,7 @@ const StackCard = ({ stack, index, inView }: { stack: (typeof stacks)[number]; i
           {stack.tools.map((tool) => (
             <span
               key={tool}
-              className="rounded-md border border-primary/20 bg-primary/10 px-2 py-0.5 font-mono text-[11px] text-primary"
+              className="rounded-md border border-primary/20 bg-primary/10 px-2 py-0.5 font-mono text-[0.7rem] text-primary"
             >
               {tool}
             </span>
@@ -296,19 +296,19 @@ const Skills = () => {
   const active = categories.find((c) => c.id === activeId) ?? categories[0];
 
   return (
-    <section id="skills" className="relative py-32" ref={ref}>
-      <div className="container mx-auto px-6">
+    <section id="skills" className="section-padding relative" ref={ref}>
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="mb-14 text-center"
+          className="mb-10 text-center md:mb-14"
         >
           <p className="mb-4 font-mono text-sm text-primary">Skills & Expertise</p>
           <h2 className="section-heading">
             The Full-Stack <span className="gradient-text">Toolkit</span>
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
             Frontend to backend, data to AI, pipelines to product decisions: the tools and practices I use to ship.
           </p>
         </motion.div>
@@ -317,7 +317,7 @@ const Skills = () => {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-16 space-y-3"
+          className="mb-10 space-y-2.5 md:mb-16 md:space-y-3"
         >
           <Marquee items={marqueeTop} />
           <Marquee items={marqueeBottom} reverse />
@@ -328,12 +328,12 @@ const Skills = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="grid gap-6 lg:grid-cols-[280px_1fr]"
+          className="grid gap-4 md:gap-6 lg:grid-cols-[15rem_1fr] xl:grid-cols-[17rem_1fr]"
         >
           <div
             role="tablist"
             aria-label="Skill categories"
-            className="-mx-6 flex gap-2 overflow-x-auto px-6 pb-2 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0"
+            className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:-mx-6 sm:px-6 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0"
           >
             {categories.map((category) => {
               const selected = category.id === activeId;
@@ -366,7 +366,7 @@ const Skills = () => {
             })}
           </div>
 
-          <div className="glass-card relative min-h-[340px] overflow-hidden rounded-2xl p-6 md:p-8" role="tabpanel">
+          <div className="glass-card relative min-h-[20rem] overflow-hidden rounded-2xl p-5 sm:p-6 md:p-8" role="tabpanel">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active.id}
@@ -375,7 +375,7 @@ const Skills = () => {
                 exit={{ opacity: 0, y: -16 }}
                 transition={{ duration: 0.25 }}
               >
-                <div className="mb-6 flex items-start gap-4">
+                <div className="mb-5 flex items-start gap-3 sm:mb-6 sm:gap-4">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <active.icon className="h-6 w-6" />
                   </div>
@@ -384,7 +384,7 @@ const Skills = () => {
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground md:text-base">{active.blurb}</p>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2.5">
+                <div className="flex flex-wrap gap-2 sm:gap-2.5">
                   {active.skills.map((skill, i) => (
                     <motion.span
                       key={skill}
@@ -392,7 +392,7 @@ const Skills = () => {
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       transition={{ type: "spring", stiffness: 300, damping: 22, delay: i * 0.025 }}
                       whileHover={{ y: -3, scale: 1.04 }}
-                      className="cursor-default rounded-full border border-border bg-secondary/70 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary"
+                      className="cursor-default rounded-full border border-border bg-secondary/70 px-3 py-1.5 text-xs font-medium sm:px-4 sm:py-2 sm:text-sm text-foreground transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary"
                     >
                       {skill}
                     </motion.span>
@@ -404,16 +404,16 @@ const Skills = () => {
         </motion.div>
 
         {/* Signature stacks */}
-        <div className="mt-20">
+        <div className="mt-14 md:mt-20">
           <motion.h3
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="mb-8 text-center text-2xl font-bold"
+            className="mb-6 text-center text-xl font-bold sm:text-2xl md:mb-8"
           >
             Where I Add the Most Value
           </motion.h3>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 md:gap-5 xl:grid-cols-4">
             {stacks.map((stack, index) => (
               <StackCard key={stack.title} stack={stack} index={index} inView={isInView} />
             ))}

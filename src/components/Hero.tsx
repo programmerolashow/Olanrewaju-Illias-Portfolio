@@ -1,32 +1,7 @@
-import {
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-  type MotionValue,
-} from "framer-motion";
+import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { useRef } from "react";
-import {
-  ArrowDown,
-  ArrowRight,
-  Atom,
-  Bot,
-  Braces,
-  Briefcase,
-  Github,
-  Gitlab,
-  GraduationCap,
-  Linkedin,
-  Mail,
-  MapPin,
-  Server,
-  Sparkles,
-  type LucideIcon,
-} from "lucide-react";
-
-const portrait = "/illias-hero.webp";
+import { ArrowDown, ArrowRight, Briefcase, Github, Gitlab, GraduationCap, Linkedin, Mail, MapPin, Sparkles } from "lucide-react";
+import HeroPortrait from "./HeroPortrait";
 
 const socials = [
   { icon: Github, href: "https://github.com/programmerolashow", label: "GitHub" },
@@ -35,68 +10,15 @@ const socials = [
   { icon: Mail, href: "mailto:olanrewajuillias@gmail.com", label: "Email" },
 ];
 
-interface FloatingChip {
-  icon: LucideIcon;
-  label: string;
-  className: string;
-  depth: number;
-  float: number;
-  delay: number;
-  iconClass: string;
-}
-
-// Glass chips that hover around the portrait at different depths
-const chips: FloatingChip[] = [
-  { icon: Atom, label: "React", className: "left-0 top-[22%]", depth: 110, float: 5, delay: 0.9, iconClass: "text-cyan-400" },
-  { icon: Braces, label: "TypeScript", className: "right-0 top-[34%]", depth: 140, float: 6, delay: 1.0, iconClass: "text-sky-500" },
-  { icon: Server, label: "Node.js", className: "left-2 bottom-[30%]", depth: 90, float: 5.5, delay: 1.1, iconClass: "text-emerald-500" },
-  { icon: Bot, label: "AI Engineering", className: "right-2 bottom-[16%]", depth: 160, float: 6.5, delay: 1.2, iconClass: "text-accent" },
-];
-
-/** Shifts a layer with the pointer: deeper layers (higher depth) move further, creating parallax. */
-const useDepth = (pointerX: MotionValue<number>, pointerY: MotionValue<number>, depth: number) => {
-  const x = useTransform(pointerX, [-0.5, 0.5], [-depth * 0.18, depth * 0.18]);
-  const y = useTransform(pointerY, [-0.5, 0.5], [-depth * 0.12, depth * 0.12]);
-  return { x, y };
-};
-
-const Chip = ({ chip, pointerX, pointerY }: { chip: FloatingChip; pointerX: MotionValue<number>; pointerY: MotionValue<number> }) => {
-  const { x, y } = useDepth(pointerX, pointerY, chip.depth);
-  return (
-    <motion.div style={{ x, y, z: chip.depth }} className={`absolute z-30 ${chip.className}`}>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.6 }}
-        animate={{ opacity: 1, scale: 1, y: [0, -10, 0] }}
-        transition={{
-          opacity: { delay: chip.delay, duration: 0.5 },
-          scale: { delay: chip.delay, type: "spring", stiffness: 260, damping: 18 },
-          y: { duration: chip.float, repeat: Infinity, ease: "easeInOut", delay: chip.delay },
-        }}
-        whileHover={{ scale: 1.08 }}
-        className="glass-card flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold text-foreground md:text-sm"
-      >
-        <chip.icon className={`h-4 w-4 ${chip.iconClass}`} />
-        {chip.label}
-      </motion.div>
-    </motion.div>
-  );
-};
-
 const Hero = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const reduce = useReducedMotion();
+  const reduce = Boolean(useReducedMotion());
 
-  // Pointer position across the hero, normalised to -0.5 … 0.5 and smoothed
+  // Pointer position across the hero, normalised to -0.5 … 0.5 and smoothed (drives the depth parallax)
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
   const pointerX = useSpring(rawX, { stiffness: 90, damping: 18, mass: 0.6 });
   const pointerY = useSpring(rawY, { stiffness: 90, damping: 18, mass: 0.6 });
-
-  const stageRotateY = useTransform(pointerX, [-0.5, 0.5], [-14, 14]);
-  const stageRotateX = useTransform(pointerY, [-0.5, 0.5], [10, -10]);
-  const ringLayer = useDepth(pointerX, pointerY, -90);
-  const archLayer = useDepth(pointerX, pointerY, -30);
-  const figureLayer = useDepth(pointerX, pointerY, 50);
 
   // Scroll: the portrait sinks back and the copy drifts up as the hero leaves the screen
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
@@ -123,7 +45,7 @@ const Hero = () => {
       ref={sectionRef}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
-      className="relative flex min-h-screen items-center overflow-hidden pb-20 pt-28 lg:pt-24"
+      className="relative flex min-h-[100svh] items-center overflow-hidden pb-14 pt-24 sm:pb-16 lg:pb-20 lg:pt-24"
     >
       {/* Background Radial Glow Elements */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -141,108 +63,20 @@ const Hero = () => {
         />
       </div>
 
-      <div className="container relative z-10 mx-auto px-5">
-        <div className="grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-6">
-          {/* ---------------- Left: 3D portrait stage ---------------- */}
-          <motion.div
-            style={reduce ? undefined : { y: figureScrollY, scale: figureScale, opacity: heroOpacity }}
-            className="relative mx-auto w-full max-w-[460px] [perspective:1400px]"
-          >
-            <motion.div
-              style={
-                reduce
-                  ? undefined
-                  : { rotateX: stageRotateX, rotateY: stageRotateY, transformStyle: "preserve-3d" }
-              }
-              className="relative h-[440px] sm:h-[520px] lg:h-[640px]"
-            >
-              {/* Spinning gradient ring (deepest layer) */}
-              <motion.div
-                style={reduce ? undefined : { ...ringLayer, z: -90 }}
-                className="absolute inset-x-0 top-[6%] mx-auto aspect-square w-[92%]"
-              >
-                <motion.div
-                  animate={reduce ? undefined : { rotate: 360 }}
-                  transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-                  className="ring-mask h-full w-full rounded-full opacity-70"
-                  style={{
-                    background:
-                      "conic-gradient(from 0deg, hsl(var(--primary)), transparent 30%, hsl(var(--accent)), transparent 70%, hsl(var(--primary)))",
-                  }}
-                />
-                <div className="absolute inset-[12%] rounded-full bg-primary/20 blur-[70px]" />
-              </motion.div>
-
-              {/* Arch panel the portrait stands in */}
-              <motion.div
-                style={reduce ? undefined : { ...archLayer, z: -30 }}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-x-0 bottom-0 mx-auto h-[70%] w-[82%] overflow-hidden rounded-t-[999px] border border-white/10"
-              >
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      "linear-gradient(160deg, hsl(var(--primary) / 0.45), hsl(var(--accent) / 0.4) 55%, hsl(var(--background) / 0.2))",
-                  }}
-                />
-                <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(hsl(var(--foreground)/0.35)_1px,transparent_1px)] [background-size:18px_18px]" />
-                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background to-transparent" />
-              </motion.div>
-
-              {/* Portrait: breaks out above the arch for the pop-out effect */}
-              <motion.div
-                style={reduce ? undefined : { ...figureLayer, z: 50 }}
-                className="absolute inset-x-0 bottom-0 z-20 mx-auto flex h-full justify-center [filter:drop-shadow(0_0_28px_hsl(var(--primary)/0.35))]"
-              >
-                <motion.img
-                  src={portrait}
-                  alt="Olanrewaju Illias"
-                  draggable={false}
-                  initial={{ opacity: 0, y: 80, filter: "blur(12px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                  className="portrait-fade h-full w-auto select-none object-contain object-bottom"
-                />
-              </motion.div>
-
-              {/* Availability badge */}
-              <motion.div
-                style={reduce ? undefined : { z: 120 }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.3, duration: 0.5 }}
-                className="absolute inset-x-0 bottom-6 z-30 mx-auto flex w-max items-center gap-2 rounded-full border border-primary/40 bg-background/80 px-4 py-2 font-mono text-xs font-medium text-primary backdrop-blur-md"
-              >
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-                </span>
-                Available for Opportunities
-              </motion.div>
-
-              {/* Floating tech chips (closest layers) */}
-              {chips.map((chip) => (
-                <Chip key={chip.label} chip={chip} pointerX={pointerX} pointerY={pointerY} />
-              ))}
-            </motion.div>
-
-            {/* Ground shadow */}
-            <div className="absolute -bottom-2 left-1/2 h-6 w-2/3 -translate-x-1/2 rounded-[100%] bg-black/40 blur-xl dark:bg-black/70" />
+      <div className="container relative z-10 mx-auto px-4 sm:px-6">
+        <div className="grid items-center gap-8 md:gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-8 xl:gap-12">
+          {/* ---------------- Left: interactive 3D portrait ---------------- */}
+          <motion.div style={reduce ? undefined : { y: figureScrollY, scale: figureScale, opacity: heroOpacity }}>
+            <HeroPortrait pointerX={pointerX} pointerY={pointerY} reduce={reduce} />
           </motion.div>
 
           {/* ---------------- Right: introduction ---------------- */}
-          <motion.div
-            style={reduce ? undefined : { y: copyScrollY }}
-            className="text-center lg:text-left"
-          >
+          <motion.div style={reduce ? undefined : { y: copyScrollY }} className="text-center lg:text-left">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="mb-3 font-mono text-sm text-primary md:text-base"
+              className="mb-2 font-mono text-sm text-primary sm:mb-3 md:text-base"
             >
               Hello, I'm
             </motion.p>
@@ -251,7 +85,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="mb-3 text-4xl font-bold tracking-tight text-foreground md:text-6xl xl:text-7xl"
+              className="mb-3 text-[2.1rem] font-bold leading-[1.1] tracking-tight text-foreground sm:text-5xl md:text-6xl xl:text-7xl"
             >
               Olanrewaju Illias
             </motion.h1>
@@ -260,9 +94,9 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-secondary/80 px-4 py-1.5 font-mono text-xs text-muted-foreground md:text-sm"
+              className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-secondary/80 px-3 py-1.5 font-mono text-xs text-muted-foreground sm:mb-6 sm:px-4 md:text-sm"
             >
-              <Sparkles className="h-4 w-4 text-primary" />
+              <Sparkles className="h-4 w-4 shrink-0 text-primary" />
               <span>
                 Also Known as <strong className="font-semibold text-foreground">Programmer Olashow</strong>
               </span>
@@ -272,12 +106,12 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="mx-auto mb-8 max-w-2xl lg:mx-0"
+              className="mx-auto mb-6 max-w-2xl sm:mb-8 lg:mx-0"
             >
-              <p className="gradient-text mb-3 text-xl font-bold leading-snug md:text-3xl lg:text-4xl">
+              <p className="gradient-text mb-2 text-xl font-bold leading-snug sm:mb-3 sm:text-2xl md:text-3xl xl:text-4xl">
                 Full-Stack Product Engineer
               </p>
-              <p className="text-sm leading-relaxed text-muted-foreground md:text-lg">
+              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg">
                 I build full-stack products end to end and bring AI into them where it actually helps.
                 <span className="mt-1 block font-mono text-xs text-foreground/70 md:text-sm">
                   AI Application Engineering · Open Source · Developer Community
@@ -290,19 +124,19 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
-              className="mb-10 flex flex-wrap items-center justify-center gap-3 text-xs md:text-sm lg:justify-start"
+              className="mb-7 flex flex-wrap items-center justify-center gap-2 text-xs sm:mb-10 sm:gap-3 md:text-sm lg:justify-start"
             >
-              <div className="glass-card flex items-center gap-2 rounded-xl border border-border/80 px-3.5 py-2 font-medium text-foreground/90">
+              <div className="glass-card flex items-center gap-2 rounded-xl border border-border/80 px-3 py-2 font-medium text-foreground/90 sm:px-3.5">
                 <Briefcase className="h-4 w-4 shrink-0 text-primary" />
                 <span>
                   Software Engineer at <strong className="font-semibold text-primary">Qorelly</strong>
                 </span>
               </div>
-              <div className="glass-card flex items-center gap-2 rounded-xl border border-border/80 px-3.5 py-2 font-medium text-foreground/90">
+              <div className="glass-card flex items-center gap-2 rounded-xl border border-border/80 px-3 py-2 font-medium text-foreground/90 sm:px-3.5">
                 <GraduationCap className="h-4 w-4 shrink-0 text-accent" />
                 <span>University of Ilorin</span>
               </div>
-              <div className="glass-card flex items-center gap-2 rounded-xl border border-border/80 px-3.5 py-2 font-medium text-foreground/90">
+              <div className="glass-card flex items-center gap-2 rounded-xl border border-border/80 px-3 py-2 font-medium text-foreground/90 sm:px-3.5">
                 <MapPin className="h-4 w-4 shrink-0 text-emerald-400" />
                 <span>Lagos State, Nigeria</span>
               </div>
@@ -313,13 +147,13 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="mb-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start"
+              className="mx-auto mb-7 grid max-w-xs grid-cols-1 gap-3 sm:mb-10 sm:flex sm:max-w-none sm:items-center sm:justify-center lg:justify-start"
             >
               <motion.a
                 href="#projects"
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 rounded-full px-7 py-3 font-semibold text-primary-foreground"
+                className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-primary-foreground sm:px-7 sm:text-base"
                 style={{ background: "var(--gradient-primary)" }}
               >
                 View My Work
@@ -329,7 +163,7 @@ const Hero = () => {
                 href="#contact"
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/60 px-7 py-3 font-semibold text-foreground transition-colors hover:border-primary hover:text-primary"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-secondary/60 px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary hover:text-primary sm:px-7 sm:text-base"
               >
                 Let's Talk
               </motion.a>
@@ -340,7 +174,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.35 }}
-              className="flex items-center justify-center gap-4 md:gap-5 lg:justify-start"
+              className="flex items-center justify-center gap-3 sm:gap-4 md:gap-5 lg:justify-start"
             >
               {socials.map(({ icon: Icon, href, label }) => (
                 <motion.a
@@ -350,10 +184,10 @@ const Hero = () => {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="rounded-full border border-border bg-secondary/60 p-3.5 text-muted-foreground transition-all duration-300 hover:border-primary hover:text-primary"
+                  className="rounded-full border border-border bg-secondary/60 p-3 text-muted-foreground transition-all duration-300 hover:border-primary hover:text-primary sm:p-3.5"
                   aria-label={label}
                 >
-                  <Icon size={22} />
+                  <Icon className="h-5 w-5 sm:h-[1.35rem] sm:w-[1.35rem]" />
                 </motion.a>
               ))}
             </motion.div>
@@ -362,7 +196,7 @@ const Hero = () => {
       </div>
 
       {/* Scroll Down Indicator */}
-      <div className="absolute inset-x-0 bottom-6 hidden justify-center lg:flex">
+      <div className="absolute inset-x-0 bottom-5 hidden justify-center lg:flex">
         <motion.a
           href="#about"
           initial={{ opacity: 0 }}

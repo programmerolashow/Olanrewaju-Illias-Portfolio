@@ -142,28 +142,28 @@ const Experience = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="experience" className="py-32 relative" ref={ref}>
-      <div className="container mx-auto px-6">
+    <section id="experience" className="section-padding relative" ref={ref}>
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-20"
+          className="text-center mb-10 md:mb-16 xl:mb-20"
         >
           <p className="text-primary font-mono text-sm mb-4">Career Journey</p>
           <h2 className="section-heading">
             Work <span className="gradient-text">Experience</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto mt-4">
+          <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto mt-4">
             Proven track record of delivering production-grade software across fintech, AI technology, and freelance solutions.
           </p>
         </motion.div>
 
         <div className="relative max-w-4xl mx-auto">
           {/* Vertical Timeline Line */}
-          <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-accent to-transparent -translate-x-1/2 hidden sm:block opacity-40" />
+          <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-accent to-transparent -translate-x-1/2 hidden md:block opacity-40" />
 
-          <div className="space-y-12">
+          <div className="space-y-6 md:space-y-12">
             {experiences.map((exp, index) => {
               const isEven = index % 2 === 0;
 
@@ -176,7 +176,7 @@ const Experience = () => {
                   className="relative flex flex-col md:flex-row items-center"
                 >
                   {/* Timeline Dot */}
-                  <div className="absolute left-4 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-background border-2 border-primary shadow-[0_0_15px_rgba(56,189,248,0.5)] flex items-center justify-center z-10 hidden sm:flex">
+                  <div className="absolute left-4 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-background border-2 border-primary shadow-[0_0_15px_rgba(56,189,248,0.5)] items-center justify-center z-10 hidden md:flex">
                     <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
                   </div>
 
@@ -186,7 +186,7 @@ const Experience = () => {
                       isEven ? "md:mr-auto" : "md:ml-auto"
                     }`}
                   >
-                    <div className="glass-card rounded-2xl p-6 md:p-8 hover:border-primary/50 transition-all duration-300 shadow-xl group">
+                    <div className="glass-card rounded-2xl p-5 sm:p-6 md:p-8 hover:border-primary/50 transition-all duration-300 shadow-xl group">
                       {/* Header Badge */}
                       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-primary/10 text-primary border border-primary/20">
@@ -240,7 +240,7 @@ const Experience = () => {
                           {exp.skills.map((skill) => (
                             <span
                               key={skill}
-                              className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-secondary/60 text-foreground/90 border border-border/80"
+                              className="px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-secondary/60 text-foreground/90 border border-border/80"
                             >
                               {skill}
                             </span>

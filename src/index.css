@@ -93,6 +93,16 @@
 
   html {
     scroll-behavior: smooth;
+    /* Fluid root size: every rem-based size (text, spacing, cards) scales with the screen.
+       ~14px on small phones, 16.5px on a 1280px laptop, 18px at 1920px, capped at 20px on 2K+ screens. */
+    font-size: clamp(14px, 0.275vw + 12.97px, 20px);
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  img,
+  video {
+    max-width: 100%;
   }
 
   body {
@@ -155,7 +165,12 @@
   }
 
   .section-heading {
-    @apply text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl;
+    @apply text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl xl:text-6xl;
+  }
+
+  /* Shared vertical rhythm for page sections: compact on phones, generous on large screens */
+  .section-padding {
+    @apply py-16 sm:py-20 md:py-24 xl:py-32;
   }
 
   .code-font {

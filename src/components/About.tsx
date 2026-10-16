@@ -157,13 +157,13 @@ const About = () => {
   };
 
   return (
-    <section id="about" className="py-32 relative" ref={ref}>
-      <div className="container mx-auto px-6">
+    <section id="about" className="section-padding relative" ref={ref}>
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16"
         >
           <p className="text-primary font-mono text-sm mb-4">About Me</p>
           <h2 className="section-heading">
@@ -172,20 +172,20 @@ const About = () => {
           </h2>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 xl:gap-16 items-center">
           {/* Left Side - Text */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <p className="text-muted-foreground text-lg leading-relaxed mb-6">
+            <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-5 md:mb-6">
               I'm a <strong className="text-foreground font-semibold">Full-Stack Product Engineer</strong> who builds web and mobile applications from the interface down to the database. I take features from requirements to production: responsive React and Next.js frontends, typed Node, Express, Django and FastAPI services, and well-modelled PostgreSQL, MySQL and MongoDB data layers.
             </p>
-            <p className="text-muted-foreground text-lg leading-relaxed mb-6">
+            <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-5 md:mb-6">
               Much of my recent work is <strong className="text-foreground font-semibold">AI application engineering</strong>: integrating OpenAI and Gemini into real product workflows, with careful prompt and context design and deterministic business rules that keep the output reliable. I also modernize existing codebases, from JavaScript-to-TypeScript migrations to moving database technologies.
             </p>
-            <p className="text-muted-foreground text-lg leading-relaxed mb-8">
+            <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6 md:mb-8">
               I care about shipping well as a team: Git-based reviews, CI/CD on GitLab, Docker, testing and clear technical communication. Outside work, I contribute to open source and help grow developer communities.
             </p>
 
@@ -196,7 +196,7 @@ const About = () => {
               </span>
 
               <div 
-                className="relative min-h-[320px] py-6 px-4 bg-transparent border-none flex flex-wrap gap-4 items-end justify-center select-none overflow-visible z-20"
+                className="relative min-h-[17rem] sm:min-h-[20rem] py-6 px-2 sm:px-4 bg-transparent border-none flex flex-wrap gap-2.5 sm:gap-4 items-end justify-center select-none overflow-visible z-20"
                 onMouseEnter={triggerThrowAnimation}
               >
                 {skills.map((skill, index) => {
@@ -260,7 +260,7 @@ const About = () => {
                         color: style.text,
                         boxShadow: style.glow,
                       }}
-                      className="inline-flex items-center justify-center rounded-full border px-6 py-3 text-sm font-semibold shadow-xl backdrop-blur-md cursor-pointer select-none whitespace-nowrap tracking-wide leading-none transition-shadow duration-300"
+                      className="inline-flex items-center justify-center rounded-full border px-3.5 py-2 text-xs sm:px-5 sm:py-2.5 sm:text-sm xl:px-6 xl:py-3 font-semibold shadow-xl backdrop-blur-md cursor-pointer select-none whitespace-nowrap tracking-wide leading-none transition-shadow duration-300"
                     >
                       {skill}
                     </motion.span>
@@ -275,7 +275,7 @@ const About = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="grid grid-cols-2 gap-4"
+            className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4"
           >
             {features.map((feature, index) => (
               <motion.div
@@ -284,7 +284,7 @@ const About = () => {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
                 whileHover={{ y: -5 }}
-                className="glass-card rounded-xl p-6 group"
+                className="glass-card rounded-xl p-5 sm:p-6 group"
               >
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                   <feature.icon className="w-6 h-6 text-primary" />
@@ -305,9 +305,9 @@ const About = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-20 pt-16 border-t border-border/50"
+          className="mt-14 pt-12 md:mt-20 md:pt-16 border-t border-border/50"
         >
-          <div className="text-center mb-12">
+          <div className="text-center mb-8 md:mb-12">
             <span className="text-xs font-mono text-primary uppercase tracking-widest block mb-2">
               Impact & Ecosystems
             </span>
@@ -316,11 +316,11 @@ const About = () => {
             </h3>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-5 md:gap-6 xl:gap-8">
             {/* Card 1: GSoC 2026 & Joplin */}
             <motion.div
               whileHover={{ y: -6 }}
-              className="glass-card rounded-2xl p-6 md:p-8 relative overflow-hidden border border-border/80 hover:border-primary/50 transition-all duration-300 shadow-xl group flex flex-col justify-between"
+              className="glass-card rounded-2xl p-5 sm:p-6 md:p-8 relative overflow-hidden border border-border/80 hover:border-primary/50 transition-all duration-300 shadow-xl group flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between gap-4 mb-4">
@@ -366,7 +366,7 @@ const About = () => {
                 {["GSoC 2026", "Joplin Open-Source", "Moose Ecosystem", "AST Meta-Modelling", "Static Site Generation", "Fault Localization"].map((tag) => (
                   <span
                     key={tag}
-                    className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-primary/10 text-primary border border-primary/20"
+                    className="px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-primary/10 text-primary border border-primary/20"
                   >
                     {tag}
                   </span>
@@ -377,7 +377,7 @@ const About = () => {
             {/* Card 2: Tech Community Builder & Advocate */}
             <motion.div
               whileHover={{ y: -6 }}
-              className="glass-card rounded-2xl p-6 md:p-8 relative overflow-hidden border border-border/80 hover:border-accent/50 transition-all duration-300 shadow-xl group flex flex-col justify-between"
+              className="glass-card rounded-2xl p-5 sm:p-6 md:p-8 relative overflow-hidden border border-border/80 hover:border-accent/50 transition-all duration-300 shadow-xl group flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center gap-3 mb-4">
@@ -403,7 +403,7 @@ const About = () => {
                 {["Engineering Principles", "Deep Debugging", "Code Execution Flow", "Fintech Logic", "Developer Community"].map((tag) => (
                   <span
                     key={tag}
-                    className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-accent/10 text-accent border border-accent/20"
+                    className="px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-accent/10 text-accent border border-accent/20"
                   >
                     {tag}
                   </span>

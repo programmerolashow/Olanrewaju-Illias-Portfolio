@@ -18,8 +18,8 @@ import { cn } from "@/lib/utils";
 const sizeClasses: Record<GalleryItemSize, string> = {
   square: "",
   tall: "row-span-2",
-  wide: "sm:col-span-2",
-  large: "sm:col-span-2 row-span-2",
+  wide: "col-span-2",
+  large: "col-span-2 row-span-2",
 };
 
 const tiltSpring = { stiffness: 220, damping: 20, mass: 0.5 };
@@ -128,7 +128,7 @@ const GalleryCard = ({ item, index, onOpen }: GalleryCardProps) => {
         whileHover={reduce ? undefined : { scale: 1.03 }}
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 260, damping: 22 }}
-        className="group relative block h-full w-full overflow-hidden rounded-3xl border border-border/70 bg-card text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        className="group relative block h-full w-full overflow-hidden rounded-2xl sm:rounded-3xl border border-border/70 bg-card text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         aria-label={`Open ${item.type}: ${item.title}`}
       >
         {/* Animated gradient border that tracks the cursor */}
@@ -165,26 +165,26 @@ const GalleryCard = ({ item, index, onOpen }: GalleryCardProps) => {
         />
 
         {/* Top row: category + type */}
-        <div className="absolute inset-x-0 top-0 z-20 flex items-start justify-between p-4">
-          <span className="rounded-full border border-white/20 bg-black/35 px-3 py-1 text-[11px] font-mono font-medium uppercase tracking-wider text-white/90 backdrop-blur-md">
+        <div className="absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-2 p-2.5 sm:p-4">
+          <span className="truncate rounded-full border border-white/20 bg-black/35 px-2 py-0.5 text-[0.6rem] font-mono font-medium uppercase tracking-wider sm:px-3 sm:py-1 sm:text-[0.7rem] text-white/90 backdrop-blur-md">
             {item.category}
           </span>
-          <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/35 text-white backdrop-blur-md transition-all duration-500 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full sm:h-9 sm:w-9 border border-white/20 bg-black/35 text-white backdrop-blur-md transition-all duration-500 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary">
             {isVideo ? <Play className="h-4 w-4 fill-current" /> : <Expand className="h-4 w-4" />}
           </span>
         </div>
 
         {/* Bottom: title, caption, meta */}
-        <div className="absolute inset-x-0 bottom-0 z-20 p-5 md:p-6">
-          <h3 className="text-lg font-bold leading-tight text-white transition-transform duration-500 group-hover:-translate-y-1 md:text-xl">
+        <div className="absolute inset-x-0 bottom-0 z-20 p-3 sm:p-5 md:p-6">
+          <h3 className="text-sm font-bold leading-tight text-white transition-transform duration-500 group-hover:-translate-y-1 sm:text-lg md:text-xl">
             {item.title}
           </h3>
           {(item.caption || item.date || item.location) && (
             <div className="grid grid-rows-[0fr] opacity-0 transition-all duration-500 ease-out group-hover:grid-rows-[1fr] group-hover:opacity-100 group-focus-visible:grid-rows-[1fr] group-focus-visible:opacity-100 [@media(hover:none)]:grid-rows-[1fr] [@media(hover:none)]:opacity-100">
               <div className="overflow-hidden">
-                {item.caption && <p className="mt-1.5 text-sm leading-snug text-white/80">{item.caption}</p>}
+                {item.caption && <p className="mt-1 line-clamp-2 text-xs leading-snug text-white/80 sm:mt-1.5 sm:text-sm">{item.caption}</p>}
                 {(item.date || item.location) && (
-                  <div className="mt-2.5 flex flex-wrap items-center gap-3 text-[11px] font-mono text-white/65">
+                  <div className="mt-2 hidden flex-wrap items-center gap-3 text-[0.7rem] font-mono text-white/65 sm:flex">
                     {item.date && (
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
@@ -327,7 +327,7 @@ const Lightbox = ({ items, index, direction, onClose, onNavigate }: LightboxProp
           )}
           <figcaption className="mt-5 w-full max-w-3xl text-center">
             <div className="flex items-center justify-center gap-3">
-              <span className="rounded-full bg-primary/15 px-3 py-1 text-[11px] font-mono uppercase tracking-wider text-primary">
+              <span className="rounded-full bg-primary/15 px-3 py-1 text-[0.7rem] font-mono uppercase tracking-wider text-primary">
                 {item.category}
               </span>
               {hasMany && (
@@ -390,32 +390,32 @@ const Gallery = () => {
   if (gallery.length === 0) return null;
 
   return (
-    <section id="moments" className="relative overflow-hidden py-32">
+    <section id="moments" className="section-padding relative overflow-hidden">
       {/* Ambient glows */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-40 top-1/4 h-[28rem] w-[28rem] rounded-full bg-primary/10 blur-[120px]" />
-        <div className="absolute -right-40 bottom-1/4 h-[28rem] w-[28rem] rounded-full bg-accent/10 blur-[120px]" />
+        <div className="absolute -left-40 top-1/4 h-[28rem] w-[28rem] max-w-full rounded-full bg-primary/10 blur-[7rem]" />
+        <div className="absolute -right-40 bottom-1/4 h-[28rem] w-[28rem] max-w-full rounded-full bg-accent/10 blur-[7rem]" />
       </div>
 
-      <div className="container relative mx-auto px-6">
+      <div className="container relative mx-auto px-4 sm:px-6">
         <motion.div
           ref={headingRef}
           initial={{ opacity: 0, y: 50 }}
           animate={headingInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="mb-12 text-center"
+          className="mb-8 text-center md:mb-12"
         >
           <p className="mb-4 font-mono text-sm text-primary">Moments</p>
           <h2 className="section-heading">
             Beyond the <span className="gradient-text">Code</span>
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
             Snapshots from events, talks, community meetups and the people I build with.
           </p>
         </motion.div>
 
         {categories.length > 2 && (
-          <div className="mb-10 flex flex-wrap items-center justify-center gap-2">
+          <div className="mb-6 flex flex-wrap items-center justify-center gap-1.5 sm:mb-10 sm:gap-2">
             {categories.map((category) => {
               const active = category === activeCategory;
               return (
@@ -424,7 +424,7 @@ const Gallery = () => {
                   type="button"
                   onClick={() => setActiveCategory(category)}
                   className={cn(
-                    "relative rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                    "relative rounded-full px-3 py-1.5 text-xs font-medium transition-colors sm:px-4 sm:py-2 sm:text-sm",
                     active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground",
                   )}
                 >
@@ -444,7 +444,7 @@ const Gallery = () => {
 
         <motion.div
           layout
-          className="grid auto-rows-[260px] grid-cols-1 gap-5 [grid-auto-flow:dense] sm:grid-cols-2 lg:grid-cols-4 md:auto-rows-[280px]"
+          className="grid auto-rows-[10rem] grid-cols-2 gap-3 [grid-auto-flow:dense] xs:auto-rows-[12rem] sm:gap-4 md:auto-rows-[14rem] lg:grid-cols-4 lg:auto-rows-[14.5rem] lg:gap-5 2xl:auto-rows-[16rem]"
         >
           <AnimatePresence mode="popLayout">
             {items.map((item, index) => (

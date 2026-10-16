@@ -49,68 +49,68 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-32 relative" ref={ref}>
-      <div className="container mx-auto px-6">
+    <section id="contact" className="section-padding relative" ref={ref}>
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16"
         >
           <p className="text-primary font-mono text-sm mb-4">Get In Touch</p>
-          <h2 className="section-heading mb-6">
+          <h2 className="section-heading mb-4 md:mb-6">
             Let's Work <span className="gradient-text">Together</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
             Have a project in mind or just want to chat? Feel free to reach out.
             I'm always open to discussing new opportunities and ideas.
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-6 md:gap-8 xl:gap-12 max-w-5xl 2xl:max-w-6xl mx-auto">
           {/* Contact Info */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-8"
+            className="space-y-4 md:space-y-6"
           >
-            <div className="glass-card rounded-xl p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Mail className="w-6 h-6 text-primary" />
+            <div className="glass-card rounded-xl p-4 sm:p-6">
+              <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
                 <div>
                   <p className="text-muted-foreground text-sm">Email</p>
-                  <p className="text-foreground font-medium">
+                  <p className="text-foreground font-medium text-sm sm:text-base break-words [overflow-wrap:anywhere]">
                     olanrewajuillias@gmail.com
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="glass-card rounded-xl p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <MapPin className="w-6 h-6 text-primary" />
+            <div className="glass-card rounded-xl p-4 sm:p-6">
+              <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
                 <div>
                   <p className="text-muted-foreground text-sm">Location</p>
-                  <p className="text-foreground font-medium">
+                  <p className="text-foreground font-medium text-sm sm:text-base break-words [overflow-wrap:anywhere]">
                     Lagos State, Nigeria
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="glass-card rounded-xl p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Phone className="w-6 h-6 text-primary" />
+            <div className="glass-card rounded-xl p-4 sm:p-6">
+              <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
                 <div>
                   <p className="text-muted-foreground text-sm">Phone</p>
-                  <p className="text-foreground font-medium">
+                  <p className="text-foreground font-medium text-sm sm:text-base break-words [overflow-wrap:anywhere]">
                     +1 (234) 906-5219-168
                   </p>
                 </div>
@@ -124,7 +124,7 @@ const Contact = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="glass-card rounded-xl p-8 space-y-6"
+            className="glass-card rounded-xl p-5 sm:p-8 space-y-5 sm:space-y-6"
           >
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
@@ -196,7 +196,7 @@ const Contact = () => {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 py-6 text-base font-semibold"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 py-5 sm:py-6 text-sm sm:text-base font-semibold"
             >
               {isSubmitting ? (
                 "Sending..."
