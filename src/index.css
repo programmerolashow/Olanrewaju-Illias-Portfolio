@@ -197,6 +197,60 @@
     mask-image: linear-gradient(to bottom, #000 78%, transparent 99%);
   }
 
+  /* About card illustrations: fade out towards the card's text (bottom-left) */
+  .feature-art {
+    -webkit-mask-image: radial-gradient(ellipse 95% 95% at 100% 0%, #000 45%, transparent 85%);
+    mask-image: radial-gradient(ellipse 95% 95% at 100% 0%, #000 45%, transparent 85%);
+    transform-origin: top right;
+  }
+
+  /* Illustration motion only plays while the card is hovered */
+  .group:hover .feature-art-flow {
+    animation: feature-art-flow 1.2s linear infinite;
+  }
+
+  .group:hover .feature-art-pulse {
+    animation: feature-art-pulse 1.6s ease-in-out infinite;
+  }
+
+  .group:hover .feature-art-float {
+    animation: feature-art-float 2.4s ease-in-out infinite;
+  }
+
+  .feature-art-pulse,
+  .feature-art-float {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  @keyframes feature-art-flow {
+    to {
+      stroke-dashoffset: -18;
+    }
+  }
+
+  @keyframes feature-art-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.8);
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes feature-art-float {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(-10px, 8px);
+    }
+  }
+
   .marquee-mask {
     -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
     mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
@@ -209,7 +263,10 @@
   }
 
   .animate-marquee,
-  .animate-marquee-reverse {
+  .animate-marquee-reverse,
+  .group:hover .feature-art-flow,
+  .group:hover .feature-art-pulse,
+  .group:hover .feature-art-float {
     animation: none;
   }
 }

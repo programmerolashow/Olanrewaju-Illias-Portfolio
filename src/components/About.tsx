@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { Bot, Code2, Palette, Server, Database, ShieldCheck, GitPullRequest, HeartHandshake, ExternalLink } from "lucide-react";
+import { Bot, Code2, Palette, Server, Database, ShieldCheck, GitPullRequest, HeartHandshake, ExternalLink, type LucideIcon } from "lucide-react";
+import FeatureArt, { type FeatureArtName } from "./FeatureArt";
 
 const skills = [
   // Frontend
@@ -106,35 +107,41 @@ const scatterPositions = Array.from({ length: skills.length }, (_, i) => {
   };
 });
 
-const features = [
+const features: { icon: LucideIcon; title: string; art: FeatureArtName; description: string }[] = [
   {
     icon: Code2,
     title: "Full-Stack Delivery",
+    art: "fullstack",
     description: "Owning features end to end, from UI to API to database.",
   },
   {
     icon: Bot,
     title: "AI Integration",
+    art: "ai",
     description: "LLM features with solid prompts, context and validation.",
   },
   {
     icon: Palette,
     title: "UI/UX Implementation",
+    art: "uiux",
     description: "Responsive, accessible interfaces with purposeful motion.",
   },
   {
     icon: Server,
     title: "APIs & Auth",
+    art: "api",
     description: "Secure REST APIs, JWT/Clerk auth and integrations.",
   },
   {
     icon: Database,
     title: "Data & Modernization",
+    art: "data",
     description: "Schema design, migrations and upgrading legacy code.",
   },
   {
     icon: ShieldCheck,
     title: "Quality & CI/CD",
+    art: "quality",
     description: "Testing, type checks, reviews and GitLab pipelines.",
   },
 ];
@@ -172,7 +179,7 @@ const About = () => {
           </h2>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 xl:gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 xl:gap-16 items-center lg:items-stretch">
           {/* Left Side - Text */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -275,7 +282,7 @@ const About = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4"
+            className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 lg:h-full lg:auto-rows-fr"
           >
             {features.map((feature, index) => (
               <motion.div
@@ -284,15 +291,16 @@ const About = () => {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
                 whileHover={{ y: -5 }}
-                className="glass-card rounded-xl p-5 sm:p-6 group"
+                className="glass-card relative overflow-hidden rounded-xl p-5 sm:p-6 group flex flex-col lg:p-7 transition-colors duration-300 hover:border-primary/40"
               >
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                  <feature.icon className="w-6 h-6 text-primary" />
+                <FeatureArt name={feature.art} />
+                <div className="relative w-12 h-12 lg:w-14 lg:h-14 rounded-lg bg-primary/10 backdrop-blur-sm flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
+                  <feature.icon className="w-6 h-6 lg:w-7 lg:h-7 text-primary" />
                 </div>
-                <h3 className="font-semibold text-foreground mb-2">
+                <h3 className="relative mt-auto font-semibold text-foreground mb-2 lg:text-lg">
                   {feature.title}
                 </h3>
-                <p className="text-muted-foreground text-sm">
+                <p className="relative text-muted-foreground text-sm lg:text-base leading-relaxed">
                   {feature.description}
                 </p>
               </motion.div>

@@ -11,6 +11,9 @@ const projects = [
     github: "https://github.com/programmerolashow/BankSpace",
     live: "https://bank-space-mu95.vercel.app/",
     featured: true,
+    // Optional card background (screenshot in /public/projects). imageFocus = CSS object-position.
+    image: "/projects/bankspace.webp",
+    imageFocus: "80% center",
   },
   {
     title: "E-MassCom",
@@ -20,6 +23,8 @@ const projects = [
     github: "https://github.com/programmerolashow/EMAIL-Application",
     live: "https://email-application-egc9.vercel.app/",
     featured: true,
+    image: "/projects/e-masscom.webp",
+    imageFocus: "70% top",
   },
   {
     title: "Student-Konnect-Hub",
@@ -29,6 +34,8 @@ const projects = [
     github: "https://github.com/programmerolashow/student-konnect-hub",
     live: "https://student-konnect-hub.vercel.app/",
     featured: true,
+    image: "/projects/student-konnect-hub.webp",
+    imageFocus: "65% center",
   },
   {
     title: "HomeKit Admin Dashboard",
@@ -116,7 +123,21 @@ const Projects = () => {
                 transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
                 className="project-card group"
               >
-                <div className="p-5 sm:p-8 lg:p-10">
+                {project.image && (
+                  <div aria-hidden className="pointer-events-none absolute inset-0">
+                    <img
+                      src={project.image}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      style={{ objectPosition: project.imageFocus }}
+                      className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+                    />
+                    {/* Keeps the text readable: solid behind the copy on phones, fading to reveal the screenshot on wider screens */}
+                    <div className="absolute inset-0 bg-card/85 transition-colors duration-500 md:bg-transparent md:bg-gradient-to-r md:from-card md:via-card/90 md:to-card/20 md:group-hover:to-card/0" />
+                  </div>
+                )}
+                <div className="relative p-5 sm:p-8 lg:p-10">
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
                     <div>
                       <p className="text-primary font-mono text-sm mb-2">
