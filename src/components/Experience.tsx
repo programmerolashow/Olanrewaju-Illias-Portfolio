@@ -110,7 +110,7 @@ const experiences: ExperienceItem[] = [
   },
   {
     id: "Freelance",
-    role: "Web Development | Self-Employed",
+    role: "Web Development | Freelance",
     company: "Self-Employed",
     type: "Freelance",
     period: "3 yrs 10 mos",
