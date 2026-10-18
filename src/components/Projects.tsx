@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { ExternalLink, Github, Folder } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowRight, ExternalLink, Github, Folder } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const projects = [
@@ -93,27 +94,35 @@ const projects = [
   },
 ];
 
-const Projects = () => {
+const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const full = variant === "full";
 
   return (
-    <section id="projects" className="section-padding relative" ref={ref}>
+    <section
+      id={full ? undefined : "projects"}
+      aria-label={full ? "All projects" : undefined}
+      className={full ? "relative pb-12 md:pb-16" : "section-padding relative"}
+      ref={ref}
+    >
       <div className="container mx-auto px-4 sm:px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-10 md:mb-16"
-        >
-          <p className="text-primary font-mono text-sm mb-4">My Work</p>
-          <h2 className="section-heading">
-            Featured <span className="gradient-text">Projects</span>
-          </h2>
-        </motion.div>
+        {!full && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-10 md:mb-16"
+          >
+            <p className="text-primary font-mono text-sm mb-4">My Work</p>
+            <h2 className="section-heading">
+              Featured <span className="gradient-text">Projects</span>
+            </h2>
+          </motion.div>
+        )}
 
         {/* Featured Projects */}
-        <div className="grid gap-5 md:gap-8 mb-12 md:mb-16">
+        <div className={cn("grid gap-5 md:gap-8", full && "mb-12 md:mb-16")}>
           {projects
             .filter((p) => p.featured)
             .map((project, index) => (
@@ -196,68 +205,97 @@ const Projects = () => {
             ))}
         </div>
 
-        {/* Other Projects Grid */}
-        <motion.h3
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="text-xl sm:text-2xl font-bold text-center mb-6 md:mb-8"
-        >
-          Other Noteworthy Projects
-        </motion.h3>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {projects
-            .filter((p) => !p.featured)
-            .map((project, index) => (
-              <motion.div
-                key={project.title}
-                initial={{ opacity: 0, y: 30 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
-                whileHover={{ y: -8 }}
-                className="glass-card rounded-xl p-5 sm:p-6 group cursor-pointer"
+        {!full && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="mt-10 flex justify-center md:mt-12"
+          >
+            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
+              <Link
+                to="/projects"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/60 px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary hover:text-primary"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <Folder className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
-                  <div className="flex gap-3">
-                    <a
-                      href={project.github}
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                      aria-label="View on GitHub"
-                    >
-                      <Github size={20} />
-                    </a>
-                    <a
-                      href={project.live}
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                      aria-label="View live site"
-                    >
-                      <ExternalLink size={20} />
-                    </a>
-                  </div>
-                </div>
+                View all {projects.length} projects
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+            </motion.div>
+          </motion.div>
+        )}
 
-                <h4 className="text-lg sm:text-xl font-semibold text-foreground mb-2 sm:mb-3 group-hover:text-primary transition-colors">
-                  {project.title}
-                </h4>
-                <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
-                  {project.description}
-                </p>
+        {full && (
+          <>
+            {/* Other Projects Grid */}
+            <motion.h3
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="text-xl sm:text-2xl font-bold text-center mb-6 md:mb-8"
+            >
+              Other Noteworthy Projects
+            </motion.h3>
 
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.slice(0, 3).map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-xs font-mono text-muted-foreground"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-        </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {projects
+                .filter((p) => !p.featured)
+                .map((project, index) => (
+                  <motion.div
+                    key={project.title}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
+                    whileHover={{ y: -8 }}
+                    className="glass-card rounded-xl p-5 sm:p-6 group"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <Folder className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
+                      <div className="flex gap-3">
+                        <a
+                          href={project.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                          aria-label={`${project.title} source code on GitHub`}
+                        >
+                          <Github size={20} />
+                        </a>
+                        {project.live && (
+                          <a
+                            href={project.live}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-muted-foreground hover:text-primary transition-colors"
+                            aria-label={`${project.title} live demo`}
+                          >
+                            <ExternalLink size={20} />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+
+                    <h4 className="text-lg sm:text-xl font-semibold text-foreground mb-2 sm:mb-3 group-hover:text-primary transition-colors">
+                      {project.title}
+                    </h4>
+                    <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
+                      {project.description}
+                    </p>
+
+                    <div className="flex flex-wrap gap-2">
+                      {project.tags.slice(0, 3).map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-xs font-mono text-muted-foreground"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

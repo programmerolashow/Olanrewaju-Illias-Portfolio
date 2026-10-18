@@ -365,7 +365,7 @@ const Lightbox = ({ items, index, direction, onClose, onNavigate }: LightboxProp
 /* Section                                                             */
 /* ------------------------------------------------------------------ */
 
-const Gallery = () => {
+const Gallery = ({ showHeader = true }: { showHeader?: boolean }) => {
   const headingRef = useRef(null);
   const headingInView = useInView(headingRef, { once: true, margin: "-100px" });
   const [activeCategory, setActiveCategory] = useState("All");
@@ -390,7 +390,11 @@ const Gallery = () => {
   if (gallery.length === 0) return null;
 
   return (
-    <section id="moments" className="section-padding relative overflow-hidden">
+    <section
+      id="moments"
+      aria-label="Moments gallery"
+      className={cn(showHeader ? "section-padding" : "pb-12 md:pb-16", "relative overflow-hidden")}
+    >
       {/* Ambient glows */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute -left-40 top-1/4 h-[28rem] w-[28rem] max-w-full rounded-full bg-primary/10 blur-[7rem]" />
@@ -398,21 +402,23 @@ const Gallery = () => {
       </div>
 
       <div className="container relative mx-auto px-4 sm:px-6">
-        <motion.div
-          ref={headingRef}
-          initial={{ opacity: 0, y: 50 }}
-          animate={headingInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="mb-8 text-center md:mb-12"
-        >
-          <p className="mb-4 font-mono text-sm text-primary">Moments</p>
-          <h2 className="section-heading">
-            Beyond the <span className="gradient-text">Code</span>
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
-            Snapshots from events, talks, community meetups and the people I build with.
-          </p>
-        </motion.div>
+        {showHeader && (
+          <motion.div
+            ref={headingRef}
+            initial={{ opacity: 0, y: 50 }}
+            animate={headingInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6 }}
+            className="mb-8 text-center md:mb-12"
+          >
+            <p className="mb-4 font-mono text-sm text-primary">Moments</p>
+            <h2 className="section-heading">
+              Beyond the <span className="gradient-text">Code</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
+              Snapshots from events, talks, community meetups and the people I build with.
+            </p>
+          </motion.div>
+        )}
 
         {categories.length > 2 && (
           <div className="mb-6 flex flex-wrap items-center justify-center gap-1.5 sm:mb-10 sm:gap-2">
