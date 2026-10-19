@@ -7,6 +7,7 @@ import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";
 import { aiPractices, clients, collaboration, debugging, decisions, intro, principles, workflow } from "@/data/approach";
 import { usePageMeta } from "@/hooks/use-page-meta";
+import { pageMeta } from "@/config/pages";
 
 const sections = [
   { id: "workflow", label: "Workflow" },
@@ -48,7 +49,7 @@ const Numbered = ({ n }: { n: number }) => (
 );
 
 const ApproachPage = () => {
-  usePageMeta("How I Work", intro.subtitle);
+  usePageMeta(pageMeta.approach.title, pageMeta.approach.description);
 
   return (
     <>

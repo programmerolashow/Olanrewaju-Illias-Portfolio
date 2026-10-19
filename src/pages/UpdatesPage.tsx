@@ -7,6 +7,7 @@ import UpdateCard from "@/components/UpdateCard";
 import { cn } from "@/lib/utils";
 import { useUpdates } from "@/lib/updates";
 import { usePageMeta } from "@/hooks/use-page-meta";
+import { pageMeta } from "@/config/pages";
 
 const filters = [
   { value: "all", label: "All" },
@@ -15,7 +16,7 @@ const filters = [
 ] as const;
 
 const UpdatesPage = () => {
-  usePageMeta("Updates", "Events Olanrewaju Illias is attending or speaking at, and his latest posts.");
+  usePageMeta(pageMeta.updates.title, pageMeta.updates.description);
   const { data, isLoading, isError } = useUpdates();
   const [filter, setFilter] = useState<(typeof filters)[number]["value"]>("all");
   const shown = (data ?? []).filter((u) => filter === "all" || u.kind === filter);

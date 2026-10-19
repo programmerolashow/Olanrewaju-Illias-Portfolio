@@ -3,29 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- %SITE_*% tokens are filled from src/config/site.ts at build time (see vite.config.ts) -->
     <link rel="icon" href="/icon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <title>%SITE_TITLE%</title>
-    <meta name="description" content="%SITE_DESCRIPTION%" />
     <meta name="author" content="%SITE_NAME%" />
-    <link rel="canonical" href="%SITE_URL%/" />
-
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="%SITE_NAME%" />
-    <meta property="og:url" content="%SITE_URL%/" />
-    <meta property="og:title" content="%SITE_TITLE%" />
-    <meta property="og:description" content="%SITE_DESCRIPTION%" />
-    <meta property="og:image" content="%SITE_URL%/og-image.jpg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="%SITE_NAME%, Full-Stack Product Engineer" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="%SITE_TWITTER%" />
-    <meta name="twitter:title" content="%SITE_TITLE%" />
-    <meta name="twitter:description" content="%SITE_DESCRIPTION%" />
-    <meta name="twitter:image" content="%SITE_URL%/og-image.jpg" />
+    <!-- Title, description and link-preview tags are generated per page at build time (vite.config.ts) and
+         per event/post at request time (api/share/update.js). Do not hand-write them here. -->
+    <!--seo:start--><!--seo:end-->
   </head>
 
   <body>

@@ -1,3 +1,7 @@
 {
-  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }]
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/updates/:id", "destination": "/api/share/update?id=:id" },
+    { "source": "/((?!api/).*)", "destination": "/" }
+  ]
 }

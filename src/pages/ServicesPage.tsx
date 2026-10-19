@@ -3,12 +3,10 @@ import Services from "@/components/Services";
 import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";
 import { usePageMeta } from "@/hooks/use-page-meta";
+import { pageMeta } from "@/config/pages";
 
 const ServicesPage = () => {
-  usePageMeta(
-    "Services",
-    "Full-stack, AI integration, API, database, fintech, QA, DevOps and documentation services by Olanrewaju Illias.",
-  );
+  usePageMeta(pageMeta.services.title, pageMeta.services.description);
 
   return (
     <>

@@ -21,19 +21,45 @@ const api = async <T,>(path: string, init?: RequestInit): Promise<T> => {
   return json as T;
 };
 
-/** Shrinks a photo to at most 1600px and re-encodes it as WebP before upload, to save mobile data and storage. */
-const prepareImage = async (file: File): Promise<Blob> => {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close();
-  return new Promise((resolve, reject) =>
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("Could not process image."))), "image/webp", 0.82),
+const encode = (canvas: HTMLCanvasElement, type: string, quality: number) =>
+  new Promise<Blob>((resolve, reject) =>
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("Could not process image."))), type, quality),
   );
+
+/**
+ * From one photo, makes:
+ *  - display: at most 1600px, WebP (JPEG on Safari, which can't encode WebP and would silently return a PNG)
+ *  - share:   1200×630 centre crop as JPEG, the size and format LinkedIn, X, Facebook and WhatsApp all accept
+ *             for link previews (used when this photo is a post's cover)
+ */
+const prepareImage = async (file: File) => {
+  const bitmap = await createImageBitmap(file);
+
+  const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+  const display = document.createElement("canvas");
+  display.width = Math.round(bitmap.width * scale);
+  display.height = Math.round(bitmap.height * scale);
+  display.getContext("2d")!.drawImage(bitmap, 0, 0, display.width, display.height);
+  let displayBlob = await encode(display, "image/webp", 0.82);
+  if (displayBlob.type !== "image/webp") displayBlob = await encode(display, "image/jpeg", 0.85);
+
+  const share = document.createElement("canvas");
+  share.width = 1200;
+  share.height = 630;
+  const cover = Math.max(1200 / bitmap.width, 630 / bitmap.height);
+  const w = bitmap.width * cover;
+  const h = bitmap.height * cover;
+  share.getContext("2d")!.drawImage(bitmap, (1200 - w) / 2, (630 - h) / 2, w, h);
+  const shareBlob = await encode(share, "image/jpeg", 0.82);
+
+  bitmap.close();
+  return { displayBlob, shareBlob };
 };
+
+const uploadBlob = (blob: Blob) =>
+  api<{ url: string }>("/api/admin/upload", { method: "POST", body: blob, headers: { "Content-Type": blob.type } }).then(
+    (r) => r.url,
+  );
 
 /* ------------------------------------------------------------------ */
 /* Shared bits                                                         */
@@ -159,13 +185,9 @@ const Editor = ({ initial, onDone }: { initial: Update | null; onDone: () => voi
     setUploading((n) => n + list.length);
     for (const file of list) {
       try {
-        const blob = await prepareImage(file);
-        const { url } = await api<{ url: string }>("/api/admin/upload", {
-          method: "POST",
-          body: blob,
-          headers: { "Content-Type": "image/webp" },
-        });
-        setForm((f) => ({ ...f, images: [...f.images, { url, alt: "" }] }));
+        const { displayBlob, shareBlob } = await prepareImage(file);
+        const [url, shareUrl] = await Promise.all([uploadBlob(displayBlob), uploadBlob(shareBlob)]);
+        setForm((f) => ({ ...f, images: [...f.images, { url, shareUrl, alt: "" }] }));
       } catch (error) {
         setUploadError(error instanceof Error ? error.message : "Upload failed.");
       } finally {

@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "db:migrate": "node scripts/migrate.mjs"
+    "db:migrate": "node scripts/migrate.mjs",
+    "og:cards": "node --input-type=module -e \"const {projects}=await import('./src/data/projects.ts');const {site}=await import('./src/config/site.ts');console.log(JSON.stringify({host:new URL(site.url).host,projects}))\" | python scripts/og-cards.py"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1152.0",

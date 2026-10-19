@@ -3,9 +3,10 @@ import Articles from "@/components/Articles";
 import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";
 import { usePageMeta } from "@/hooks/use-page-meta";
+import { pageMeta } from "@/config/pages";
 
 const ArticlesPage = () => {
-  usePageMeta("Articles", "Technical articles and project lessons by Olanrewaju Illias on full-stack, AI, databases and more.");
+  usePageMeta(pageMeta.articles.title, pageMeta.articles.description);
 
   return (
     <>

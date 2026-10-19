@@ -32,7 +32,10 @@ export const updateInput = z
     startsOn: date,
     endsOn: date,
     linkUrl: optionalText(500).refine((v) => !v || /^https?:\/\//i.test(v), "Links must start with http:// or https://."),
-    images: z.array(z.object({ url: photoUrl, alt: z.string().trim().max(300).default("") })).max(12).default([]),
+    images: z
+      .array(z.object({ url: photoUrl, shareUrl: photoUrl.optional(), alt: z.string().trim().max(300).default("") }))
+      .max(12)
+      .default([]),
     published: z.boolean().default(false),
     pinned: z.boolean().default(false),
   })
