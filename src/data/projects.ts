@@ -7,6 +7,33 @@ export interface CaseStudy {
   challenges?: string[];
   /** Real outcomes only: users, numbers, feedback, what you learned. */
   outcome?: string;
+  /** How a request moves through the system, in order, e.g. ["Next.js UI", "API route", "Prisma", "PostgreSQL (Neon)"]. */
+  architecture?: string[];
+  /** Key technical decisions: what was chosen, over what, and why. */
+  decisions?: Decision[];
+  /** Milestones in order, e.g. { label: "MVP deployed", date: "Mar 2026" }. */
+  timeline?: { label: string; date?: string }[];
+  /** Short, public, sanitised code excerpts. Mark simplified or pseudocode samples in the note. */
+  code?: CodeSample[];
+  /** What you'd do differently or next. */
+  improvements?: string[];
+}
+
+export interface Decision {
+  decision: string;
+  alternatives?: string;
+  why: string;
+  tradeOff?: string;
+}
+
+export interface CodeSample {
+  title: string;
+  language: string;
+  code: string;
+  /** e.g. "Simplified from src/lib/paystack.ts". */
+  note?: string;
+  /** Link to the real file on GitHub. */
+  source?: string;
 }
 
 export interface Project {
@@ -21,6 +48,8 @@ export interface Project {
   /** Optional screenshot in /public/projects. imageFocus = CSS object-position. */
   image?: string;
   imageFocus?: string;
+  /** "Live", "Prototype", "In progress" or "Archived". Shown as a label so visitors know how finished it is. */
+  status?: string;
   /** Optional write-up shown on the project page. Sections left empty are not rendered. */
   caseStudy?: CaseStudy;
 }
@@ -67,7 +96,7 @@ export const projects: Project[] = [
     title: "HomeKit Admin Dashboard",
     description:
       "An admin dashboard that enables admins to manage users, products, and analytics efficiently. Features include user/product search, dynamic data handling, and responsive design. This project strengthened my skills in scalable React apps, reusable components, TypeScript, and building real-world interactive web applications.",
-    tags: ["React.js", "TypeScript", "Tailwind CSS", "Vite"],
+    tags: ["React", "TypeScript", "Tailwind CSS", "Vite"],
     github: "https://github.com/programmerolashow/HomeKit-Admin-Dashboard",
     live: "https://homekit-admin-dashboard.netlify.app",
     featured: false,
@@ -77,7 +106,7 @@ export const projects: Project[] = [
     title: "VidMage - Personality Generator",
     description:
       "An intelligent personality analysis and generation platform that leverages advanced AI to interpret facial expressions, body language, and visual style cues from user-provided images. The platform transforms visual data into meaningful personality insights, offering users a unique, interactive, and engaging experience.",
-    tags: ["React.js", "Tailwind CSS", "TypeScript", "Lovable"],
+    tags: ["React", "Tailwind CSS", "TypeScript", "Lovable"],
     github: "https://github.com/programmerolashow/VidMage",
     live: "https://vid-mage.vercel.app",
     featured: false,
@@ -87,7 +116,7 @@ export const projects: Project[] = [
     title: "BuyIT",
     description:
       "E-commerce platform that is fully responsive, sleek, and optimized for a smooth user experience. Focused on clean UI, product insights, and converting design ideas into a real interactive shopping platform.",
-    tags: ["React.js", "Tailwind CSS", "TypeScript"],
+    tags: ["React", "Tailwind CSS", "TypeScript"],
     github: "https://github.com/programmerolashow/shop-insights-hub",
     live: "https://shop-insights-hub.vercel.app",
     featured: false,
@@ -107,7 +136,7 @@ export const projects: Project[] = [
     title: "Stream-Central",
     description:
       "A modern web application inspired by Netflix. Allows users to explore movies and TV shows through a clean, responsive, and interactive interface.",
-    tags: ["React.js", "Tailwind CSS", "TypeScript", "Vite"],
+    tags: ["React", "Tailwind CSS", "TypeScript", "Vite"],
     github: "https://github.com/programmerolashow/stream-central",
     live: "https://stream-central-three.vercel.app/",
     featured: false,

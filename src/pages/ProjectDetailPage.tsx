@@ -1,11 +1,11 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, ExternalLink, Github } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ChevronRight, Copy, ExternalLink, Github } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";
-import { getProject, projects } from "@/data/projects";
+import { getProject, projects, type CodeSample } from "@/data/projects";
 import { usePageMeta } from "@/hooks/use-page-meta";
 
 const Section = ({ heading, children }: { heading: string; children: ReactNode }) => (
@@ -14,6 +14,51 @@ const Section = ({ heading, children }: { heading: string; children: ReactNode }
     {children}
   </section>
 );
+
+const CodeBlock = ({ sample }: { sample: CodeSample }) => {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(sample.code);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      /* clipboard blocked: the code is still selectable */
+    }
+  };
+
+  return (
+    <figure className="overflow-hidden rounded-2xl border border-border">
+      <figcaption className="flex items-center justify-between gap-3 border-b border-border bg-secondary/60 px-4 py-2.5">
+        <span className="min-w-0 truncate text-sm font-medium text-foreground">
+          {sample.title} <span className="font-mono text-xs text-muted-foreground">· {sample.language}</span>
+        </span>
+        <button
+          type="button"
+          onClick={copy}
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+        >
+          {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" aria-hidden /> : <Copy className="h-3.5 w-3.5" aria-hidden />}
+          {copied ? "Copied" : "Copy"}
+        </button>
+      </figcaption>
+      <pre className="overflow-x-auto bg-background/60 p-4 text-xs leading-relaxed sm:text-sm">
+        <code className="font-mono">{sample.code}</code>
+      </pre>
+      {(sample.note || sample.source) && (
+        <p className="border-t border-border px-4 py-2.5 text-xs text-muted-foreground">
+          {sample.note}
+          {sample.note && sample.source && " · "}
+          {sample.source && (
+            <a href={sample.source} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">
+              View source
+            </a>
+          )}
+        </p>
+      )}
+    </figure>
+  );
+};
 
 const ProjectDetailPage = () => {
   const { slug = "" } = useParams();
@@ -26,7 +71,9 @@ const ProjectDetailPage = () => {
   const prev = projects[(index - 1 + projects.length) % projects.length];
   const next = projects[(index + 1) % projects.length];
   const cs = project.caseStudy ?? {};
-  const hasCaseStudy = Boolean(cs.problem || cs.role || cs.challenges?.length || cs.outcome);
+  const hasCaseStudy = Boolean(
+    cs.problem || cs.role || cs.challenges?.length || cs.outcome || cs.architecture?.length || cs.decisions?.length || cs.timeline?.length || cs.code?.length || cs.improvements?.length,
+  );
 
   return (
     <>
@@ -37,6 +84,11 @@ const ProjectDetailPage = () => {
         highlight={project.title}
         description={project.description}
       >
+        {project.status && (
+          <p className="mb-4 inline-flex rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-xs text-primary">
+            Status: {project.status}
+          </p>
+        )}
         <div className="flex flex-wrap gap-3">
           {project.live && (
             <motion.a
@@ -102,9 +154,81 @@ const ProjectDetailPage = () => {
                 </ul>
               </Section>
             )}
+            {cs.architecture && cs.architecture.length > 0 && (
+              <Section heading="How it fits together">
+                <ol className="flex flex-wrap items-center gap-2">
+                  {cs.architecture.map((node, i) => (
+                    <li key={node} className="flex items-center gap-2">
+                      <span className="rounded-xl border border-border bg-secondary/60 px-3 py-2 text-sm font-medium text-foreground">{node}</span>
+                      {i < cs.architecture!.length - 1 && <ChevronRight className="h-4 w-4 text-primary" aria-hidden />}
+                    </li>
+                  ))}
+                </ol>
+              </Section>
+            )}
+            {cs.decisions && cs.decisions.length > 0 && (
+              <Section heading="Key decisions">
+                <div className="space-y-3">
+                  {cs.decisions.map((d) => (
+                    <div key={d.decision} className="rounded-2xl border border-border p-4 sm:p-5">
+                      <h3 className="font-semibold text-foreground">{d.decision}</h3>
+                      <dl className="mt-2 space-y-1.5 text-sm text-muted-foreground sm:text-base">
+                        {d.alternatives && (
+                          <div>
+                            <dt className="inline font-medium text-foreground/90">Considered: </dt>
+                            <dd className="inline">{d.alternatives}</dd>
+                          </div>
+                        )}
+                        <div>
+                          <dt className="inline font-medium text-foreground/90">Why: </dt>
+                          <dd className="inline">{d.why}</dd>
+                        </div>
+                        {d.tradeOff && (
+                          <div>
+                            <dt className="inline font-medium text-foreground/90">Trade-off: </dt>
+                            <dd className="inline">{d.tradeOff}</dd>
+                          </div>
+                        )}
+                      </dl>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            )}
+            {cs.code && cs.code.length > 0 && (
+              <Section heading="Code highlights">
+                <div className="space-y-4">
+                  {cs.code.map((sample) => (
+                    <CodeBlock key={sample.title} sample={sample} />
+                  ))}
+                </div>
+              </Section>
+            )}
+            {cs.timeline && cs.timeline.length > 0 && (
+              <Section heading="Timeline">
+                <ol className="space-y-3 border-l border-border pl-5">
+                  {cs.timeline.map((m) => (
+                    <li key={m.label} className="relative">
+                      <span className="absolute -left-[1.6rem] top-1.5 h-3 w-3 rounded-full border-2 border-primary bg-background" aria-hidden />
+                      <span className="font-medium text-foreground">{m.label}</span>
+                      {m.date && <span className="ml-2 font-mono text-xs text-muted-foreground">{m.date}</span>}
+                    </li>
+                  ))}
+                </ol>
+              </Section>
+            )}
             {cs.outcome && (
               <Section heading="Outcome">
                 <p className="text-muted-foreground md:text-lg">{cs.outcome}</p>
+              </Section>
+            )}
+            {cs.improvements && cs.improvements.length > 0 && (
+              <Section heading="What I'd improve next">
+                <ul className="list-disc space-y-2 pl-5 text-muted-foreground md:text-lg">
+                  {cs.improvements.map((i) => (
+                    <li key={i}>{i}</li>
+                  ))}
+                </ul>
               </Section>
             )}
             {!hasCaseStudy && (

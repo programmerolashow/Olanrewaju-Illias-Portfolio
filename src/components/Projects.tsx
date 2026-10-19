@@ -1,14 +1,46 @@
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ExternalLink, Github, Folder } from "lucide-react";
+import { ArrowRight, ExternalLink, Github, Folder, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { projects } from "@/data/projects";
+import { projects, type Project } from "@/data/projects";
+
+type Availability = "all" | "live" | "source";
+
+/** Most-used technologies first, so the filter chips stay short and relevant. */
+const topTags = Object.entries(
+  projects.flatMap((p) => p.tags).reduce<Record<string, number>>((acc, tag) => ({ ...acc, [tag]: (acc[tag] ?? 0) + 1 }), {}),
+)
+  .filter(([, count]) => count > 1)
+  .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+  .map(([tag]) => tag);
+
+const matches = (p: Project, query: string, tag: string | null, availability: Availability) => {
+  if (tag && !p.tags.includes(tag)) return false;
+  if (availability === "live" && !p.live) return false;
+  if (availability === "source" && p.live) return false;
+  if (!query) return true;
+  const q = query.toLowerCase();
+  return [p.title, p.description, ...p.tags].some((text) => text.toLowerCase().includes(q));
+};
 
 const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const full = variant === "full";
+  const [query, setQuery] = useState("");
+  const [tag, setTag] = useState<string | null>(null);
+  const [availability, setAvailability] = useState<Availability>("all");
+  const filtering = full && (query.trim() !== "" || tag !== null || availability !== "all");
+  const shown = useMemo(
+    () => (full ? projects.filter((p) => matches(p, query.trim(), tag, availability)) : projects),
+    [full, query, tag, availability],
+  );
+  const reset = () => {
+    setQuery("");
+    setTag(null);
+    setAvailability("all");
+  };
 
   return (
     <section
@@ -32,9 +64,84 @@ const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => 
           </motion.div>
         )}
 
+        {full && (
+          <div role="search" className="mb-8 space-y-4 md:mb-10">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <label className="relative flex-1">
+                <span className="sr-only">Search projects</span>
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search by name, technology or keyword"
+                  className="w-full rounded-full border border-border bg-background/80 py-2.5 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+              </label>
+              <div className="flex gap-1 rounded-full border border-border bg-secondary/60 p-1" role="group" aria-label="Filter by availability">
+                {([
+                  ["all", "All"],
+                  ["live", "Live demo"],
+                  ["source", "Source only"],
+                ] as const).map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={availability === value}
+                    onClick={() => setAvailability(value)}
+                    className={cn(
+                      "flex-1 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors sm:flex-none sm:text-sm",
+                      availability === value ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by technology">
+              {topTags.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  aria-pressed={tag === t}
+                  onClick={() => setTag(tag === t ? null : t)}
+                  className={cn(
+                    "rounded-full border px-3 py-1 font-mono text-xs transition-colors sm:text-sm",
+                    tag === t ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:border-primary hover:text-primary",
+                  )}
+                >
+                  {t}
+                </button>
+              ))}
+              {filtering && (
+                <button
+                  type="button"
+                  onClick={reset}
+                  className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-primary sm:text-sm"
+                >
+                  <X className="h-3.5 w-3.5" aria-hidden /> Reset
+                </button>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground" aria-live="polite">
+              {filtering ? `Showing ${shown.length} of ${projects.length} projects` : `${projects.length} projects`}
+            </p>
+          </div>
+        )}
+
+        {full && shown.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-border p-8 text-center">
+            <p className="text-muted-foreground">No projects match those filters.</p>
+            <button type="button" onClick={reset} className="mt-3 text-sm font-semibold text-primary hover:underline">
+              Clear filters
+            </button>
+          </div>
+        )}
+
         {/* Featured Projects */}
-        <div className={cn("grid gap-5 md:gap-8", full && "mb-12 md:mb-16")}>
-          {projects
+        <div className={cn("grid gap-5 md:gap-8", full && shown.some((p) => p.featured) && "mb-12 md:mb-16")}>
+          {shown
             .filter((p) => p.featured)
             .map((project, index) => (
               <motion.div
@@ -144,7 +251,7 @@ const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => 
           </motion.div>
         )}
 
-        {full && (
+        {full && shown.some((p) => !p.featured) && (
           <>
             {/* Other Projects Grid */}
             <motion.h3
@@ -157,7 +264,7 @@ const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => 
             </motion.h3>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              {projects
+              {shown
                 .filter((p) => !p.featured)
                 .map((project, index) => (
                   <motion.div
