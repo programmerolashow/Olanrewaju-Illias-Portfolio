@@ -6,6 +6,7 @@ import {
   FolderGit2,
   NotebookPen,
   UserRound,
+  Workflow,
   type LucideIcon,
 } from "lucide-react";
 
@@ -31,6 +32,7 @@ export const navGroups: NavGroup[] = [
       { label: "About Me", to: "/#about", description: "Background, values and how I work", icon: UserRound, section: "about" },
       { label: "Services", to: "/services", description: "How I help teams build and ship software", icon: Briefcase, section: "services" },
       { label: "Skills", to: "/#skills", description: "Languages, frameworks and tooling", icon: Code2, section: "skills" },
+      { label: "How I Work", to: "/approach", description: "Process, debugging, AI practice and principles", icon: Workflow },
       { label: "Moments", to: "/moments", description: "Events, talks and community", icon: Camera },
     ],
   },

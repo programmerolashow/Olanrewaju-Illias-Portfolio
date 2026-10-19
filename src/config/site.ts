@@ -14,10 +14,10 @@ export const site = {
   /** Short availability line shown in the hero. Empty hides it. */
   availability: "Open to remote work",
   /** Umami Cloud website ID (Settings → Websites → Edit → Website ID). Empty turns analytics off. */
-  umamiWebsiteId: "",
+  umamiWebsiteId: "7d57fdd9-4984-4ecd-ab83-1610bed319a7",
   /** Drop your CV at public/cv.pdf and the download buttons appear on the next build. */
   cvPath: "/ILLIAS_OLANREWAJU_CV.docx",
 };
 
 /** Static routes for the sitemap; project pages are added from src/data/projects.ts. */
-export const staticRoutes = ["/", "/services", "/projects", "/articles", "/moments"];
+export const staticRoutes = ["/", "/services", "/projects", "/articles", "/moments", "/approach"];
