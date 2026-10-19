@@ -1,5 +1,6 @@
 import PageHeader from "@/components/PageHeader";
 import Services from "@/components/Services";
+import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";
 import { usePageMeta } from "@/hooks/use-page-meta";
 
@@ -18,7 +19,9 @@ const ServicesPage = () => {
         description="I build full-stack applications and AI-powered software products, integrating frontend interfaces, backend services, databases and external APIs to solve practical problems. Open any service to see everything it covers."
       />
       <Services variant="full" />
-      <ExploreMore />
+      <ScrollSection>
+        <ExploreMore />
+      </ScrollSection>
     </>
   );
 };

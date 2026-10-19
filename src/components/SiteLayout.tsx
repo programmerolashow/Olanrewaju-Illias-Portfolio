@@ -3,6 +3,7 @@ import { useLocation, useOutlet } from "react-router-dom";
 import { AnimatePresence, MotionConfig, motion, useScroll, useSpring } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import AmbientBackground from "@/components/AmbientBackground";
 
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -53,7 +54,8 @@ const SiteLayout = () => {
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="min-h-screen bg-background [overflow-x:clip]">
+      <div className="isolate min-h-screen bg-background [overflow-x:clip]">
+        <AmbientBackground />
         <a
           href="#content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-primary-foreground"

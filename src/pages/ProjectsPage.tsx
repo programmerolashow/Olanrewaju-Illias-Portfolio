@@ -1,5 +1,6 @@
 import PageHeader from "@/components/PageHeader";
 import Projects from "@/components/Projects";
+import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";
 import { usePageMeta } from "@/hooks/use-page-meta";
 
@@ -14,8 +15,12 @@ const ProjectsPage = () => {
         highlight="Built"
         description="Featured builds first, then smaller projects worth a look. Each one links to its source code and, where available, a live demo."
       />
-      <Projects variant="full" />
-      <ExploreMore />
+      <ScrollSection>
+        <Projects variant="full" />
+      </ScrollSection>
+      <ScrollSection>
+        <ExploreMore />
+      </ScrollSection>
     </>
   );
 };

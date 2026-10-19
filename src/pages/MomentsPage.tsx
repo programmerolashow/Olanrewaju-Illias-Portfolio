@@ -1,5 +1,6 @@
 import PageHeader from "@/components/PageHeader";
 import Gallery from "@/components/Gallery";
+import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";
 import { usePageMeta } from "@/hooks/use-page-meta";
 
@@ -15,7 +16,9 @@ const MomentsPage = () => {
         description="Snapshots from events, talks, community meetups and the people I build with."
       />
       <Gallery showHeader={false} />
-      <ExploreMore />
+      <ScrollSection>
+        <ExploreMore />
+      </ScrollSection>
     </>
   );
 };

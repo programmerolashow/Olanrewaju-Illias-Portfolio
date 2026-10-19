@@ -6,6 +6,7 @@ import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
 import Articles from "@/components/Articles";
 import Contact from "@/components/Contact";
+import ScrollSection from "@/components/ScrollSection";
 import { usePageMeta } from "@/hooks/use-page-meta";
 
 // Home is the overview: Services, Projects and Articles show previews that link to their own pages,
@@ -16,13 +17,27 @@ const Index = () => {
   return (
     <>
       <Hero />
-      <About />
-      <Services />
-      <Skills />
-      <Experience />
-      <Projects />
-      <Articles />
-      <Contact />
+      <ScrollSection>
+        <About />
+      </ScrollSection>
+      <ScrollSection>
+        <Services />
+      </ScrollSection>
+      <ScrollSection>
+        <Skills />
+      </ScrollSection>
+      <ScrollSection>
+        <Experience />
+      </ScrollSection>
+      <ScrollSection>
+        <Projects />
+      </ScrollSection>
+      <ScrollSection>
+        <Articles />
+      </ScrollSection>
+      <ScrollSection>
+        <Contact />
+      </ScrollSection>
     </>
   );
 };
