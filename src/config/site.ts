@@ -16,7 +16,7 @@ export const site = {
   /** Umami Cloud website ID (Settings → Websites → Edit → Website ID). Empty turns analytics off. */
   umamiWebsiteId: "",
   /** Drop your CV at public/cv.pdf and the download buttons appear on the next build. */
-  cvPath: "/cv.pdf",
+  cvPath: "/ILLIAS_OLANREWAJU_CV.docx",
 };
 
 /** Static routes for the sitemap; project pages are added from src/data/projects.ts. */
