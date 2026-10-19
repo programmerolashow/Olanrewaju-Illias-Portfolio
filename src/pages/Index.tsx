@@ -20,9 +20,6 @@ const Index = () => {
     <>
       <Hero />
       <ScrollSection>
-        <LatestUpdates />
-      </ScrollSection>
-      <ScrollSection>
         <About />
       </ScrollSection>
       <ScrollSection>
@@ -42,6 +39,9 @@ const Index = () => {
       </ScrollSection>
       <ScrollSection>
         <Articles />
+      </ScrollSection>
+      <ScrollSection>
+        <LatestUpdates />
       </ScrollSection>
       <ScrollSection>
         <Contact />
