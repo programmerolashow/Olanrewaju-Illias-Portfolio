@@ -31,3 +31,4 @@ backend/.env
 
 # Personal photos kept out of the served /public folder
 media-archive/
+.neon

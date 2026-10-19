@@ -1,4 +1,5 @@
 import Hero from "@/components/Hero";
+import LatestUpdates from "@/components/LatestUpdates";
 import About from "@/components/About";
 import Services from "@/components/Services";
 import Skills from "@/components/Skills";
@@ -18,6 +19,9 @@ const Index = () => {
   return (
     <>
       <Hero />
+      <ScrollSection>
+        <LatestUpdates />
+      </ScrollSection>
       <ScrollSection>
         <About />
       </ScrollSection>

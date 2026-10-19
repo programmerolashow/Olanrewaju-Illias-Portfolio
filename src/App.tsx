@@ -16,6 +16,9 @@ const ProjectDetailPage = lazy(() => import("./pages/ProjectDetailPage"));
 const ArticlesPage = lazy(() => import("./pages/ArticlesPage"));
 const MomentsPage = lazy(() => import("./pages/MomentsPage"));
 const ApproachPage = lazy(() => import("./pages/ApproachPage"));
+const UpdatesPage = lazy(() => import("./pages/UpdatesPage"));
+const UpdateDetailPage = lazy(() => import("./pages/UpdateDetailPage"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
 
 const queryClient = new QueryClient();
 
@@ -35,6 +38,9 @@ const App = () => (
               <Route path="/articles" element={<ArticlesPage />} />
               <Route path="/moments" element={<MomentsPage />} />
               <Route path="/approach" element={<ApproachPage />} />
+              <Route path="/updates" element={<UpdatesPage />} />
+              <Route path="/updates/:id" element={<UpdateDetailPage />} />
+              <Route path="/admin" element={<AdminPage />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
