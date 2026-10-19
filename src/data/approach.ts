@@ -1,58 +1,121 @@
 import { Bot, Gauge, Scale, ShieldCheck, type LucideIcon } from "lucide-react";
 
 /**
- * Content for the "How I Work" page. These describe how Olanrewaju works, not delivered results:
- * keep outcomes, numbers and client claims out of here and put verified ones on project pages.
+ * Content for the "How I Work" page, in Olanrewaju's own words. These describe how he works, not
+ * delivered results: keep outcomes, numbers and client claims out of here and put verified ones on
+ * project pages.
  */
+
+export const intro = {
+  subtitle:
+    "My approach to building software, solving technical problems, making engineering decisions, and collaborating with people.",
+  paragraphs: [
+    "I approach software engineering as a combination of problem-solving, product thinking, and technical execution. I aim to understand the problem before choosing a solution, build systems that are maintainable, validate important assumptions, and communicate decisions clearly.",
+    "Whether I'm building a full-stack application, integrating AI into a product, modernizing an existing codebase, or collaborating with a team, I focus on delivering practical solutions without introducing unnecessary complexity.",
+  ],
+};
 
 export interface Phase {
   title: string;
   steps: string[];
 }
 
-/** Development workflow, grouped into phases so 13 steps read as a journey rather than a wall. */
 export const workflow: Phase[] = [
-  { title: "Understand", steps: ["Understand the problem", "Gather requirements", "Define acceptance criteria"] },
-  { title: "Plan", steps: ["Evaluate technical options", "Plan the architecture", "Design database schemas and APIs", "Break work into manageable tasks"] },
-  { title: "Build", steps: ["Implement features", "Test and debug", "Review code"] },
-  { title: "Ship", steps: ["Prepare deployments", "Validate completed functionality", "Document decisions and lessons learned"] },
+  {
+    title: "Understand and Define",
+    steps: [
+      "Understand the problem and the people experiencing it.",
+      "Gather requirements and clarify expected behaviour.",
+      "Identify constraints, dependencies, and edge cases.",
+      "Define acceptance criteria before implementation.",
+      "Break large requirements into manageable tasks.",
+    ],
+  },
+  {
+    title: "Design and Plan",
+    steps: [
+      "Evaluate suitable technologies and implementation approaches.",
+      "Design the necessary application architecture.",
+      "Plan database schemas, API contracts, and component boundaries.",
+      "Consider security, accessibility, performance, and maintainability.",
+      "Identify technical risks and implementation trade-offs.",
+    ],
+  },
+  {
+    title: "Build and Validate",
+    steps: [
+      "Implement features in manageable increments.",
+      "Follow existing project conventions where appropriate.",
+      "Integrate frontend, backend, databases, and external services.",
+      "Validate inputs and handle errors deliberately.",
+      "Run relevant tests, linting, type checks, and builds.",
+      "Review changes for regressions before delivery.",
+    ],
+  },
+  {
+    title: "Deliver and Improve",
+    steps: [
+      "Validate the completed functionality against requirements.",
+      "Document important implementation decisions.",
+      "Communicate limitations, blockers, and remaining work.",
+      "Support deployment and integration where within scope.",
+      "Use feedback and observed issues to guide improvements.",
+    ],
+  },
 ];
 
-export const debugging = [
-  { title: "Reproduce the issue", detail: "Confirm the exact steps, inputs and environment that trigger it." },
-  { title: "Gather evidence", detail: "Logs, error traces, network requests and recent changes." },
-  { title: "List possible causes", detail: "Write down hypotheses instead of guessing at fixes." },
-  { title: "Isolate the root cause", detail: "Narrow it down until one cause explains every symptom." },
-  { title: "Evaluate fixes", detail: "Compare options by risk, scope and side effects." },
-  { title: "Make the smallest appropriate change", detail: "Fix the cause, not the symptom, without touching unrelated code." },
-  { title: "Test the solution", detail: "Prove the original issue is gone." },
-  { title: "Check for regressions", detail: "Make sure nothing nearby broke." },
-  { title: "Document the outcome", detail: "Record what happened and why the fix works." },
-  { title: "Prevent recurrence", detail: "Add a test, a constraint or a check so it can't quietly return." },
-];
+export const debugging = {
+  intro:
+    "My debugging approach is systematic. I try to establish what is happening, why it is happening, and how to verify that a fix addresses the underlying cause.",
+  steps: [
+    "Reproduce the issue consistently.",
+    "Define the expected behaviour and compare it with the actual result.",
+    "Gather evidence from error messages, logs, network requests, and application state.",
+    "Narrow the problem to the relevant component, service, or integration.",
+    "Form hypotheses about possible causes.",
+    "Test those hypotheses individually.",
+    "Identify the root cause rather than relying on a superficial workaround.",
+    "Implement the smallest appropriate fix.",
+    "Run relevant tests and check for regressions.",
+    "Document the resolution and consider how to prevent similar issues.",
+  ],
+};
 
-export const decisionFactors = [
-  "Technology selection",
-  "Architecture trade-offs",
-  "Database technology",
-  "Build versus buy",
-  "Maintainability",
-  "Performance and scalability",
-  "Security implications",
-  "Development cost and complexity",
-  "Short-term versus long-term trade-offs",
-];
+export const decisions = {
+  intro:
+    "I choose technologies and implementation approaches based on the problem being solved, rather than selecting tools simply because they are popular.",
+  factors: [
+    { label: "Requirements", question: "Does the solution satisfy the actual product needs?" },
+    { label: "Maintainability", question: "Can the codebase be understood and changed over time?" },
+    { label: "Reliability", question: "How will the system behave when something fails?" },
+    { label: "Security", question: "What data, permissions, and trust boundaries need protection?" },
+    { label: "Performance", question: "Will the approach meet realistic usage requirements?" },
+    { label: "Complexity", question: "Is the additional abstraction or infrastructure justified?" },
+    { label: "Integration", question: "How well does the solution fit the existing system?" },
+    { label: "Cost", question: "What are the development, infrastructure, and ongoing operational costs?" },
+    { label: "Team context", question: "Can the team implement and maintain the solution effectively?" },
+    { label: "Trade-offs", question: "What advantages are gained, and what limitations are introduced?" },
+  ],
+  outro: "I prefer solutions that are sufficiently robust for the problem without making the system unnecessarily complicated.",
+};
 
-export const collaboration = [
-  "Working within existing codebases and their conventions",
-  "Branch-based development with merge requests and code review",
-  "Communicating blockers early",
-  "Coordinating frontend and backend changes",
-  "Receiving and applying feedback",
-  "Documenting handoffs",
-  "Validating changes before merging",
-  "Coordinating deployment and release activities",
-];
+export const collaboration = {
+  intro: "I value clear communication, shared ownership, and predictable engineering workflows.",
+  points: [
+    "Understanding the team's conventions and existing codebase.",
+    "Breaking work into clear, manageable tasks.",
+    "Communicating progress, blockers, and dependencies early.",
+    "Using Git branches and merge requests to organize changes.",
+    "Keeping changes focused and reviewable.",
+    "Participating in code reviews and applying constructive feedback.",
+    "Coordinating frontend, backend, and integration work.",
+    "Documenting important technical decisions and handoffs.",
+    "Validating changes before merging or deploying.",
+    "Respecting ownership boundaries while contributing to shared goals.",
+  ],
+  outro:
+    "I aim to make my work understandable to other developers and to leave the codebase easier to maintain wherever practical.",
+};
 
 export interface Pillar {
   icon: LucideIcon;
@@ -60,79 +123,90 @@ export interface Pillar {
   points: string[];
 }
 
-/** Practices, not service claims: phrased as how AI features should be built. */
 export const aiPractices: Pillar[] = [
   {
     icon: Bot,
-    title: "System design",
+    title: "Design",
     points: [
-      "Decide first whether AI is the right tool for the feature",
-      "Keep business rules separate from probabilistic model output",
-      "Use structured prompts and defined response formats",
-      "Manage context and conversation history deliberately",
-      "Validate model output and handle invalid or incomplete responses",
-      "Design fallback behaviour",
+      "Start with a clearly defined problem that benefits from AI.",
+      "Determine whether AI is necessary or whether deterministic logic is more appropriate.",
+      "Separate business rules from probabilistic model outputs.",
+      "Design prompts and context around the task.",
+      "Define expected output formats and validation requirements.",
+      "Integrate AI services with application APIs and data carefully.",
+      "Plan fallback behaviour for unavailable or unreliable model responses.",
     ],
   },
   {
     icon: Scale,
-    title: "Evaluation and reliability",
+    title: "Evaluation",
     points: [
-      "Write representative test cases, including edge cases",
-      "Test expected and unexpected outputs for consistency",
-      "Measure task success against defined criteria",
-      "Identify hallucination risks",
-      "Handle model and provider errors",
-      "Record limitations and known failure modes",
+      "Define expected behaviour before testing.",
+      "Test representative inputs and edge cases.",
+      "Validate output structure and application-level correctness.",
+      "Check how the system responds to incomplete or unexpected outputs.",
+      "Evaluate consistency and task success against defined criteria.",
+      "Record limitations and known failure modes.",
+      "Avoid claiming reliability without appropriate evidence.",
     ],
   },
   {
     icon: ShieldCheck,
-    title: "Security and privacy",
+    title: "Security",
     points: [
-      "Threat-model prompt injection",
-      "Separate untrusted content from trusted instructions",
-      "Enforce authorization outside model-generated decisions",
-      "Never expose secrets to models",
-      "Minimise personal data and protect sensitive context",
-      "Apply rate limits and test unsafe inputs",
+      "Treat user input and retrieved content as potentially untrusted.",
+      "Consider prompt-injection risks.",
+      "Validate model outputs before using them in sensitive workflows.",
+      "Enforce authorization and permissions in application code.",
+      "Avoid exposing secrets or unnecessary personal information.",
+      "Apply appropriate rate limits and error handling.",
+      "Keep high-impact decisions under explicit application controls.",
     ],
   },
   {
     icon: Gauge,
-    title: "Cost and performance",
+    title: "Cost and Performance",
     points: [
-      "Weigh model choice against quality, latency and cost",
-      "Cut unnecessary API calls and manage context size",
-      "Cache where appropriate",
-      "Handle timeouts and retries",
-      "Track usage limits",
-      "Degrade gracefully when a provider is unavailable",
+      "Choose models according to task requirements.",
+      "Avoid unnecessary model calls.",
+      "Manage prompt and context size.",
+      "Handle timeouts and provider failures.",
+      "Consider caching when appropriate.",
+      "Measure latency and usage costs where possible.",
+      "Balance response quality, cost, and user experience.",
+      "Design graceful fallback behaviour when AI services are unavailable.",
     ],
   },
 ];
 
-export const engagement = [
-  { title: "Discuss", detail: "An initial conversation to understand the problem you're solving." },
-  { title: "Define scope", detail: "Objectives, deliverables, assumptions, integrations and acceptance criteria, agreed in writing." },
-  { title: "Check feasibility", detail: "A technical review of constraints and dependencies before committing to milestones." },
-  { title: "Plan milestones", detail: "Work broken into deliverable milestones you can see and test." },
-  { title: "Build and demo", detail: "Regular progress updates and demos, with risks and blockers raised early." },
-  { title: "Revise", detail: "Feedback rounds, with change requests handled openly against the agreed scope." },
-  { title: "Hand over", detail: "Documentation and a clean handover, plus agreed maintenance arrangements." },
-];
+export const clients = {
+  intro:
+    "I approach client work by first understanding the desired outcome, clarifying the scope, and agreeing on what successful delivery means.",
+  steps: [
+    "Understand the client's problem and objectives.",
+    "Clarify requirements, priorities, and constraints.",
+    "Recommend an appropriate technical approach.",
+    "Define deliverables and acceptance criteria.",
+    "Break the work into manageable milestones.",
+    "Communicate progress, risks, and changes.",
+    "Implement and validate the agreed functionality.",
+    "Provide relevant documentation and handover information.",
+  ],
+  outro:
+    "I aim to maintain realistic expectations, explain technical trade-offs clearly, and focus on solutions that meet the client's actual needs.",
+};
 
 export const principles = [
-  "Build solutions around real problems.",
-  "Prefer maintainable implementations over unnecessary complexity.",
-  "Explain technical decisions clearly.",
-  "Prioritise reliability and data integrity.",
-  "Treat AI output as something to validate, not automatically trust.",
-  "Protect confidential information.",
-  "Distinguish individual contributions from team achievements.",
-  "Be honest about project status and limitations.",
-  "Measure results rather than inventing metrics.",
-  "Learn from technical challenges.",
-  "Communicate clearly with teammates and stakeholders.",
-  "Keep projects accessible, usable and maintainable.",
+  "Understand the problem before writing code.",
+  "Build for real users and practical needs.",
+  "Prefer clarity over unnecessary complexity.",
+  "Make deliberate and explainable technical decisions.",
+  "Treat security and privacy as engineering responsibilities.",
+  "Validate assumptions and test important behaviour.",
+  "Investigate root causes rather than hiding symptoms.",
+  "Keep code maintainable and changes reviewable.",
+  "Communicate clearly and collaborate respectfully.",
+  "Treat AI outputs as requiring appropriate validation.",
+  "Be honest about limitations, progress, and results.",
+  "Learn continuously and improve through feedback.",
 ];

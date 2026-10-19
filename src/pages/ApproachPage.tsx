@@ -5,46 +5,54 @@ import { ArrowRight, Check } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";
-import { aiPractices, collaboration, debugging, decisionFactors, engagement, principles, workflow } from "@/data/approach";
+import { aiPractices, clients, collaboration, debugging, decisions, intro, principles, workflow } from "@/data/approach";
 import { usePageMeta } from "@/hooks/use-page-meta";
 
 const sections = [
   { id: "workflow", label: "Workflow" },
   { id: "debugging", label: "Debugging" },
   { id: "decisions", label: "Decisions" },
-  { id: "collaboration", label: "Collaboration" },
+  { id: "collaboration", label: "Teamwork" },
   { id: "ai", label: "AI engineering" },
-  { id: "clients", label: "Working with clients" },
+  { id: "clients", label: "Clients" },
   { id: "principles", label: "Principles" },
 ];
 
-const Block = ({ id, eyebrow, title, intro, children }: { id: string; eyebrow: string; title: string; intro?: string; children: ReactNode }) => (
+interface BlockProps {
+  id: string;
+  eyebrow: string;
+  title: string;
+  intro?: string;
+  outro?: string;
+  children: ReactNode;
+}
+
+const Block = ({ id, eyebrow, title, intro, outro, children }: BlockProps) => (
   <ScrollSection>
     <section id={id} aria-labelledby={`${id}-heading`} className="scroll-mt-28 py-10 md:py-14">
       <p className="mb-2 font-mono text-sm text-primary">{eyebrow}</p>
       <h2 id={`${id}-heading`} className="text-2xl font-bold text-foreground sm:text-3xl">
         {title}
       </h2>
-      {intro && <p className="mt-3 max-w-2xl text-muted-foreground md:text-lg">{intro}</p>}
+      {intro && <p className="mt-3 max-w-3xl text-muted-foreground md:text-lg">{intro}</p>}
       <div className="mt-6 md:mt-8">{children}</div>
+      {outro && <p className="mt-6 max-w-3xl border-l-2 border-primary pl-4 text-foreground/90 md:text-lg">{outro}</p>}
     </section>
   </ScrollSection>
 );
 
+const Numbered = ({ n }: { n: number }) => (
+  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 font-mono text-sm font-semibold text-primary">
+    {n}
+  </span>
+);
+
 const ApproachPage = () => {
-  usePageMeta(
-    "How I Work",
-    "How Olanrewaju Illias plans, builds, debugs and ships software, approaches AI engineering and works with teams and clients.",
-  );
+  usePageMeta("How I Work", intro.subtitle);
 
   return (
     <>
-      <PageHeader
-        eyebrow="How I Work"
-        title="How I Build"
-        highlight="Software"
-        description="The process behind the projects: how I go from a problem to a working, maintainable product, how I debug, make decisions, work with teams and clients, and build AI features responsibly."
-      >
+      <PageHeader eyebrow="How I Work" title="How I" highlight="Work" description={intro.subtitle}>
         <nav aria-label="On this page" className="flex flex-wrap gap-2">
           {sections.map((s) => (
             <a
@@ -59,7 +67,13 @@ const ApproachPage = () => {
       </PageHeader>
 
       <div className="container mx-auto px-4 sm:px-6">
-        <Block id="workflow" eyebrow="01 · Workflow" title="From problem to shipped feature" intro="Every piece of work moves through the same four phases, whether it's a one-day fix or a multi-week feature.">
+        <div className="max-w-3xl space-y-4 text-foreground/90 md:text-lg">
+          {intro.paragraphs.map((p) => (
+            <p key={p}>{p}</p>
+          ))}
+        </div>
+
+        <Block id="workflow" eyebrow="01 · Workflow" title="My Development Workflow">
           <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {workflow.map((phase, i) => (
               <li key={phase.title} className="glass-card rounded-2xl p-5">
@@ -78,35 +92,32 @@ const ApproachPage = () => {
           </ol>
         </Block>
 
-        <Block id="debugging" eyebrow="02 · Debugging" title="How I approach difficult problems" intro="Evidence first, smallest fix second, and a guard so the same bug can't come back.">
+        <Block id="debugging" eyebrow="02 · Debugging" title="How I Debug" intro={debugging.intro}>
           <ol className="grid gap-3 md:grid-cols-2">
-            {debugging.map((step, i) => (
-              <li key={step.title} className="flex gap-4 rounded-2xl border border-border p-4 sm:p-5">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 font-mono text-sm font-semibold text-primary">
-                  {i + 1}
-                </span>
-                <div>
-                  <h3 className="font-semibold text-foreground">{step.title}</h3>
-                  <p className="mt-0.5 text-sm text-muted-foreground">{step.detail}</p>
-                </div>
+            {debugging.steps.map((step, i) => (
+              <li key={step} className="flex items-center gap-4 rounded-2xl border border-border p-4">
+                <Numbered n={i + 1} />
+                <span className="text-foreground/90">{step}</span>
               </li>
             ))}
           </ol>
         </Block>
 
-        <Block id="decisions" eyebrow="03 · Decisions" title="Technical decision-making" intro="Before choosing a tool or an architecture, I weigh it against these factors and write down why the trade-off was worth it.">
-          <ul className="flex flex-wrap gap-2">
-            {decisionFactors.map((f) => (
-              <li key={f} className="rounded-full border border-primary/25 bg-primary/10 px-3.5 py-1.5 text-sm font-medium text-primary">
-                {f}
-              </li>
+        <Block id="decisions" eyebrow="03 · Decisions" title="How I Make Technical Decisions" intro={decisions.intro} outro={decisions.outro}>
+          <p className="mb-4 font-medium text-foreground">My decision-making considers:</p>
+          <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {decisions.factors.map((f) => (
+              <div key={f.label} className="glass-card rounded-2xl p-4 sm:p-5">
+                <dt className="font-semibold text-primary">{f.label}</dt>
+                <dd className="mt-1 text-sm text-muted-foreground sm:text-base">{f.question}</dd>
+              </div>
             ))}
-          </ul>
+          </dl>
         </Block>
 
-        <Block id="collaboration" eyebrow="04 · Collaboration" title="Working in a team">
+        <Block id="collaboration" eyebrow="04 · Teamwork" title="How I Work in a Team" intro={collaboration.intro} outro={collaboration.outro}>
           <ul className="grid gap-3 sm:grid-cols-2">
-            {collaboration.map((c) => (
+            {collaboration.points.map((c) => (
               <li key={c} className="flex gap-3 rounded-2xl border border-border p-4 text-foreground/90">
                 <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
                 {c}
@@ -115,12 +126,7 @@ const ApproachPage = () => {
           </ul>
         </Block>
 
-        <Block
-          id="ai"
-          eyebrow="05 · AI engineering"
-          title="Building AI features responsibly"
-          intro="A model's output is a suggestion to validate, not a decision to trust. These are the practices I apply when AI is part of a product."
-        >
+        <Block id="ai" eyebrow="05 · AI engineering" title="My Approach to AI Engineering">
           <div className="grid gap-4 md:grid-cols-2">
             {aiPractices.map(({ icon: Icon, title, points }) => (
               <div key={title} className="glass-card rounded-2xl p-5 sm:p-6">
@@ -143,16 +149,14 @@ const ApproachPage = () => {
           </div>
         </Block>
 
-        <Block id="clients" eyebrow="06 · Clients" title="Working with clients" intro="Freelance and contract work follows a clear path, so you always know what's being built, when, and what's left.">
+        <Block id="clients" eyebrow="06 · Clients" title="How I Work with Clients" intro={clients.intro} outro={clients.outro}>
+          <p className="mb-4 font-medium text-foreground">My process includes:</p>
           <ol className="relative space-y-4 border-l border-border pl-6">
-            {engagement.map((step, i) => (
-              <li key={step.title} className="relative">
-                <span className="absolute -left-[1.85rem] top-1 flex h-3.5 w-3.5 rounded-full border-2 border-primary bg-background" aria-hidden />
-                <h3 className="font-semibold text-foreground">
-                  <span className="mr-2 font-mono text-sm text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
-                  {step.title}
-                </h3>
-                <p className="mt-0.5 text-sm text-muted-foreground sm:text-base">{step.detail}</p>
+            {clients.steps.map((step, i) => (
+              <li key={step} className="relative">
+                <span className="absolute -left-[1.85rem] top-1.5 flex h-3.5 w-3.5 rounded-full border-2 border-primary bg-background" aria-hidden />
+                <span className="mr-2 font-mono text-sm text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
+                <span className="text-foreground/90">{step}</span>
               </li>
             ))}
           </ol>
@@ -168,7 +172,7 @@ const ApproachPage = () => {
           </motion.div>
         </Block>
 
-        <Block id="principles" eyebrow="07 · Principles" title="What I hold myself to">
+        <Block id="principles" eyebrow="07 · Principles" title="My Engineering Principles">
           <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {principles.map((p, i) => (
               <li key={p} className="glass-card flex gap-3 rounded-2xl p-4 sm:p-5">

@@ -7,6 +7,7 @@ import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";
 import { getProject, projects, type CodeSample } from "@/data/projects";
 import { usePageMeta } from "@/hooks/use-page-meta";
+import { cn } from "@/lib/utils";
 
 const Section = ({ heading, children }: { heading: string; children: ReactNode }) => (
   <section className="space-y-3">
@@ -72,7 +73,7 @@ const ProjectDetailPage = () => {
   const next = projects[(index + 1) % projects.length];
   const cs = project.caseStudy ?? {};
   const hasCaseStudy = Boolean(
-    cs.problem || cs.role || cs.challenges?.length || cs.outcome || cs.architecture?.length || cs.decisions?.length || cs.timeline?.length || cs.code?.length || cs.improvements?.length,
+    cs.problem || cs.role || cs.challenges?.length || cs.features?.length || cs.outcome || cs.architecture?.length || cs.decisions?.length || cs.timeline?.length || cs.code?.length || cs.improvements?.length,
   );
 
   return (
@@ -84,10 +85,15 @@ const ProjectDetailPage = () => {
         highlight={project.title}
         description={project.description}
       >
-        {project.status && (
-          <p className="mb-4 inline-flex rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-xs text-primary">
-            Status: {project.status}
-          </p>
+        {(project.category || project.status) && (
+          <div className="mb-4 flex flex-wrap gap-2">
+            {project.category && (
+              <p className="rounded-full border border-border bg-secondary/60 px-3 py-1 font-mono text-xs text-muted-foreground">{project.category}</p>
+            )}
+            {project.status && (
+              <p className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-xs text-primary">Status: {project.status}</p>
+            )}
+          </div>
         )}
         <div className="flex flex-wrap gap-3">
           {project.live && (
@@ -146,10 +152,32 @@ const ProjectDetailPage = () => {
               </Section>
             )}
             {cs.challenges && cs.challenges.length > 0 && (
-              <Section heading="Challenges">
-                <ul className="list-disc space-y-2 pl-5 text-muted-foreground md:text-lg">
+              <Section heading="Engineering challenges and lessons">
+                <div className="space-y-4">
                   {cs.challenges.map((c) => (
-                    <li key={c}>{c}</li>
+                    <div key={c.title}>
+                      <h3 className="font-semibold text-foreground">{c.title}</h3>
+                      <p className="mt-1 text-muted-foreground md:text-lg">{c.detail}</p>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            )}
+            {cs.features && cs.features.length > 0 && (
+              <Section heading="Feature areas">
+                <ul className="grid gap-2 sm:grid-cols-2">
+                  {cs.features.map((f) => (
+                    <li key={f.name} className="flex items-center justify-between gap-3 rounded-xl border border-border px-4 py-2.5">
+                      <span className="text-foreground/90">{f.name}</span>
+                      <span
+                        className={cn(
+                          "shrink-0 rounded-full px-2.5 py-0.5 font-mono text-xs",
+                          f.status === "Implemented" ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" : "bg-secondary text-muted-foreground",
+                        )}
+                      >
+                        {f.status}
+                      </span>
+                    </li>
                   ))}
                 </ul>
               </Section>
@@ -167,7 +195,7 @@ const ProjectDetailPage = () => {
               </Section>
             )}
             {cs.decisions && cs.decisions.length > 0 && (
-              <Section heading="Key decisions">
+              <Section heading="Key technical decisions">
                 <div className="space-y-3">
                   {cs.decisions.map((d) => (
                     <div key={d.decision} className="rounded-2xl border border-border p-4 sm:p-5">
@@ -223,7 +251,7 @@ const ProjectDetailPage = () => {
               </Section>
             )}
             {cs.improvements && cs.improvements.length > 0 && (
-              <Section heading="What I'd improve next">
+              <Section heading="Potential improvements">
                 <ul className="list-disc space-y-2 pl-5 text-muted-foreground md:text-lg">
                   {cs.improvements.map((i) => (
                     <li key={i}>{i}</li>
