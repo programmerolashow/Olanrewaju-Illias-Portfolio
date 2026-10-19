@@ -34,7 +34,7 @@
  *   {
  *     type: "video",
  *     src: "/gallery/project-pitch.mp4",
- *     poster: "/gallery/project-pitch-poster.jpg",
+ *     poster: "/gallery/project-pitch-poster.webp",
  *     title: "Project Pitch",
  *     caption: "Presenting a product concept to a panel",
  *     category: "Speaking",
@@ -61,7 +61,7 @@ export interface GalleryItem {
 export const gallery: GalleryItem[] = [
   {
     type: "image",
-    src: "/gallery/build-with-ai-group.jpg",
+    src: "/gallery/build-with-ai-group.webp",
     title: "Build with AI 2026",
     caption: "The Google Developer Groups community at Build with AI",
     category: "Community",
@@ -70,7 +70,7 @@ export const gallery: GalleryItem[] = [
   },
   {
     type: "image",
-    src: "/gallery/gemini-lagos.jpg",
+    src: "/gallery/gemini-lagos.webp",
     title: "Gemini Lagos",
     caption: "Connecting with the Google Gemini community",
     category: "Events",
@@ -80,7 +80,7 @@ export const gallery: GalleryItem[] = [
   },
   {
     type: "image",
-    src: "/gallery/ilorin-innovation-hub-building.jpg",
+    src: "/gallery/ilorin-innovation-hub-building.webp",
     title: "Heads Down, Building",
     caption: "Hands-on build session at Ilorin Innovation Hub",
     category: "Workshops",
@@ -89,7 +89,7 @@ export const gallery: GalleryItem[] = [
   },
   {
     type: "image",
-    src: "/gallery/devfest-ilorin-duo.jpg",
+    src: "/gallery/devfest-ilorin-duo.webp",
     title: "DevFest Ilorin 2025",
     caption: "Google Developer Groups' flagship developer festival",
     category: "Events",
@@ -100,7 +100,7 @@ export const gallery: GalleryItem[] = [
   },
   {
     type: "image",
-    src: "/gallery/build-with-ai-stage.jpg",
+    src: "/gallery/build-with-ai-stage.webp",
     title: "On Stage at Build with AI",
     caption: "A panel moment at Build with AI 2026",
     category: "Events",
@@ -109,7 +109,7 @@ export const gallery: GalleryItem[] = [
   },
   {
     type: "image",
-    src: "/gallery/portrait-yellow-wall.jpg",
+    src: "/gallery/portrait-yellow-wall.webp",
     title: "Olanrewaju Illias",
     caption: "Full-Stack Product Engineer",
     category: "Portraits",
@@ -118,7 +118,7 @@ export const gallery: GalleryItem[] = [
   },
   {
     type: "image",
-    src: "/gallery/ilorin-innovation-hub-session.jpg",
+    src: "/gallery/ilorin-innovation-hub-session.webp",
     title: "Ilorin Innovation Hub",
     caption: "Learning sessions with the local tech community",
     category: "Workshops",
@@ -127,7 +127,7 @@ export const gallery: GalleryItem[] = [
   },
   {
     type: "image",
-    src: "/gallery/malhub-career-event.jpg",
+    src: "/gallery/malhub-career-event.webp",
     title: "MALhub Tech Career Event",
     caption: "Empowering Africa's next tech talent",
     category: "Events",
@@ -136,7 +136,7 @@ export const gallery: GalleryItem[] = [
   },
   {
     type: "image",
-    src: "/gallery/careerfest-stage.jpg",
+    src: "/gallery/careerfest-stage.webp",
     title: "CareerFest",
     caption: "On stage with fellow participants at a GDG CareerFest",
     category: "Events",
@@ -144,7 +144,7 @@ export const gallery: GalleryItem[] = [
   },
   {
     type: "image",
-    src: "/gallery/careerfest-portrait.jpg",
+    src: "/gallery/careerfest-portrait.webp",
     title: "Between Sessions",
     caption: "CareerFest",
     category: "Portraits",
@@ -153,7 +153,7 @@ export const gallery: GalleryItem[] = [
   },
   {
     type: "image",
-    src: "/gallery/ilorin-innovation-hub-audience.jpg",
+    src: "/gallery/ilorin-innovation-hub-audience.webp",
     title: "In the Room",
     caption: "Learning alongside the developer community",
     category: "Community",
@@ -162,7 +162,7 @@ export const gallery: GalleryItem[] = [
   },
   {
     type: "image",
-    src: "/gallery/with-colleagues.jpg",
+    src: "/gallery/with-colleagues.webp",
     title: "With the Team",
     caption: "Good people, good work",
     category: "Community",
@@ -171,7 +171,7 @@ export const gallery: GalleryItem[] = [
   },
   {
     type: "image",
-    src: "/gallery/devfest-ilorin-portrait.jpg",
+    src: "/gallery/devfest-ilorin-portrait.webp",
     title: "DevFest Ilorin",
     caption: "Showing up for the developer community",
     category: "Portraits",
@@ -182,7 +182,7 @@ export const gallery: GalleryItem[] = [
   },
   {
     type: "image",
-    src: "/gallery/build-with-ai-audience.jpg",
+    src: "/gallery/build-with-ai-audience.webp",
     title: "Build with AI, Front Row",
     caption: "Taking it all in at Build with AI 2026",
     category: "Community",

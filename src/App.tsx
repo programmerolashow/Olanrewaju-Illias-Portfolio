@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 // Secondary pages load on demand so the home page bundle stays lean.
 const ServicesPage = lazy(() => import("./pages/ServicesPage"));
 const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
+const ProjectDetailPage = lazy(() => import("./pages/ProjectDetailPage"));
 const ArticlesPage = lazy(() => import("./pages/ArticlesPage"));
 const MomentsPage = lazy(() => import("./pages/MomentsPage"));
 
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/projects" element={<ProjectsPage />} />
+              <Route path="/projects/:slug" element={<ProjectDetailPage />} />
               <Route path="/articles" element={<ArticlesPage />} />
               <Route path="/moments" element={<MomentsPage />} />
             </Route>

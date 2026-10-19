@@ -28,3 +28,6 @@ dist-ssr
 .env.*
 !.env.example
 backend/.env
+
+# Personal photos kept out of the served /public folder
+media-archive/

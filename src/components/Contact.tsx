@@ -16,6 +16,7 @@ import {
   AtSign,
   Check,
   Copy,
+  FileDown,
   Github,
   Gitlab,
   Linkedin,
@@ -32,6 +33,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { site } from "@/config/site";
 
 // Served by api/contact.js on Vercel, or proxied to backend/server.js in development.
 // Set VITE_CONTACT_ENDPOINT only if the backend lives on a different domain (e.g. https://api.example.com/api/contact).
@@ -76,12 +78,14 @@ interface MethodCardProps {
   label: string;
   value: string;
   href?: string;
+  /** Download the link target instead of navigating to it. */
+  download?: boolean;
   copyValue?: string;
   delay: number;
   inView: boolean;
 }
 
-const MethodCard = ({ icon: Icon, label, value, href, copyValue, delay, inView }: MethodCardProps) => {
+const MethodCard = ({ icon: Icon, label, value, href, download, copyValue, delay, inView }: MethodCardProps) => {
   const [copied, setCopied] = useState(false);
   const mx = useMotionValue(-300);
   const my = useMotionValue(-300);
@@ -129,7 +133,7 @@ const MethodCard = ({ icon: Icon, label, value, href, copyValue, delay, inView }
         <div className="min-w-0 flex-1">
           <p className="text-xs text-muted-foreground sm:text-sm">{label}</p>
           <Value
-            {...(href ? { href } : {})}
+            {...(href ? { href, download: download || undefined } : {})}
             className="block font-medium text-foreground transition-colors [overflow-wrap:anywhere] hover:text-primary text-sm sm:text-base"
           >
             {value}
@@ -484,6 +488,9 @@ const Contact = () => {
             <MethodCard icon={Mail} label="Email" value={EMAIL} href={`mailto:${EMAIL}`} copyValue={EMAIL} delay={0.2} inView={isInView} />
             <MethodCard icon={Phone} label="Phone" value={PHONE_DISPLAY} href={PHONE_LINK} copyValue={PHONE_DISPLAY} delay={0.3} inView={isInView} />
             <MethodCard icon={MapPin} label="Location" value="Lagos State, Nigeria · Open to remote" delay={0.4} inView={isInView} />
+            {__HAS_CV__ && (
+              <MethodCard icon={FileDown} label="CV" value="Download my CV (PDF)" href={site.cvPath} download delay={0.45} inView={isInView} />
+            )}
 
             <motion.div
               initial={{ opacity: 0, x: -40 }}
