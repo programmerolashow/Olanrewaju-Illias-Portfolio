@@ -20,4 +20,4 @@ export const site = {
 };
 
 /** Static routes for the sitemap; project pages are added from src/data/projects.ts. */
-export const staticRoutes = ["/", "/services", "/projects", "/articles", "/moments", "/approach"];
+export const staticRoutes = ["/", "/services", "/projects", "/articles", "/moments", "/approach", "/updates"];

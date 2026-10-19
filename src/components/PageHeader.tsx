@@ -7,7 +7,7 @@ interface PageHeaderProps {
   eyebrow: string;
   title: string;
   highlight: string;
-  description: string;
+  description?: string;
   /** Extra breadcrumb level between Home and this page, e.g. Projects on a project page. */
   parent?: { label: string; to: string };
   children?: ReactNode;
@@ -64,14 +64,16 @@ const PageHeader = ({ eyebrow, title, highlight, description, parent, children }
         {title} <span className="gradient-text">{highlight}</span>
       </motion.h1>
 
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, delay: 0.12 }}
-        className="mt-4 max-w-2xl text-base text-muted-foreground md:text-lg"
-      >
-        {description}
-      </motion.p>
+      {description && (
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, delay: 0.12 }}
+          className="mt-4 max-w-2xl text-base text-muted-foreground md:text-lg"
+        >
+          {description}
+        </motion.p>
+      )}
 
       {children && (
         <motion.div

@@ -50,7 +50,7 @@ const sitePlugin = (): Plugin => ({
     this.emitFile({
       type: "asset",
       fileName: "robots.txt",
-      source: `User-agent: *\nAllow: /\n\nSitemap: ${site.url}/sitemap.xml\n`,
+      source: `User-agent: *\nAllow: /\nDisallow: /admin\n\nSitemap: ${site.url}/sitemap.xml\n`,
     });
   },
 });

@@ -2,6 +2,7 @@ import {
   Building2,
   Briefcase,
   Camera,
+  Megaphone,
   Code2,
   FolderGit2,
   NotebookPen,
@@ -34,6 +35,7 @@ export const navGroups: NavGroup[] = [
       { label: "Skills", to: "/#skills", description: "Languages, frameworks and tooling", icon: Code2, section: "skills" },
       { label: "How I Work", to: "/approach", description: "Process, debugging, AI practice and principles", icon: Workflow },
       { label: "Moments", to: "/moments", description: "Events, talks and community", icon: Camera },
+      { label: "Updates", to: "/updates", description: "Latest events and posts", icon: Megaphone },
     ],
   },
   {
