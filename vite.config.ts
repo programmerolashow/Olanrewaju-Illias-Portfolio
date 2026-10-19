@@ -4,6 +4,7 @@ import path from "path";
 import { existsSync } from "fs";
 import { site, staticRoutes } from "./src/config/site";
 import { projects } from "./src/data/projects";
+import { apiDevServer } from "./scripts/vite-api-dev";
 
 const escapeAttr = (value: string) => value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
@@ -60,8 +61,9 @@ export default defineConfig(() => ({
   server: {
     host: "::",
     port: 8080,
-    // In development, /api/* goes to the Express server in /backend (run: cd backend && npm run dev).
-    // In production on Vercel, /api/contact is served by api/contact.js instead.
+    // In development, /api/updates and /api/admin/* run from api/ (see scripts/vite-api-dev.ts); the rest of
+    // /api/* (the contact form) goes to the Express server in /backend (run: cd backend && npm run dev).
+    // In production on Vercel, everything under /api is served from api/.
     proxy: {
       "/api": "http://localhost:5000",
     },
@@ -69,22 +71,22 @@ export default defineConfig(() => ({
   define: {
     __HAS_CV__: JSON.stringify(existsSync(path.resolve(__dirname, "public", site.cvPath.replace(/^\//, "")))),
   },
-  plugins: [react(), sitePlugin()],
+  plugins: [react(), sitePlugin(), apiDevServer(__dirname)],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
   build: {
+    // The single vendor chunk below is ~530 kB (~170 kB gzipped); that's expected.
+    chunkSizeWarningLimit: 700,
     rollupOptions: {
       output: {
-        // Long-lived vendor chunks: they change rarely, so returning visitors keep them cached.
+        // One long-lived vendor chunk: it changes rarely, so returning visitors keep it cached.
+        // Keep it as ONE chunk. Splitting React from libraries that use it (e.g. separate "react" and "vendor"
+        // chunks) created a circular import that ran a library before React existed and blanked the whole site.
         manualChunks(id) {
-          if (!id.includes("node_modules")) return;
-          if (/[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/.test(id)) return "react";
-          if (id.includes("framer-motion") || id.includes("motion-dom") || id.includes("motion-utils")) return "motion";
-          if (id.includes("@radix-ui")) return "radix";
-          return "vendor";
+          if (id.includes("node_modules")) return "vendor";
         },
       },
     },
