@@ -9,7 +9,7 @@ export const site = {
   name: "Olanrewaju Illias",
   title: "Olanrewaju Illias | Full-Stack Product Engineer",
   description:
-    "Full-stack product engineer in Lagos, Nigeria, building web applications and AI-powered software with React, Next.js, TypeScript and PostgreSQL.",
+    "Full-stack product engineer in Lagos, Nigeria, building web and mobile applications and AI-powered software with React, Next.js, TypeScript and PostgreSQL.",
   twitter: "@olanrewajuillias",
   /** Short availability line shown in the hero. Empty hides it. */
   availability: "Open to remote work",
