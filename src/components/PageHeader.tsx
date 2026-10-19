@@ -8,11 +8,13 @@ interface PageHeaderProps {
   title: string;
   highlight: string;
   description: string;
+  /** Extra breadcrumb level between Home and this page, e.g. Projects on a project page. */
+  parent?: { label: string; to: string };
   children?: ReactNode;
 }
 
 /** Hero band for dedicated pages: breadcrumb, h1 and intro, left-aligned to read as a document. */
-const PageHeader = ({ eyebrow, title, highlight, description, children }: PageHeaderProps) => (
+const PageHeader = ({ eyebrow, title, highlight, description, parent, children }: PageHeaderProps) => (
   <header className="relative overflow-hidden pb-8 pt-28 sm:pt-32 md:pb-12 md:pt-40">
     <div aria-hidden className="pointer-events-none absolute inset-0">
       <div className="absolute -right-32 -top-32 h-[26rem] w-[26rem] max-w-full rounded-full bg-primary/10 blur-[7rem]" />
@@ -35,6 +37,18 @@ const PageHeader = ({ eyebrow, title, highlight, description, children }: PageHe
           <li aria-hidden>
             <ChevronRight className="h-3.5 w-3.5" />
           </li>
+          {parent && (
+            <>
+              <li>
+                <Link to={parent.to} className="rounded transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  {parent.label}
+                </Link>
+              </li>
+              <li aria-hidden>
+                <ChevronRight className="h-3.5 w-3.5" />
+              </li>
+            </>
+          )}
           <li aria-current="page" className="text-primary">
             {eyebrow}
           </li>

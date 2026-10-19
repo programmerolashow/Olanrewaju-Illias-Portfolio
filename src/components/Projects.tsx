@@ -3,96 +3,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ExternalLink, Github, Folder } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const projects = [
-  {
-    title: "BankSpace",
-    description:
-      "BankSpace is a full-stack fintech platform designed to provide users with a modern digital banking experience. It includes secure authentication, KYC onboarding, financial dashboards, savings and investment features, budget management, transfers, and transaction tracking, with integrated services supporting real-world payment workflows.",
-    tags: ["Next.js", "TypeScript", "PostgreSQL", "Prisma", "Neon", "Paystack"],
-    github: "https://github.com/programmerolashow/BankSpace",
-    live: "https://bank-space-mu95.vercel.app/",
-    featured: true,
-    // Optional card background (screenshot in /public/projects). imageFocus = CSS object-position.
-    image: "/projects/bankspace.webp",
-    imageFocus: "80% center",
-  },
-  {
-    title: "E-MassCom",
-    description:
-      "E-MassCom is an AI-powered email client and platform designed to make email management smarter and faster. It features intelligent email composition, automated workflows, audience segmentation, real-time analytics, and seamless integrations with Gmail and Outlook.",
-    tags: ["Next.js", "Prisma", "PostgreSQL", "TypeScript", "Clerk", "OpenAI API", "NeonDB", "shadcn/ui"],
-    github: "https://github.com/programmerolashow/EMAIL-Application",
-    live: "https://email-application-egc9.vercel.app/",
-    featured: true,
-    image: "/projects/e-masscom.webp",
-    imageFocus: "70% top",
-  },
-  {
-    title: "Student-Konnect-Hub",
-    description:
-      "Student-Konnect-Hub is a modern web application designed to connect students across higher education institutions worldwide. The platform provides a seamless space for students to network, collaborate, and share knowledge regardless of geographical boundaries.",
-    tags: ["React", "TypeScript", "PLpgSQL", "CSS"],
-    github: "https://github.com/programmerolashow/student-konnect-hub",
-    live: "https://student-konnect-hub.vercel.app/",
-    featured: true,
-    image: "/projects/student-konnect-hub.webp",
-    imageFocus: "65% center",
-  },
-  {
-    title: "HomeKit Admin Dashboard",
-    description:
-      "An admin dashboard that enables admins to manage users, products, and analytics efficiently. Features include user/product search, dynamic data handling, and responsive design. This project strengthened my skills in scalable React apps, reusable components, TypeScript, and building real-world interactive web applications.",
-    tags: ["React.js", "TypeScript", "Tailwind CSS", "Vite"],
-    github: "https://github.com/programmerolashow/HomeKit-Admin-Dashboard",
-    live: "https://homekit-admin-dashboard.netlify.app",
-    featured: false,
-  },
-  {
-    title: "VidMage - Personality Generator",
-    description:
-      "An intelligent personality analysis and generation platform that leverages advanced AI to interpret facial expressions, body language, and visual style cues from user-provided images. The platform transforms visual data into meaningful personality insights, offering users a unique, interactive, and engaging experience.",
-    tags: ["React.js", "Tailwind CSS", "TypeScript", "Lovable"],
-    github: "https://github.com/programmerolashow/VidMage",
-    live: "https://vid-mage.vercel.app",
-    featured: false,
-  },
-  {
-    title: "BuyIT",
-    description:
-      "E-commerce platform that is fully responsive, sleek, and optimized for a smooth user experience. Focused on clean UI, product insights, and converting design ideas into a real interactive shopping platform.",
-    tags: ["React.js", "Tailwind CSS", "TypeScript"],
-    github: "https://github.com/programmerolashow/shop-insights-hub",
-    live: "https://shop-insights-hub.vercel.app",
-    featured: false,
-  },
-  {
-    title: "FraudGuard – Receipt Verification & Fraud Detection System",
-    description:
-      "FraudGuard is an intelligent receipt verification and fraud detection system built with Python, designed to detect anomalies and validate transactional receipts with high accuracy. It leverages rule-based logic and data validation techniques to identify suspicious patterns, reduce fraudulent submissions, and improve trust in digital transaction workflows.",
-    tags: ["Python", "Data Validation", "Fraud Detection", "Automation"],
-    github: "https://github.com/programmerolashow/Fraud-Check",
-    live: "https://fraud-check-2gfd.vercel.app",
-    featured: false,
-  },
-  {
-    title: "Stream-Central",
-    description:
-      "A modern web application inspired by Netflix. Allows users to explore movies and TV shows through a clean, responsive, and interactive interface.",
-    tags: ["React.js", "Tailwind CSS", "TypeScript", "Vite"],
-    github: "https://github.com/programmerolashow/stream-central",
-    live: "https://stream-central-three.vercel.app/",
-    featured: false,
-  },
-  {
-    title: "Backend User Authentication",
-    description:
-      "Implemented a fully functional CRUD system enabling data to be created, retrieved, updated, and deleted efficiently. Developed an authentication system with user registration, login, and logout features, ensuring secure access and user management.",
-    tags: ["JavaScript", "Node.js", "MongoDB", "Postman"],
-    github: "https://github.com/programmerolashow/Backend-Tutorial",
-    featured: false,
-  },
-];
+import { projects } from "@/data/projects";
 
 const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => {
   const ref = useRef(null);
@@ -174,6 +85,15 @@ const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => 
                   </div>
 
                   <div className="mt-6 flex flex-wrap gap-3">
+                    <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
+                      <Link
+                        to={`/projects/${project.slug}`}
+                        className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-5 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/20"
+                      >
+                        Project Details
+                        <ArrowRight className="h-4 w-4" aria-hidden />
+                      </Link>
+                    </motion.div>
                     {project.live && (
                       <motion.a
                         href={project.live}
@@ -275,7 +195,9 @@ const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => 
                     </div>
 
                     <h4 className="text-lg sm:text-xl font-semibold text-foreground mb-2 sm:mb-3 group-hover:text-primary transition-colors">
-                      {project.title}
+                      <Link to={`/projects/${project.slug}`} className="rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                        {project.title}
+                      </Link>
                     </h4>
                     <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
                       {project.description}

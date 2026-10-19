@@ -1,7 +1,8 @@
 import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { ArrowDown, ArrowRight, Briefcase, Github, Gitlab, GraduationCap, Linkedin, Mail, MapPin, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowRight, Briefcase, FileDown, Github, Gitlab, GraduationCap, Linkedin, Mail, MapPin, Sparkles } from "lucide-react";
 import HeroPortrait from "./HeroPortrait";
+import { site } from "@/config/site";
 
 const socials = [
   { icon: Github, href: "https://github.com/programmerolashow", label: "GitHub" },
@@ -140,6 +141,15 @@ const Hero = () => {
                 <MapPin className="h-4 w-4 shrink-0 text-emerald-400" />
                 <span>Lagos State, Nigeria</span>
               </div>
+              {site.availability && (
+                <div className="glass-card flex items-center gap-2 rounded-xl border border-emerald-500/40 px-3 py-2 font-medium text-foreground/90 sm:px-3.5">
+                  <span className="relative flex h-2.5 w-2.5 shrink-0" aria-hidden>
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:animate-none" />
+                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                  </span>
+                  <span>{site.availability}</span>
+                </div>
+              )}
             </motion.div>
 
             {/* Calls to Action */}
@@ -167,6 +177,18 @@ const Hero = () => {
               >
                 Let's Talk
               </motion.a>
+              {__HAS_CV__ && (
+                <motion.a
+                  href={site.cvPath}
+                  download
+                  whileHover={{ scale: 1.04, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-secondary/60 px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary hover:text-primary sm:px-7 sm:text-base"
+                >
+                  <FileDown className="h-4 w-4" aria-hidden />
+                  Download CV
+                </motion.a>
+              )}
             </motion.div>
 
             {/* Social Links */}

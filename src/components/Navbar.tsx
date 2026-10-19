@@ -8,7 +8,7 @@ import { homeSections, navGroups, type NavGroup, type NavItem } from "@/data/nav
 import { useActiveSection } from "@/hooks/use-active-section";
 
 const isItemActive = (item: NavItem, pathname: string, section: string | null) => {
-  if (!item.to.includes("#")) return pathname === item.to || (pathname === "/" && !!item.section && item.section === section);
+  if (!item.to.includes("#")) return pathname === item.to || pathname.startsWith(`${item.to}/`) || (pathname === "/" && !!item.section && item.section === section);
   return pathname === "/" && item.section === section;
 };
 
