@@ -3,9 +3,10 @@ import Projects from "@/components/Projects";
 import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";
 import { usePageMeta } from "@/hooks/use-page-meta";
+import { pageMeta } from "@/config/pages";
 
 const ProjectsPage = () => {
-  usePageMeta("Projects", "Featured and noteworthy projects by Olanrewaju Illias, with live demos and source code.");
+  usePageMeta(pageMeta.projects.title, pageMeta.projects.description);
 
   return (
     <>

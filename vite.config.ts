@@ -1,29 +1,41 @@
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { existsSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { site, staticRoutes } from "./src/config/site";
+import { pageMeta, pageRoutes } from "./src/config/pages";
 import { projects } from "./src/data/projects";
+import { excerpt, replaceSeo, type SeoMeta } from "./api/_lib/seo.js";
 import { apiDevServer } from "./scripts/vite-api-dev";
 
 const escapeAttr = (value: string) => value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
+/** Home-page link preview; also the fallback for any page without its own image. */
+const defaultSeo = (): SeoMeta => ({
+  siteName: site.name,
+  twitter: site.twitter,
+  title: site.title,
+  description: site.description,
+  url: `${site.url}/`,
+  image: `${site.url}/og-image.jpg`,
+  imageWidth: 1200,
+  imageHeight: 630,
+  imageAlt: `${site.name}, Full-Stack Product Engineer`,
+});
+
 /**
- * Fills the %SITE_*% tokens in index.html from src/config/site.ts, adds the Umami script when a website
- * ID is set, and writes sitemap.xml and robots.txt into the build.
+ * Fills index.html from src/config/site.ts (tokens + the home page's link-preview tags), adds the Umami script
+ * when a website ID is set, writes sitemap.xml and robots.txt, and writes a copy of index.html for every fixed
+ * page and project with that page's own title, description and preview image. Vercel serves those files
+ * directly (cleanUrls in vercel.json), so LinkedIn, X, Facebook and WhatsApp (which don't run JavaScript) see the right preview.
  */
 const sitePlugin = (): Plugin => ({
   name: "site-meta",
   transformIndexHtml: {
-    // Run before Vite's own %ENV% replacement so it never sees these tokens.
+    // Run before Vite's own %ENV% replacement so it never sees the %SITE_NAME% token.
     order: "pre",
     handler(html) {
-      const filled = html
-        .replace(/%SITE_URL%/g, site.url)
-        .replace(/%SITE_TITLE%/g, escapeAttr(site.title))
-        .replace(/%SITE_DESCRIPTION%/g, escapeAttr(site.description))
-        .replace(/%SITE_NAME%/g, escapeAttr(site.name))
-        .replace(/%SITE_TWITTER%/g, escapeAttr(site.twitter));
+      const filled = replaceSeo(html, defaultSeo()).replace(/%SITE_NAME%/g, escapeAttr(site.name));
       if (!site.umamiWebsiteId) return filled;
       return {
         html: filled,
@@ -53,6 +65,33 @@ const sitePlugin = (): Plugin => ({
       fileName: "robots.txt",
       source: `User-agent: *\nAllow: /\nDisallow: /admin\n\nSitemap: ${site.url}/sitemap.xml\n`,
     });
+  },
+  writeBundle(options) {
+    const outDir = options.dir ?? path.resolve(__dirname, "dist");
+    const template = readFileSync(path.join(outDir, "index.html"), "utf8");
+    const base = defaultSeo();
+    // Written as /services.html, /projects/bankspace.html, …; vercel.json's cleanUrls serves them at /services etc.
+    const write = (route: string, meta: Partial<SeoMeta>) => {
+      const file = path.join(outDir, `${route}.html`);
+      mkdirSync(path.dirname(file), { recursive: true });
+      writeFileSync(file, replaceSeo(template, { ...base, url: `${site.url}${route}`, ...meta }));
+    };
+
+    for (const [key, route] of Object.entries(pageRoutes) as [keyof typeof pageMeta, string][]) {
+      const { title, description } = pageMeta[key];
+      write(route, { title: `${title} | ${site.name}`, description });
+    }
+    for (const p of projects) {
+      const card = `/og/projects/${p.slug}.jpg`;
+      const hasCard = existsSync(path.join(__dirname, "public", card));
+      if (!hasCard) this.warn(`No preview card for project "${p.slug}"; using og-image.jpg. Run npm run og:cards.`);
+      write(`/projects/${p.slug}`, {
+        title: `${p.title} | ${site.name}`,
+        description: excerpt(p.description),
+        type: "article",
+        ...(hasCard ? { image: `${site.url}${card}`, imageAlt: `${p.title}: ${p.tags.slice(0, 4).join(", ")}` } : {}),
+      });
+    }
   },
 });
 

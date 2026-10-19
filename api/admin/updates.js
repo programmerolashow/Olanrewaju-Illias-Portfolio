@@ -8,6 +8,9 @@ import { deleteImages } from "../_lib/storage.js";
 import { readBody, requireAdmin } from "../_lib/auth.js";
 import { firstError, updateInput } from "../_lib/validate.js";
 
+/** Every stored file behind a post's photos: the display image and its link-preview copy. */
+const fileUrls = (images) => (images ?? []).flatMap((i) => [i.url, i.shareUrl]).filter(Boolean);
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export default async function handler(req, res) {
@@ -55,15 +58,15 @@ export default async function handler(req, res) {
         where id = ${id}
         returning id, kind, title, body, location, starts_on::text as starts_on, ends_on::text as ends_on,
                   link_url, images, published, pinned, created_at, updated_at`;
-      const kept = new Set(v.images.map((i) => i.url));
-      await deleteImages((before.images ?? []).map((i) => i.url).filter((url) => !kept.has(url)));
+      const kept = new Set(fileUrls(v.images));
+      await deleteImages(fileUrls(before.images).filter((url) => !kept.has(url)));
       return res.status(200).json({ update: toUpdate(row) });
     }
 
     if (req.method === "DELETE") {
       const [row] = await sql`delete from updates where id = ${id} returning images`;
       if (!row) return res.status(404).json({ error: "Post not found." });
-      await deleteImages((row.images ?? []).map((i) => i.url));
+      await deleteImages(fileUrls(row.images));
       return res.status(200).json({ deleted: true });
     }
 

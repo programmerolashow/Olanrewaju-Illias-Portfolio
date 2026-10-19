@@ -31,6 +31,13 @@ cd backend && npm run dev   # optional: contact API on :5000
 
 Set `cvPath` in `src/config/site.ts` to your CV in `public/` and the download buttons appear on the next build.
 
+## Link previews (LinkedIn, X, Facebook, WhatsApp, Instagram DMs)
+
+- **Fixed pages and projects:** the build writes `services.html`, `projects/<slug>.html`, … each with its own title, description and image (titles and descriptions live in `src/config/pages.ts` and `src/data/projects.ts`). After adding or renaming a project, run `npm run og:cards` (needs Python + Pillow) to make its 1200×630 card in `public/og/projects/`.
+- **Events and posts:** `/updates/<id>` is served by `api/share/update.js`, which uses the post's cover photo. Every photo uploaded in `/admin` also gets a 1200×630 JPEG share copy for this.
+- **Networks cache previews.** After changing one, refresh it: Facebook/Instagram/WhatsApp at developers.facebook.com/tools/debug ("Scrape Again"), LinkedIn at linkedin.com/post-inspector. X refreshes on its own within about a week.
+- Instagram only shows link previews in DMs (not in posts or the bio link); those use the same Facebook tags.
+
 ## Credits
 
 Background map of Nigeria (`public/nigeria-map.svg`): state boundaries from [geoBoundaries](https://www.geoboundaries.org) (gbOpen NGA ADM1, source: GRID3), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Simplified and converted to SVG. `sitemap.xml` and `robots.txt` are generated at build time from `src/config/site.ts`.

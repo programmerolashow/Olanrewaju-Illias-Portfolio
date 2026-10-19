@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 export interface UpdateImage {
   url: string;
   alt: string;
+  /** 1200×630 JPEG used for link previews when this photo is the cover. Missing on photos uploaded before it existed. */
+  shareUrl?: string;
 }
 
 export interface Update {
