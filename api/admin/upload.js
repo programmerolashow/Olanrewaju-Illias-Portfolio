@@ -6,8 +6,24 @@ import { isAllowedImage, putImage } from "../_lib/storage.js";
 
 const MAX_BYTES = 4 * 1024 * 1024;
 
+/** Vercel may have buffered the body already; use that if so, otherwise read the stream. */
+const bufferedBody = (req) => {
+  try {
+    return Buffer.isBuffer(req.body) ? req.body : null;
+  } catch {
+    // Vercel's lazy body parser throws for content types it doesn't know; the stream is still readable then.
+    return null;
+  }
+};
+
 const readRaw = (req) =>
   new Promise((resolve, reject) => {
+    const buffered = bufferedBody(req);
+    if (buffered) {
+      if (buffered.length > MAX_BYTES) reject(Object.assign(new Error("Photo is too large (max 4 MB)."), { status: 413 }));
+      else resolve(buffered);
+      return;
+    }
     const chunks = [];
     let size = 0;
     req.on("data", (chunk) => {
@@ -40,6 +56,11 @@ export default async function handler(req, res) {
   } catch (error) {
     if (error.status === 413) return res.status(413).json({ error: error.message });
     console.error("POST /api/admin/upload failed", error);
-    return res.status(500).json({ error: "Upload failed." });
+    // Only the signed-in admin sees this, so name the cause instead of a bare "Upload failed."
+    if (error.code === "STORAGE_NOT_CONFIGURED") return res.status(500).json({ error: error.message });
+    const status = error.$metadata?.httpStatusCode;
+    return res.status(500).json({
+      error: `Upload failed: photo storage rejected the file${error.name ? ` (${error.name}${status ? `, HTTP ${status}` : ""})` : ""}.`,
+    });
   }
 }
