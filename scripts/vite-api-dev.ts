@@ -7,6 +7,9 @@ import type { Plugin } from "vite";
 /** Routes served from api/ in dev, exactly as Vercel serves them in production. /api/contact still goes to backend/. */
 const ROUTES: Record<string, string> = {
   "/api/updates": "api/updates.js",
+  "/api/recommendations": "api/recommendations.js",
+  "/api/comments": "api/comments.js",
+  "/api/admin/moderation": "api/admin/moderation.js",
   "/api/admin/session": "api/admin/session.js",
   "/api/admin/login": "api/admin/login.js",
   "/api/admin/logout": "api/admin/logout.js",

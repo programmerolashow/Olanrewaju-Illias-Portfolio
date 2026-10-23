@@ -18,6 +18,7 @@ const MomentsPage = lazy(() => import("./pages/MomentsPage"));
 const ApproachPage = lazy(() => import("./pages/ApproachPage"));
 const UpdatesPage = lazy(() => import("./pages/UpdatesPage"));
 const UpdateDetailPage = lazy(() => import("./pages/UpdateDetailPage"));
+const RecommendationsPage = lazy(() => import("./pages/RecommendationsPage"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/approach" element={<ApproachPage />} />
               <Route path="/updates" element={<UpdatesPage />} />
               <Route path="/updates/:id" element={<UpdateDetailPage />} />
+              <Route path="/recommendations" element={<RecommendationsPage />} />
               <Route path="/admin" element={<AdminPage />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

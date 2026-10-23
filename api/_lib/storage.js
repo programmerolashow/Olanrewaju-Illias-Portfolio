@@ -12,7 +12,19 @@ const config = () => {
   const accessKeyId = env.NEON_S3_ACCESS_KEY_ID || env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = env.NEON_S3_SECRET_ACCESS_KEY || env.AWS_SECRET_ACCESS_KEY;
   const region = env.NEON_S3_REGION || env.AWS_REGION;
-  if (!endpoint || !accessKeyId || !secretAccessKey || !region) throw new Error("Neon object storage env vars are not set.");
+  const missing = Object.entries({
+    NEON_S3_ENDPOINT: endpoint,
+    NEON_S3_REGION: region,
+    NEON_S3_ACCESS_KEY_ID: accessKeyId,
+    NEON_S3_SECRET_ACCESS_KEY: secretAccessKey,
+  })
+    .filter(([, value]) => !value)
+    .map(([name]) => name);
+  if (missing.length) {
+    throw Object.assign(new Error(`Photo storage is not configured. Missing environment variables: ${missing.join(", ")}.`), {
+      code: "STORAGE_NOT_CONFIGURED",
+    });
+  }
   return { endpoint: endpoint.replace(/\/$/, ""), accessKeyId, secretAccessKey, region };
 };
 

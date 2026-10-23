@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CalendarDays, MapPin, Megaphone } from "lucide-react";
 import { cn } from "@/lib/utils";
+import MotionImage from "@/components/MotionImage";
 import { displayDate, eventStatus, statusLabel, type Update } from "@/lib/updates";
 
 export const StatusBadge = ({ update, className }: { update: Update; className?: string }) => {
@@ -41,13 +42,7 @@ const UpdateCard = ({ update, index = 0 }: { update: Update; index?: number }) =
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
         {cover ? (
-          <img
-            src={cover.url}
-            alt={cover.alt}
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
+          <MotionImage src={cover.url} alt={cover.alt} delay={index * 0.08} />
         ) : (
           <div className="flex h-full items-center justify-center text-primary/60">
             <Megaphone className="h-10 w-10" aria-hidden />

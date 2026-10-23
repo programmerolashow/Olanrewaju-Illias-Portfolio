@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ArrowRight, Eye, ImagePlus, Loader2, LogOut, Pencil, Pin, Plus, Trash2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Eye, ImagePlus, Linkedin, Loader2, LogOut, Mail, Pencil, Pin, Plus, Star, Trash2, Undo2, X } from "lucide-react";
 import { StatusBadge } from "@/components/UpdateCard";
 import { cn } from "@/lib/utils";
 import { displayDate, type Update, type UpdateImage, type UpdateInput } from "@/lib/updates";
+import { recommenderLine, relationshipLabels, shortDate, type AdminComment, type AdminRecommendation, type ReviewStatus } from "@/lib/feedback";
 
 /* ------------------------------------------------------------------ */
 /* API                                                                 */
@@ -354,12 +355,192 @@ const Editor = ({ initial, onDone }: { initial: Update | null; onDone: () => voi
 };
 
 /* ------------------------------------------------------------------ */
+/* Moderation: recommendations and comments                            */
+/* ------------------------------------------------------------------ */
+
+type ModerationKind = "recommendations" | "comments";
+type ModerationItem = AdminRecommendation | AdminComment;
+
+const useModeration = (kind: ModerationKind) =>
+  useQuery({
+    queryKey: ["admin-moderation", kind],
+    queryFn: () => api<{ items: ModerationItem[] }>(`/api/admin/moderation?kind=${kind}`).then((r) => r.items),
+  });
+
+const statusStyles: Record<ReviewStatus, string> = {
+  pending: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+  approved: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+  rejected: "bg-secondary text-muted-foreground",
+};
+
+const pillButton =
+  "inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-60";
+
+const Moderation = ({ kind }: { kind: ModerationKind }) => {
+  const queryClient = useQueryClient();
+  const list = useModeration(kind);
+  const [filter, setFilter] = useState<ReviewStatus | "all">("pending");
+
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["admin-moderation", kind] });
+    queryClient.invalidateQueries({ queryKey: [kind] });
+  };
+  const patch = useMutation({
+    mutationFn: ({ id, body }: { id: string; body: { status?: ReviewStatus; featured?: boolean } }) =>
+      api(`/api/admin/moderation?kind=${kind}&id=${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+    onSuccess: refresh,
+  });
+  const remove = useMutation({
+    mutationFn: (id: string) => api(`/api/admin/moderation?kind=${kind}&id=${id}`, { method: "DELETE" }),
+    onSuccess: refresh,
+  });
+
+  const all = list.data ?? [];
+  const items = all.filter((i) => filter === "all" || i.status === filter);
+  const busy = patch.isPending || remove.isPending;
+  const noun = kind === "recommendations" ? "recommendation" : "comment";
+  const actionError = patch.error ?? remove.error;
+
+  return (
+    <div className="space-y-4">
+      <div className="inline-flex flex-wrap gap-1 rounded-full border border-border bg-secondary/60 p-1" role="group" aria-label="Filter by status">
+        {(["pending", "approved", "rejected", "all"] as const).map((s) => (
+          <button
+            key={s}
+            type="button"
+            aria-pressed={filter === s}
+            onClick={() => setFilter(s)}
+            className={cn("rounded-full px-3.5 py-1.5 text-sm font-medium capitalize", filter === s ? "bg-primary text-primary-foreground" : "text-muted-foreground")}
+          >
+            {s}
+            {s !== "all" && ` (${all.filter((i) => i.status === s).length})`}
+          </button>
+        ))}
+      </div>
+
+      {list.isLoading && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" aria-label="Loading" />}
+      {list.isError && <p className="text-sm text-destructive">{list.error.message}</p>}
+      {actionError && <p className="text-sm text-destructive">{actionError.message}</p>}
+      {list.data && items.length === 0 && <p className="text-muted-foreground">Nothing {filter === "all" ? "here" : filter} yet.</p>}
+
+      <ul className="space-y-3">
+        {items.map((item) => {
+          const rec = kind === "recommendations" ? (item as AdminRecommendation) : null;
+          const comment = kind === "comments" ? (item as AdminComment) : null;
+          return (
+            <li key={item.id} className="rounded-2xl border border-border p-4">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span className={cn("rounded-full px-2 py-0.5 font-medium capitalize", statusStyles[item.status])}>{item.status}</span>
+                {rec?.featured && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 font-medium text-primary">
+                    <Star className="h-3 w-3" aria-hidden /> Featured
+                  </span>
+                )}
+                <span>{shortDate(item.createdAt)}</span>
+                {comment && (
+                  <Link to={`/updates/${comment.updateId}`} className="truncate hover:text-primary">
+                    on “{comment.updateTitle}”
+                  </Link>
+                )}
+              </div>
+
+              <p className="mt-2 font-semibold text-foreground">
+                {item.name}
+                {rec && (
+                  <span className="font-normal text-muted-foreground">
+                    {" "}
+                    · {relationshipLabels[rec.relationship]}
+                    {(rec.role || rec.company) && ` · ${recommenderLine(rec)}`}
+                  </span>
+                )}
+              </p>
+              <p className="mt-1 whitespace-pre-line text-sm text-foreground/90 [overflow-wrap:anywhere]">{item.body}</p>
+
+              {(item.email || rec?.linkedinUrl) && (
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                  {item.email && (
+                    <a href={`mailto:${item.email}`} className="inline-flex items-center gap-1 hover:text-primary">
+                      <Mail className="h-3.5 w-3.5" aria-hidden /> {item.email}
+                    </a>
+                  )}
+                  {rec?.linkedinUrl && (
+                    <a href={rec.linkedinUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-primary">
+                      <Linkedin className="h-3.5 w-3.5" aria-hidden /> LinkedIn
+                    </a>
+                  )}
+                </div>
+              )}
+
+              <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                {item.status !== "approved" && (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => patch.mutate({ id: item.id, body: { status: "approved" } })}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-sm font-semibold text-primary-foreground disabled:opacity-60"
+                  >
+                    <Check className="h-4 w-4" aria-hidden /> Approve
+                  </button>
+                )}
+                {item.status === "pending" && (
+                  <button type="button" disabled={busy} onClick={() => patch.mutate({ id: item.id, body: { status: "rejected" } })} className={pillButton}>
+                    <X className="h-4 w-4" aria-hidden /> Reject
+                  </button>
+                )}
+                {item.status === "approved" && (
+                  <button type="button" disabled={busy} onClick={() => patch.mutate({ id: item.id, body: { status: "pending" } })} className={pillButton}>
+                    <Undo2 className="h-4 w-4" aria-hidden /> Unpublish
+                  </button>
+                )}
+                {rec && rec.status === "approved" && (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    aria-pressed={rec.featured}
+                    onClick={() => patch.mutate({ id: rec.id, body: { featured: !rec.featured } })}
+                    className={pillButton}
+                  >
+                    <Star className="h-4 w-4" aria-hidden /> {rec.featured ? "Unfeature" : "Feature"}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  aria-label={`Delete ${noun}`}
+                  disabled={busy}
+                  onClick={() => {
+                    if (window.confirm(`Delete this ${noun} from ${item.name}? This can't be undone.`)) remove.mutate(item.id);
+                  }}
+                  className="ml-auto rounded-full p-2 text-muted-foreground hover:text-destructive disabled:opacity-40"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------------ */
 /* Dashboard                                                           */
 /* ------------------------------------------------------------------ */
+
+const tabs = [
+  { value: "updates", label: "Updates" },
+  { value: "recommendations", label: "Recommendations" },
+  { value: "comments", label: "Comments" },
+] as const;
 
 const Dashboard = ({ onSignedOut }: { onSignedOut: () => void }) => {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<Update | "new" | null>(null);
+  const [tab, setTab] = useState<(typeof tabs)[number]["value"]>("updates");
+  const pending: Record<string, number> = {
+    recommendations: useModeration("recommendations").data?.filter((i) => i.status === "pending").length ?? 0,
+    comments: useModeration("comments").data?.filter((i) => i.status === "pending").length ?? 0,
+  };
   const list = useQuery({
     queryKey: ["admin-updates"],
     queryFn: () => api<{ updates: Update[] }>("/api/admin/updates").then((r) => r.updates),
@@ -381,15 +562,39 @@ const Dashboard = ({ onSignedOut }: { onSignedOut: () => void }) => {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-bold">Updates</h1>
+        <h1 className="sr-only">Admin</h1>
+        <div className="inline-flex flex-wrap gap-1 rounded-full border border-border bg-secondary/60 p-1" role="tablist" aria-label="Admin sections">
+          {tabs.map((t) => (
+            <button
+              key={t.value}
+              type="button"
+              role="tab"
+              aria-selected={tab === t.value}
+              onClick={() => setTab(t.value)}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium",
+                tab === t.value ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {t.label}
+              {pending[t.value] > 0 && (
+                <span className="rounded-full bg-amber-500 px-1.5 text-xs font-semibold text-white" aria-label={`${pending[t.value]} pending`}>
+                  {pending[t.value]}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
         <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setEditing("new")}
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
-          >
-            <Plus className="h-4 w-4" aria-hidden /> New post
-          </button>
+          {tab === "updates" && (
+            <button
+              type="button"
+              onClick={() => setEditing("new")}
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+            >
+              <Plus className="h-4 w-4" aria-hidden /> New post
+            </button>
+          )}
           <button
             type="button"
             onClick={() => logout.mutate()}
@@ -400,11 +605,13 @@ const Dashboard = ({ onSignedOut }: { onSignedOut: () => void }) => {
         </div>
       </div>
 
-      {list.isLoading && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" aria-label="Loading" />}
-      {list.isError && <p className="text-sm text-destructive">{list.error.message}</p>}
-      {list.data?.length === 0 && <p className="text-muted-foreground">No posts yet. Tap “New post” to share your first event.</p>}
+      {tab !== "updates" && <Moderation key={tab} kind={tab} />}
 
-      <ul className="space-y-3">
+      {tab === "updates" && list.isLoading && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" aria-label="Loading" />}
+      {tab === "updates" && list.isError && <p className="text-sm text-destructive">{list.error.message}</p>}
+      {tab === "updates" && list.data?.length === 0 && <p className="text-muted-foreground">No posts yet. Tap “New post” to share your first event.</p>}
+
+      <ul className={cn("space-y-3", tab !== "updates" && "hidden")}>
         {list.data?.map((u) => (
           <li key={u.id} className="flex items-center gap-3 rounded-2xl border border-border p-3">
             <div className="h-16 w-20 shrink-0 overflow-hidden rounded-lg bg-secondary">

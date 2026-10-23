@@ -29,3 +29,27 @@ export const toUpdate = (row) => ({
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
+
+/** Public shape of a recommendation; the admin view adds email, status and reviewedAt. */
+export const toRecommendation = (row, admin = false) => ({
+  id: row.id,
+  name: row.name,
+  relationship: row.relationship,
+  role: row.role,
+  company: row.company,
+  body: row.body,
+  linkedinUrl: row.linkedin_url,
+  featured: row.featured,
+  createdAt: row.created_at,
+  ...(admin ? { email: row.email, status: row.status, reviewedAt: row.reviewed_at } : {}),
+});
+
+/** Public shape of a comment; the admin view adds email, status and the post it belongs to. */
+export const toComment = (row, admin = false) => ({
+  id: row.id,
+  updateId: row.update_id,
+  name: row.name,
+  body: row.body,
+  createdAt: row.created_at,
+  ...(admin ? { email: row.email, status: row.status, reviewedAt: row.reviewed_at, updateTitle: row.update_title } : {}),
+});
