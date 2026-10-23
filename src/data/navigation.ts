@@ -3,6 +3,7 @@ import {
   Briefcase,
   Camera,
   Megaphone,
+  MessageSquareQuote,
   Code2,
   FolderGit2,
   NotebookPen,
@@ -36,6 +37,7 @@ export const navGroups: NavGroup[] = [
       { label: "How I Work", to: "/approach", description: "Process, debugging, AI practice and principles", icon: Workflow },
       { label: "Moments", to: "/moments", description: "Events, talks and community", icon: Camera },
       { label: "Updates", to: "/updates", description: "Latest events and posts", icon: Megaphone },
+      { label: "Recommendations", to: "/recommendations", description: "What people I've worked with say", icon: MessageSquareQuote },
     ],
   },
   {

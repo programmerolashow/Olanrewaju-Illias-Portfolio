@@ -3,6 +3,7 @@ import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ExternalLink, Github, Folder, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import MotionImage from "@/components/MotionImage";
 import { projects, type Project } from "@/data/projects";
 
 type Availability = "all" | "live" | "source";
@@ -158,14 +159,7 @@ const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => 
                     aria-hidden
                     className="project-shot pointer-events-none relative h-44 overflow-hidden sm:h-56 md:absolute md:inset-y-0 md:right-0 md:h-auto md:w-[48%]"
                   >
-                    <img
-                      src={project.image}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      style={{ objectPosition: project.imageFocus }}
-                      className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
-                    />
+                    <MotionImage src={project.image} alt="" imgStyle={{ objectPosition: project.imageFocus }} delay={0.15} />
                   </div>
                 )}
                 <div className={cn("relative p-5 sm:p-8 lg:p-10", project.image && "-mt-10 sm:-mt-12 md:mt-0 md:w-[56%]")}>

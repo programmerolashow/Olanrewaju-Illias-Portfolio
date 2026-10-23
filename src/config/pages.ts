@@ -34,6 +34,10 @@ export const pageMeta = {
     title: "Updates",
     description: "Events Olanrewaju Illias is attending or speaking at, and his latest posts.",
   },
+  recommendations: {
+    title: "Recommendations",
+    description: "What colleagues, managers, classmates and collaborators say about working with Olanrewaju Illias.",
+  },
 } satisfies Record<string, PageMeta>;
 
 /** Route for each entry above. */
@@ -44,4 +48,5 @@ export const pageRoutes: Record<keyof typeof pageMeta, string> = {
   moments: "/moments",
   approach: "/approach",
   updates: "/updates",
+  recommendations: "/recommendations",
 };

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, ChevronRight, Copy, ExternalLink, Github } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import ScrollSection from "@/components/ScrollSection";
+import MotionImage from "@/components/MotionImage";
 import ExploreMore from "@/components/ExploreMore";
 import { getProject, projects, type CodeSample } from "@/data/projects";
 import { usePageMeta } from "@/hooks/use-page-meta";
@@ -128,12 +129,12 @@ const ProjectDetailPage = () => {
         {project.image && (
           <ScrollSection>
             <div className="mb-10 overflow-hidden rounded-2xl border border-border md:mb-14">
-              <img
+              <MotionImage
                 src={project.image}
                 alt={`${project.title} screenshot`}
-                decoding="async"
-                style={{ objectPosition: project.imageFocus }}
-                className="aspect-[16/9] w-full object-cover"
+                loading="eager"
+                imgStyle={{ objectPosition: project.imageFocus }}
+                className="aspect-[16/9]"
               />
             </div>
           </ScrollSection>
