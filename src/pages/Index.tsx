@@ -3,6 +3,7 @@ import LatestUpdates from "@/components/LatestUpdates";
 import About from "@/components/About";
 import Services from "@/components/Services";
 import Skills from "@/components/Skills";
+import Certifications from "@/components/Certifications";
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
 import Articles from "@/components/Articles";
@@ -27,6 +28,9 @@ const Index = () => {
       </ScrollSection>
       <ScrollSection>
         <Skills />
+      </ScrollSection>
+      <ScrollSection>
+        <Certifications />
       </ScrollSection>
       <ScrollSection>
         <Experience />

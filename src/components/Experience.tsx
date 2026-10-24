@@ -23,12 +23,14 @@ const experiences: ExperienceItem[] = [
     period: "Aug 2026 - Present",
     location: "Remote",
     description:
-      "Working as a Software Engineer within the Engineering Department at Qorelly, contributing to the development and improvement of fintech products and internal software systems.",
+      "Working as a Software Engineer within the Engineering Department at Qorelly, contributing to full-stack engineering across fintech and e-commerce products and internal software systems.",
     responsibilities: [
       "Develop and maintain software features using modern web development technologies and engineering best practices.",
       "Collaborate with other engineers and team members to design, implement, test, and improve application features.",
       "Contribute to frontend and backend development, API integration, database operations, and application workflows.",
       "Participate in debugging, code reviews, Git-based version control, testing, and continuous improvement of existing systems.",
+      "Built inventory interface improvements, including product variation table columns, inventory pricing and stock-value displays, and category selection across product workflows.",
+      "Use Claude Code as an AI-assisted development tool in my day-to-day engineering workflow.",
       "Apply software engineering principles to build reliable, scalable, and maintainable solutions within a fintech environment.",
       "Gain hands-on experience working with production-oriented software development processes, team collaboration, and agile engineering practices.",
     ],
@@ -36,6 +38,7 @@ const experiences: ExperienceItem[] = [
       "Software Design",
       "Software Industry",
       "Fintech",
+      "E-commerce",
       "React",
       "Node.js",
       "API Integration",

@@ -14,6 +14,7 @@ import { z } from "zod";
 import {
   AlertCircle,
   AtSign,
+  CalendarClock,
   Check,
   Copy,
   FileDown,
@@ -134,6 +135,7 @@ const MethodCard = ({ icon: Icon, label, value, href, download, copyValue, delay
           <p className="text-xs text-muted-foreground sm:text-sm">{label}</p>
           <Value
             {...(href ? { href, download: download || undefined } : {})}
+            {...(href?.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
             className="block font-medium text-foreground transition-colors [overflow-wrap:anywhere] hover:text-primary text-sm sm:text-base"
           >
             {value}
@@ -485,6 +487,9 @@ const Contact = () => {
               </div>
             </motion.div>
 
+            {site.bookingUrl && (
+              <MethodCard icon={CalendarClock} label="Book a call" value="Pick a 30-minute slot on Calendly" href={site.bookingUrl} delay={0.15} inView={isInView} />
+            )}
             <MethodCard icon={Mail} label="Email" value={EMAIL} href={`mailto:${EMAIL}`} copyValue={EMAIL} delay={0.2} inView={isInView} />
             <MethodCard icon={Phone} label="Phone" value={PHONE_DISPLAY} href={PHONE_LINK} copyValue={PHONE_DISPLAY} delay={0.3} inView={isInView} />
             <MethodCard icon={MapPin} label="Location" value="Lagos State, Nigeria · Open to remote" delay={0.4} inView={isInView} />

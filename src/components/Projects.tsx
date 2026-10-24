@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, ExternalLink, Github, Folder, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import MotionImage from "@/components/MotionImage";
+import GitHubStrip from "@/components/GitHubStrip";
 import { projects, type Project } from "@/data/projects";
 
 type Availability = "all" | "live" | "source";
@@ -319,6 +320,8 @@ const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => 
             </div>
           </>
         )}
+
+        {!filtering && <GitHubStrip />}
       </div>
     </section>
   );
