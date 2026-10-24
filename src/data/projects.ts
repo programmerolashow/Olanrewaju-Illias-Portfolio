@@ -101,6 +101,10 @@ export const projects: Project[] = [
       ],
       challenges: [
         {
+          title: "Financial workflows with a clear user experience",
+          detail: "The biggest challenge was handling financial workflows while keeping the experience clear and intuitive. That meant thinking carefully about how data flows between the interface and the backend, how transactions and account information are represented, and how errors are handled. I structured the application around clear responsibilities and reliable API interactions, with maintainability and future expansion in mind.",
+        },
+        {
           title: "Maintaining a clear application architecture",
           detail: "A full-stack financial application needs clear boundaries between its user interface, server-side logic, and data access. Organizing these responsibilities makes the codebase easier to reason about and maintain.",
         },
@@ -139,25 +143,129 @@ export const projects: Project[] = [
     slug: "e-masscom",
     title: "E-MassCom",
     description:
-      "E-MassCom is an AI-powered email client and platform designed to make email management smarter and faster. It features intelligent email composition, automated workflows, audience segmentation, real-time analytics, and seamless integrations with Gmail and Outlook.",
-    tags: ["Next.js", "Prisma", "PostgreSQL", "TypeScript", "Clerk", "OpenAI API", "NeonDB", "shadcn/ui"],
+      "E-MassCom is an AI-powered email client and platform designed to make email management smarter and faster. It connects to an existing mailbox and adds AI summaries, reply drafting, draft rewriting and action-item extraction.",
+    tags: ["Next.js", "TypeScript", "tRPC", "Prisma", "PostgreSQL", "Supabase Auth", "Nylas", "OpenAI API", "shadcn/ui"],
+    category: "AI / Full-Stack Web Application",
     github: "https://github.com/programmerolashow/EMAIL-Application",
     live: "https://email-application-egc9.vercel.app/",
     featured: true,
     image: "/projects/e-masscom.webp",
     imageFocus: "70% top",
+    // Features and decisions are taken from the EMAIL-Application repo.
+    caseStudy: {
+      problem:
+        "Email takes a lot of time to read, triage and answer. E-MassCom is an AI-powered email client that connects to an existing mailbox and adds summaries, reply drafting and action-item extraction on top of a normal inbox.",
+      role: "I built E-MassCom independently, from the frontend to the backend: the inbox interface, the typed API layer, the mailbox integration, the database schema and the AI features.",
+      challenges: [
+        {
+          title: "Adding AI without adding complexity",
+          detail: "The main challenge was bringing AI into an email workflow without making the experience harder to use. Email tasks and AI assistance had to live in one cohesive interface. I focused on connecting the right application components, managing the API interactions, and keeping the experience straightforward, so AI supports everyday email tasks instead of getting in the way.",
+        },
+      ],
+      architecture: ["Next.js UI", "tRPC (protected procedures)", "Service layer", "Nylas (mailbox source of truth)", "Prisma + PostgreSQL (selective cache)", "OpenAI API"],
+      features: [
+        { name: "Sign-in and per-user protected API", status: "Implemented" },
+        { name: "Connect an email account (Nylas OAuth)", status: "Implemented" },
+        { name: "Inbox with cursor pagination, thread view and search", status: "Implemented" },
+        { name: "Compose, send and draft management", status: "Implemented" },
+        { name: "Mark as read and archive", status: "Implemented" },
+        { name: "AI thread and email summaries", status: "Implemented" },
+        { name: "AI reply generation and draft rewriting", status: "Implemented" },
+        { name: "AI action-item extraction and thread intelligence", status: "Implemented" },
+        { name: "Ask-AI copilot panel", status: "Implemented" },
+        { name: "Idempotent webhook processing", status: "Implemented" },
+      ],
+      decisions: [
+        {
+          decision: "Nylas as the mailbox source of truth, with a selective local cache",
+          alternatives: "Syncing and storing every message in the app's own database",
+          why: "Reads, sends and drafts come live from the provider, so the app never duplicates a whole mailbox. Only active-thread metadata is cached locally for fast AI processing.",
+          tradeOff: "Most views depend on the provider being available, and the cache has to be kept in step with it.",
+        },
+        {
+          decision: "A provider abstraction and an email normalizer between Nylas and the app",
+          why: "The rest of the code works with one normalized message and thread shape, so the mail provider can change without rewriting the UI or the AI features.",
+          tradeOff: "An extra layer to maintain, and provider-specific fields have to be mapped deliberately.",
+        },
+        {
+          decision: "Idempotent webhook handling",
+          why: "Webhook providers retry and can deliver the same event twice. Each event is recorded and moved through PROCESSING, PROCESSED or FAILED, so a duplicate is acknowledged without repeating its side effects and a failed event can be retried.",
+        },
+        {
+          decision: "Bounded, sanitized context for every AI call",
+          why: "Before an email reaches the model, HTML, scripts, embedded images, long URLs and likely secrets are stripped, and the prompt is capped to the most recent messages and a fixed character budget. This keeps token cost predictable and avoids sending unnecessary content.",
+          tradeOff: "Very long threads are summarized from their most recent messages, not the full history.",
+        },
+        {
+          decision: "tRPC with typed, protected procedures",
+          why: "Every mail and AI operation is a typed procedure that requires a signed-in user, so the client and server share types end to end.",
+        },
+      ],
+      outcome: "An independently built personal project, fully working end to end. There are no user numbers or production metrics to report.",
+      improvements: [
+        "Verify Nylas webhook signatures before processing events.",
+        "Add automated tests for the mail, AI and webhook services.",
+        "Semantic search over cached threads.",
+        "Usage limits and cost tracking for AI calls.",
+      ],
+    },
   },
   {
     slug: "student-konnect-hub",
     title: "Student-Konnect-Hub",
     description:
       "Student-Konnect-Hub is a modern web application designed to connect students across higher education institutions worldwide. The platform provides a seamless space for students to network, collaborate, and share knowledge regardless of geographical boundaries.",
-    tags: ["React", "TypeScript", "PLpgSQL", "CSS"],
+    tags: ["React", "TypeScript", "Supabase", "PostgreSQL", "PLpgSQL", "CSS"],
+    category: "Social / Full-Stack Web Application",
     github: "https://github.com/programmerolashow/student-konnect-hub",
     live: "https://student-konnect-hub.vercel.app/",
     featured: true,
     image: "/projects/student-konnect-hub.webp",
     imageFocus: "65% center",
+    // Features are taken from the student-konnect-hub repo and its Supabase migrations.
+    caseStudy: {
+      problem:
+        "Students at different institutions rarely have one place to find each other, share what they are learning and stay in touch. Student-Konnect-Hub is a student network built around short videos, connections and direct messaging.",
+      role: "I built Student-Konnect-Hub independently, including the React interface, the Supabase database schema and access rules, and the realtime features.",
+      challenges: [
+        {
+          title: "Many interactions, one cohesive platform",
+          detail: "The main challenge was bringing many student-focused interactions into one platform. The video feed, messaging, connections and notifications all have to work together while navigation stays intuitive and application state stays consistent. I organised the app into manageable components and connected the frontend and backend workflows, with an emphasis on maintainability and a smooth experience.",
+        },
+      ],
+      architecture: ["React + Vite UI", "Supabase client", "Supabase Auth", "PostgreSQL with row-level security", "Supabase Realtime"],
+      features: [
+        { name: "Sign-up, sign-in and password reset", status: "Implemented" },
+        { name: "Student profiles and a searchable directory", status: "Implemented" },
+        { name: "Video upload, feed and player", status: "Implemented" },
+        { name: "In-browser video editing: trim, captions and filters", status: "Implemented" },
+        { name: "Comments, acknowledgements, view counts and hashtags", status: "Implemented" },
+        { name: "Explore page", status: "Implemented" },
+        { name: "Connections and followers", status: "Implemented" },
+        { name: "Realtime direct messaging", status: "Implemented" },
+        { name: "Realtime notifications", status: "Implemented" },
+        { name: "Block, mute and report", status: "Implemented" },
+        { name: "Light and dark theme", status: "Implemented" },
+      ],
+      decisions: [
+        {
+          decision: "Supabase for auth, database and realtime",
+          alternatives: "A custom Node.js API with a separate websocket server",
+          why: "One platform covers sign-in, PostgreSQL and realtime subscriptions, so messaging, notifications and comments update live without running a separate server.",
+          tradeOff: "More of the security model lives in database policies, and the app is tied to Supabase's client and APIs.",
+        },
+        {
+          decision: "Row-level security on the tables",
+          why: "Supabase exposes the database to the browser, so access rules are enforced in PostgreSQL itself rather than trusted to the client.",
+        },
+        {
+          decision: "Safety tools from the start",
+          why: "A social platform for students needs a way to handle unwanted contact, so blocking, muting and reporting were built in from the start.",
+        },
+      ],
+      outcome: "An independently built personal project, fully working end to end. There are no user numbers or production metrics to report.",
+      improvements: ["Broader automated test coverage.", "Moderation tools for handling reports.", "Institution verification for student accounts."],
+    },
   },
   {
     slug: "homekit-admin-dashboard",

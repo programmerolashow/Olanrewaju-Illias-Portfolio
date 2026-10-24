@@ -1,16 +1,45 @@
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, PenLine } from "lucide-react";
 import RecommendationCard from "@/components/RecommendationCard";
 import { useRecommendations } from "@/lib/feedback";
 
+const SLOTS = 3;
+const ROTATE_MS = 3000;
+
 /** Home-page preview of approved recommendations (featured first). Always shows the invitation to write one. */
 const Testimonials = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const reduce = useReducedMotion();
   const { data } = useRecommendations();
-  const recs = (data ?? []).slice(0, 3);
+  const all = useMemo(() => data ?? [], [data]);
+  const [shown, setShown] = useState<string[]>([]);
+  const [paused, setPaused] = useState(false);
+
+  // Start from the first three (featured first); reset whenever the list changes.
+  useEffect(() => {
+    setShown(all.slice(0, SLOTS).map((r) => r.id));
+  }, [all]);
+
+  // Every 3s, swap one random card for a random recommendation that isn't on screen.
+  useEffect(() => {
+    if (reduce || paused || all.length <= SLOTS) return;
+    const tick = window.setInterval(() => {
+      if (document.hidden) return;
+      setShown((current) => {
+        const hidden = all.filter((r) => !current.includes(r.id));
+        if (hidden.length === 0) return current;
+        const next = [...current];
+        next[Math.floor(Math.random() * next.length)] = hidden[Math.floor(Math.random() * hidden.length)].id;
+        return next;
+      });
+    }, ROTATE_MS);
+    return () => window.clearInterval(tick);
+  }, [all, reduce, paused]);
+
+  const recs = shown.map((id) => all.find((r) => r.id === id)).filter((r) => r !== undefined);
 
   return (
     <section id="testimonials" className="section-padding relative" ref={ref}>
@@ -28,9 +57,21 @@ const Testimonials = () => {
         </motion.div>
 
         {recs.length > 0 && (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 md:gap-6">
+          <div
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 md:gap-6"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+            onFocus={() => setPaused(true)}
+            onBlur={() => setPaused(false)}
+          >
             {recs.map((r, index) => (
-              <RecommendationCard key={r.id} rec={r} index={index} clamp />
+              <div key={index} className="grid">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.div key={r.id} exit={{ opacity: 0, y: -16, transition: { duration: 0.3 } }} className="h-full">
+                    <RecommendationCard rec={r} index={index} clamp />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             ))}
           </div>
         )}
