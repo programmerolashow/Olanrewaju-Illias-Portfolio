@@ -188,13 +188,13 @@ const About = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-5 md:mb-6">
-              I'm a <strong className="text-foreground font-semibold">Full-Stack Product Engineer</strong> who builds web and mobile applications from the interface down to the database. I take features from requirements to production: responsive React and Next.js frontends, typed Node, Express, Django and FastAPI services, and well-modelled PostgreSQL, MySQL and MongoDB data layers.
+              I bridge the gap between complex technical architecture and intuitive user experiences. As a <strong className="text-foreground font-semibold">Software Product Engineer</strong>, I turn ideas into AI-powered digital products, combining full-stack rigor with a product-first mindset so every line of code serves a business goal or user need.
             </p>
             <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-5 md:mb-6">
-              Much of my recent work is <strong className="text-foreground font-semibold">AI application engineering</strong>: integrating OpenAI and Gemini into real product workflows, with careful prompt and context design and deterministic business rules that keep the output reliable. I also modernize existing codebases, from JavaScript-to-TypeScript migrations to moving database technologies.
+              I work across the stack, from responsive React and Next.js interfaces to scalable APIs in Python, Django and FastAPI, and I integrate LLMs into practical applications. I don’t just write code, I solve problems: third-party integrations, database design and cloud deployments included.
             </p>
             <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6 md:mb-8">
-              I care about shipping well as a team: Git-based reviews, CI/CD on GitLab, Docker, testing and clear technical communication. Outside work, I contribute to open source and help grow developer communities.
+              Beyond the IDE, I’m active in Google Developer Groups and hackathons, and I advocate for open source and continuous learning. I value clean architecture, collaborative teams and technology with real-world impact. If you’re building something ambitious, I’d love to connect.
             </p>
 
             {/* Skills Floor Area with Depth-Sequenced 1.5s Staggered Throw Physics */}
