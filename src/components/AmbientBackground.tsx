@@ -43,6 +43,19 @@ const AmbientBackground = () => {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-30 motion-reduce:animate-none" />
             <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary opacity-40" />
           </span>
+          {/* Portrait cutout in the map's bottom-right corner; fades out at the waist so it has no hard bottom edge. */}
+          <img
+            src="/illias-map.webp"
+            alt=""
+            width={640}
+            height={795}
+            decoding="async"
+            className="absolute bottom-0 right-0 w-[30%] opacity-[0.35] dark:opacity-[0.28]"
+            style={{
+              maskImage: "linear-gradient(to bottom, black 70%, transparent)",
+              WebkitMaskImage: "linear-gradient(to bottom, black 70%, transparent)",
+            }}
+          />
         </motion.div>
       </div>
       <motion.div
