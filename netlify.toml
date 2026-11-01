@@ -1,0 +1,26 @@
+# Netlify copy of the site (olanrewaju-illias.netlify.app). Vercel ignores this file and uses vercel.json.
+# The /api routes and /updates/:id previews run from netlify/functions/api.mjs, which serves the same api/ handlers.
+# Set the same environment variables as on Vercel in Netlify → Site configuration → Environment variables
+# (DATABASE_URL, NEON_S3_*, ADMIN_PASSWORD, SESSION_SECRET, EMAIL_USER, EMAIL_PASS). Use the NEON_S3_* names:
+# Netlify, like Vercel, reserves the AWS_* ones.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Netlify fails the build when an environment variable's value appears in the repo. These four are public by
+# design (the dev port, the bucket name "updates", the site's own URLs and the contact email shown on the page),
+# so they're skipped; real secrets (DATABASE_URL, ADMIN_PASSWORD, SESSION_SECRET, EMAIL_PASS, S3 keys) are still scanned.
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "PORT,NEON_S3_BUCKET_NAME,ALLOWED_ORIGINS,EMAIL_USER"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Client-side routes without their own HTML file (e.g. /admin) load the app. Not forced, so the per-page
+# HTML files written at build time (/services, /projects/bankspace, …) are still served as they are.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

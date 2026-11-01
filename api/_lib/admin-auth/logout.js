@@ -1,5 +1,5 @@
 // POST /api/admin/logout — clears the admin session cookie.
-import { clearSessionCookie } from "../_lib/auth.js";
+import { clearSessionCookie } from "../auth.js";
 
 export default function handler(req, res) {
   if (req.method !== "POST") {

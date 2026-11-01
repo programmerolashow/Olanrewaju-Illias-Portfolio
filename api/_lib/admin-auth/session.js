@@ -1,5 +1,5 @@
 // GET /api/admin/session — tells the admin page whether the visitor is signed in.
-import { isAuthenticated } from "../_lib/auth.js";
+import { isAuthenticated } from "../auth.js";
 
 export default function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");

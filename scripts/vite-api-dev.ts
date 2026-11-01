@@ -12,9 +12,9 @@ const ROUTES: Record<string, string> = {
   "/api/recommendations": "api/recommendations.js",
   "/api/comments": "api/comments.js",
   "/api/admin/moderation": "api/admin/moderation.js",
-  "/api/admin/session": "api/admin/session.js",
-  "/api/admin/login": "api/admin/login.js",
-  "/api/admin/logout": "api/admin/logout.js",
+  "/api/admin/session": "api/admin/auth.js",
+  "/api/admin/login": "api/admin/auth.js",
+  "/api/admin/logout": "api/admin/auth.js",
   "/api/admin/updates": "api/admin/updates.js",
   "/api/admin/upload": "api/admin/upload.js",
 };

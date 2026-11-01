@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/api/admin/:action(login|logout|session)", "destination": "/api/admin/auth?action=:action" },
     { "source": "/updates/:id", "destination": "/api/share/update?id=:id" },
     { "source": "/((?!api/).*)", "destination": "/" }
   ]
