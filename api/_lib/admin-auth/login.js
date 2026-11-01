@@ -1,6 +1,6 @@
 // POST /api/admin/login — { password } → sets the admin session cookie.
-import { sql } from "../_lib/db.js";
-import { clientIp, passwordMatches, readBody, sameOrigin, setSessionCookie } from "../_lib/auth.js";
+import { sql } from "../db.js";
+import { clientIp, passwordMatches, readBody, sameOrigin, setSessionCookie } from "../auth.js";
 
 const MAX_FAILURES = 5;
 const WINDOW_MINUTES = 15;
