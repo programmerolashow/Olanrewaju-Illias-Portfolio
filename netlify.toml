@@ -8,6 +8,12 @@
   command = "npm run build"
   publish = "dist"
 
+# Netlify fails the build when an environment variable's value appears in the repo. These four are public by
+# design (the dev port, the bucket name "updates", the site's own URLs and the contact email shown on the page),
+# so they're skipped; real secrets (DATABASE_URL, ADMIN_PASSWORD, SESSION_SECRET, EMAIL_PASS, S3 keys) are still scanned.
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "PORT,NEON_S3_BUCKET_NAME,ALLOWED_ORIGINS,EMAIL_USER"
+
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
