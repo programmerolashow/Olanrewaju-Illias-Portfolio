@@ -19,6 +19,8 @@ export const site = {
   bookingUrl: "https://calendly.com/olanrewajuillias/30min",
   /** Drop your CV in public/ and point this at it; the download buttons appear on the next build. */
   cvPath: "/ILLIAS_OLANREWAJU_CV.pdf",
+  /** Google Scholar profile, linked from the Articles page. Empty hides the link. */
+  scholarUrl: "",
 };
 
 /** Static routes for the sitemap; project pages are added from src/data/projects.ts. */

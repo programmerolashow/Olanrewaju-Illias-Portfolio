@@ -30,6 +30,23 @@ export const toUpdate = (row) => ({
   updatedAt: row.updated_at,
 });
 
+export const toArticle = (row) => ({
+  id: row.id,
+  title: row.title,
+  summary: row.summary,
+  track: row.track,
+  topic: row.topic,
+  fileUrl: row.file_url,
+  fileName: row.file_name,
+  scholarUrl: row.scholar_url,
+  zenodoUrl: row.zenodo_url,
+  // Selected as ::text ("YYYY-MM-DD"), like update dates.
+  publishedOn: row.published_on,
+  published: row.published,
+  createdAt: row.created_at,
+  updatedAt: row.updated_at,
+});
+
 /** Public shape of a recommendation; the admin view adds email, status and reviewedAt. */
 export const toRecommendation = (row, admin = false) => ({
   id: row.id,

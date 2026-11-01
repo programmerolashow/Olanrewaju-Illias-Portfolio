@@ -1,4 +1,5 @@
-// Photo storage for /updates in the Neon Object Storage bucket "updates" (public_read: anyone can view, only we can write).
+// File storage for /updates photos and /articles documents in the Neon Object Storage bucket "updates"
+// (public_read: anyone can view, only we can write).
 // Vercel reserves the AWS_* variable names, so on Vercel set NEON_S3_ACCESS_KEY_ID, NEON_S3_SECRET_ACCESS_KEY,
 // NEON_S3_ENDPOINT and NEON_S3_REGION. Locally the AWS_* names from `neon env pull` work too.
 import { randomUUID } from "node:crypto";
@@ -21,7 +22,7 @@ const config = () => {
     .filter(([, value]) => !value)
     .map(([name]) => name);
   if (missing.length) {
-    throw Object.assign(new Error(`Photo storage is not configured. Missing environment variables: ${missing.join(", ")}.`), {
+    throw Object.assign(new Error(`File storage is not configured. Missing environment variables: ${missing.join(", ")}.`), {
       code: "STORAGE_NOT_CONFIGURED",
     });
   }
@@ -38,7 +39,7 @@ const s3 = () => {
   return client;
 };
 
-/** Every stored photo URL starts with this, which is how validation tells our photos from anything else. */
+/** Every stored file URL starts with this, which is how validation tells our files from anything else. */
 export const publicBase = () => `${config().endpoint}/${BUCKET}/`;
 
 const IMAGE_TYPES = {
@@ -47,19 +48,33 @@ const IMAGE_TYPES = {
   "image/png": "png",
 };
 
-/** Checks the file's leading bytes, so a renamed non-image can't be stored. */
+const DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+/** Article files. Stored under articles/ so they're easy to tell apart from photos in the bucket. */
+const DOCUMENT_TYPES = {
+  "application/pdf": "pdf",
+  [DOCX]: "docx",
+};
+
+const EXTENSIONS = { ...IMAGE_TYPES, ...DOCUMENT_TYPES };
+
+/** Checks the file's leading bytes, so a renamed file of another type can't be stored. */
 const looksLike = (type, bytes) => {
+  if (type === "application/pdf") return bytes.subarray(0, 5).toString() === "%PDF-";
+  // .docx is a zip archive.
+  if (type === DOCX) return bytes.subarray(0, 4).equals(Buffer.from([0x50, 0x4b, 0x03, 0x04]));
   if (type === "image/webp") return bytes.subarray(0, 4).toString() === "RIFF" && bytes.subarray(8, 12).toString() === "WEBP";
   if (type === "image/jpeg") return bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
   if (type === "image/png") return bytes.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
   return false;
 };
 
-export const isAllowedImage = (type, bytes) => Boolean(IMAGE_TYPES[type]) && looksLike(type, bytes);
+export const isAllowedFile = (type, bytes) => Boolean(EXTENSIONS[type]) && looksLike(type, bytes);
 
-/** Stores a photo under a fresh key and returns its public URL. Keys are never reused, so it can be cached forever. */
-export const putImage = async (bytes, type) => {
-  const key = `${new Date().toISOString().slice(0, 7)}/${randomUUID()}.${IMAGE_TYPES[type]}`;
+/** Stores a photo or document under a fresh key and returns its public URL. Keys are never reused, so it can be cached forever. */
+export const putFile = async (bytes, type) => {
+  const folder = DOCUMENT_TYPES[type] ? "articles/" : "";
+  const key = `${folder}${new Date().toISOString().slice(0, 7)}/${randomUUID()}.${EXTENSIONS[type]}`;
   await s3().send(
     new PutObjectCommand({
       Bucket: BUCKET,
@@ -72,14 +87,14 @@ export const putImage = async (bytes, type) => {
   return `${publicBase()}${key}`;
 };
 
-/** Best effort: a leftover photo costs storage, never correctness, so failures are only logged. */
-export const deleteImages = async (urls) => {
+/** Best effort: a leftover file costs storage, never correctness, so failures are only logged. */
+export const deleteFiles = async (urls) => {
   const base = publicBase();
   const keys = urls.filter((u) => u.startsWith(base)).map((u) => u.slice(base.length));
   if (keys.length === 0) return;
   try {
     await s3().send(new DeleteObjectsCommand({ Bucket: BUCKET, Delete: { Objects: keys.map((Key) => ({ Key })) } }));
   } catch (error) {
-    console.error("Could not delete images", keys, error);
+    console.error("Could not delete files", keys, error);
   }
 };

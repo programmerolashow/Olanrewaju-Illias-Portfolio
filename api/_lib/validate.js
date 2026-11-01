@@ -42,6 +42,27 @@ export const updateInput = z
   .refine((v) => !v.endsOn || v.startsOn, { message: "Add a start date before an end date.", path: ["startsOn"] })
   .refine((v) => !v.endsOn || !v.startsOn || v.endsOn >= v.startsOn, { message: "The end date is before the start date.", path: ["endsOn"] });
 
+export const articleInput = z
+  .object({
+    title: z.string().trim().min(1, "Add a title.").max(200),
+    summary: z.string().trim().max(600).default(""),
+    track: z.string().trim().min(1, "Choose a track.").max(40),
+    topic: optionalText(200),
+    fileUrl: optionalText(500).refine((v) => !v || v.startsWith(publicBase()), "Files must be uploaded through the admin page."),
+    fileName: optionalText(200),
+    scholarUrl: optionalText(500).refine((v) => !v || /^https:\/\//i.test(v), "The Google Scholar link must start with https://."),
+    zenodoUrl: optionalText(500).refine(
+      (v) => !v || /^https:\/\/(www\.|sandbox\.)?zenodo\.org\//i.test(v) || /^https:\/\/doi\.org\/10\.5281\/zenodo\./i.test(v),
+      "Use a zenodo.org record link or its Zenodo DOI link (https://doi.org/10.5281/zenodo.…).",
+    ),
+    publishedOn: date,
+    published: z.boolean().default(false),
+  })
+  .refine((v) => v.fileUrl || v.scholarUrl || v.zenodoUrl, {
+    message: "Upload a file or add a Google Scholar or Zenodo link.",
+    path: ["fileUrl"],
+  });
+
 export const relationships = [
   "colleague",
   "manager",
