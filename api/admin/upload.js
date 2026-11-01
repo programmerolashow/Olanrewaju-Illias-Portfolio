@@ -1,8 +1,10 @@
-// POST /api/admin/upload — raw image bytes in the body (Content-Type: image/webp, image/jpeg or image/png).
-// Stores the photo in Neon Object Storage and returns { url }. Admin only.
+// POST /api/admin/upload — raw file bytes in the body. Content-Type: image/webp, image/jpeg or image/png for
+// photos; application/pdf or a .docx type for article files. Stores the file in Neon Object Storage and
+// returns { url }. Admin only.
 // The admin page shrinks photos to ~1600px WebP first, so they stay well under Vercel's 4.5 MB request limit.
+// Article files are sent as they are, so they must be under 4 MB.
 import { requireAdmin } from "../_lib/auth.js";
-import { isAllowedImage, putImage } from "../_lib/storage.js";
+import { isAllowedFile, putFile } from "../_lib/storage.js";
 
 const MAX_BYTES = 4 * 1024 * 1024;
 
@@ -20,7 +22,7 @@ const readRaw = (req) =>
   new Promise((resolve, reject) => {
     const buffered = bufferedBody(req);
     if (buffered) {
-      if (buffered.length > MAX_BYTES) reject(Object.assign(new Error("Photo is too large (max 4 MB)."), { status: 413 }));
+      if (buffered.length > MAX_BYTES) reject(Object.assign(new Error("File is too large (max 4 MB)."), { status: 413 }));
       else resolve(buffered);
       return;
     }
@@ -29,7 +31,7 @@ const readRaw = (req) =>
     req.on("data", (chunk) => {
       size += chunk.length;
       if (size > MAX_BYTES) {
-        reject(Object.assign(new Error("Photo is too large (max 4 MB)."), { status: 413 }));
+        reject(Object.assign(new Error("File is too large (max 4 MB)."), { status: 413 }));
         req.destroy();
         return;
       }
@@ -50,8 +52,10 @@ export default async function handler(req, res) {
   const type = (req.headers["content-type"] ?? "").split(";")[0].trim();
   try {
     const bytes = await readRaw(req);
-    if (!isAllowedImage(type, bytes)) return res.status(415).json({ error: "Only WebP, JPEG or PNG photos can be uploaded." });
-    const url = await putImage(bytes, type);
+    if (!isAllowedFile(type, bytes)) {
+      return res.status(415).json({ error: "Only WebP, JPEG or PNG photos, or PDF or Word (.docx) files, can be uploaded." });
+    }
+    const url = await putFile(bytes, type);
     return res.status(201).json({ url });
   } catch (error) {
     if (error.status === 413) return res.status(413).json({ error: error.message });
@@ -60,7 +64,7 @@ export default async function handler(req, res) {
     if (error.code === "STORAGE_NOT_CONFIGURED") return res.status(500).json({ error: error.message });
     const status = error.$metadata?.httpStatusCode;
     return res.status(500).json({
-      error: `Upload failed: photo storage rejected the file${error.name ? ` (${error.name}${status ? `, HTTP ${status}` : ""})` : ""}.`,
+      error: `Upload failed: storage rejected the file${error.name ? ` (${error.name}${status ? `, HTTP ${status}` : ""})` : ""}.`,
     });
   }
 }

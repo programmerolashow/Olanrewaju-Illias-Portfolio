@@ -4,7 +4,7 @@
 //   PUT    /api/admin/updates?id=...   replace
 //   DELETE /api/admin/updates?id=...   delete (and its uploaded images)
 import { sql, toUpdate } from "../_lib/db.js";
-import { deleteImages } from "../_lib/storage.js";
+import { deleteFiles } from "../_lib/storage.js";
 import { readBody, requireAdmin } from "../_lib/auth.js";
 import { firstError, updateInput } from "../_lib/validate.js";
 
@@ -59,14 +59,14 @@ export default async function handler(req, res) {
         returning id, kind, title, body, location, starts_on::text as starts_on, ends_on::text as ends_on,
                   link_url, images, published, pinned, created_at, updated_at`;
       const kept = new Set(fileUrls(v.images));
-      await deleteImages(fileUrls(before.images).filter((url) => !kept.has(url)));
+      await deleteFiles(fileUrls(before.images).filter((url) => !kept.has(url)));
       return res.status(200).json({ update: toUpdate(row) });
     }
 
     if (req.method === "DELETE") {
       const [row] = await sql`delete from updates where id = ${id} returning images`;
       if (!row) return res.status(404).json({ error: "Post not found." });
-      await deleteImages(fileUrls(row.images));
+      await deleteFiles(fileUrls(row.images));
       return res.status(200).json({ deleted: true });
     }
 

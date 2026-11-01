@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ArrowRight, Check, Eye, ImagePlus, Linkedin, Loader2, LogOut, Mail, Pencil, Pin, Plus, Star, Trash2, Undo2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Eye, FileUp, GraduationCap, ImagePlus, Linkedin, Loader2, LogOut, Mail, Pencil, Pin, Plus, Star, Trash2, Undo2, X } from "lucide-react";
 import { StatusBadge } from "@/components/UpdateCard";
 import { cn } from "@/lib/utils";
 import { displayDate, type Update, type UpdateImage, type UpdateInput } from "@/lib/updates";
+import { articleDate, articleTracks, fileKind, matchPlannedTopic, plannedTopics, type Article, type ArticleInput } from "@/lib/articles";
 import { recommenderLine, relationshipLabels, shortDate, type AdminComment, type AdminRecommendation, type ReviewStatus } from "@/lib/feedback";
 
 /* ------------------------------------------------------------------ */
@@ -524,11 +525,323 @@ const Moderation = ({ kind }: { kind: ModerationKind }) => {
 };
 
 /* ------------------------------------------------------------------ */
+/* Articles                                                            */
+/* ------------------------------------------------------------------ */
+
+/** Sent as-is (no resizing), so it has to fit Vercel's 4.5 MB request limit. */
+const MAX_FILE_BYTES = 4 * 1024 * 1024;
+const DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+const blankArticle: ArticleInput = {
+  title: "",
+  summary: "",
+  track: articleTracks[0].id,
+  topic: null,
+  fileUrl: null,
+  fileName: null,
+  scholarUrl: null,
+  zenodoUrl: null,
+  publishedOn: null,
+  published: false,
+};
+
+const ArticleEditor = ({ initial, taken, onDone }: { initial: Article | null; taken: Set<string>; onDone: () => void }) => {
+  const queryClient = useQueryClient();
+  const [form, setForm] = useState<ArticleInput>(initial ? { ...initial } : blankArticle);
+  // Once a topic is picked (or cleared) by hand, typing the title no longer changes it.
+  const [topicTouched, setTopicTouched] = useState(Boolean(initial));
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const set = <K extends keyof ArticleInput>(key: K, value: ArticleInput[K]) => setForm((f) => ({ ...f, [key]: value }));
+
+  const save = useMutation({
+    mutationFn: () =>
+      api(initial ? `/api/admin/articles?id=${initial.id}` : "/api/admin/articles", {
+        method: initial ? "PUT" : "POST",
+        body: JSON.stringify(form),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-articles"] });
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
+      onDone();
+    },
+  });
+
+  const addFile = async (file: File | undefined) => {
+    if (!file) return;
+    setUploadError(null);
+    // Some browsers leave .docx files without a type; work it out from the name.
+    const type = file.type || (file.name.toLowerCase().endsWith(".docx") ? DOCX : "");
+    if (type !== "application/pdf" && type !== DOCX) {
+      setUploadError("Upload a PDF or a Word (.docx) file.");
+    } else if (file.size > MAX_FILE_BYTES) {
+      setUploadError("That file is over 4 MB. Export a smaller PDF (e.g. without high-resolution images) and try again.");
+    } else {
+      setUploading(true);
+      try {
+        const url = await uploadBlob(new Blob([file], { type }));
+        setForm((f) => ({ ...f, fileUrl: url, fileName: file.name }));
+      } catch (error) {
+        setUploadError(error instanceof Error ? error.message : "Upload failed.");
+      } finally {
+        setUploading(false);
+      }
+    }
+    if (fileInput.current) fileInput.current.value = "";
+  };
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    save.mutate();
+  };
+
+  return (
+    <form onSubmit={submit} className="space-y-5">
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-xl font-bold">{initial ? "Edit article" : "New article"}</h1>
+        <button type="button" onClick={onDone} className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" aria-hidden /> Back
+        </button>
+      </div>
+
+      <Field
+        label="Planned topic"
+        hint="Pick the topic from /articles this article covers: it switches from Planned to Published instead of being listed twice. Choose “New topic” if it isn't listed."
+      >
+        <select
+          value={form.topic ?? ""}
+          onChange={(e) => {
+            const topic = e.target.value || null;
+            const track = articleTracks.find((t) => topic && plannedTopics[t.id].includes(topic))?.id;
+            setTopicTouched(true);
+            setForm((f) => ({ ...f, topic, track: track ?? f.track, title: f.title || topic || "" }));
+          }}
+          className={inputClass}
+        >
+          <option value="">New topic (not in the planned list)</option>
+          {articleTracks.map((t) => (
+            <optgroup key={t.id} label={t.label}>
+              {plannedTopics[t.id].map((topic) => {
+                const used = taken.has(topic) && topic !== initial?.topic;
+                return (
+                  <option key={topic} value={topic} disabled={used}>
+                    {topic}
+                    {used ? " (already published)" : ""}
+                  </option>
+                );
+              })}
+            </optgroup>
+          ))}
+        </select>
+      </Field>
+
+      <Field label="Title" hint="Can be longer than the topic, e.g. with a subtitle.">
+        <input
+          required
+          maxLength={200}
+          value={form.title}
+          onChange={(e) => {
+            const title = e.target.value;
+            const match = topicTouched ? null : matchPlannedTopic(title);
+            setForm((f) => ({
+              ...f,
+              title,
+              ...(topicTouched ? {} : { topic: match && !taken.has(match.topic) ? match.topic : null }),
+              ...(match && !topicTouched && !taken.has(match.topic) ? { track: match.track } : {}),
+            }));
+          }}
+          className={inputClass}
+        />
+      </Field>
+
+      <Field label="Summary" hint="Two or three sentences shown on the article card.">
+        <textarea rows={4} maxLength={600} value={form.summary} onChange={(e) => set("summary", e.target.value)} className={inputClass} />
+      </Field>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Track">
+          <select value={form.track} onChange={(e) => set("track", e.target.value)} className={inputClass}>
+            {articleTracks.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.label}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Publication date" hint="Leave empty to use today's date.">
+          <input type="date" value={form.publishedOn ?? ""} onChange={(e) => set("publishedOn", e.target.value || null)} className={inputClass} />
+        </Field>
+      </div>
+
+      <div>
+        <span className="mb-1.5 block text-sm font-medium text-foreground">File</span>
+        <p className="mb-3 text-xs text-muted-foreground">PDF or Word (.docx), up to 4 MB. PDFs open in the browser; Word files download.</p>
+        {form.fileUrl ? (
+          <div className="flex items-center gap-3 rounded-xl border border-border p-3">
+            <span className="rounded-full bg-primary/15 px-2 py-0.5 text-xs font-semibold text-primary">{fileKind(form)}</span>
+            <a href={form.fileUrl} target="_blank" rel="noopener noreferrer" className="min-w-0 flex-1 truncate text-sm hover:text-primary">
+              {form.fileName ?? "Uploaded file"}
+            </a>
+            <button type="button" onClick={() => fileInput.current?.click()} disabled={uploading} className={pillButton}>
+              Replace
+            </button>
+            <button
+              type="button"
+              onClick={() => setForm((f) => ({ ...f, fileUrl: null, fileName: null }))}
+              aria-label="Remove file"
+              className="rounded-full p-2 text-muted-foreground hover:text-destructive"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => fileInput.current?.click()}
+            disabled={uploading}
+            className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-8 text-sm font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:opacity-60"
+          >
+            {uploading ? <Loader2 className="h-6 w-6 animate-spin" aria-hidden /> : <FileUp className="h-6 w-6" aria-hidden />}
+            {uploading ? "Uploading…" : "Upload PDF or Word file"}
+          </button>
+        )}
+        <input
+          ref={fileInput}
+          type="file"
+          accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          hidden
+          onChange={(e) => addFile(e.target.files?.[0])}
+        />
+        {uploadError && (
+          <p role="alert" className="mt-2 text-sm text-destructive">
+            {uploadError}
+          </p>
+        )}
+      </div>
+
+      <Field label="Google Scholar link" hint="Optional: the article's page on Google Scholar.">
+        <input
+          type="url"
+          maxLength={500}
+          placeholder="https://scholar.google.com/…"
+          value={form.scholarUrl ?? ""}
+          onChange={(e) => set("scholarUrl", e.target.value || null)}
+          className={inputClass}
+        />
+      </Field>
+
+      <Field label="Zenodo link" hint="Optional: the zenodo.org record or its DOI link. An article needs a file, a Google Scholar link or a Zenodo link.">
+        <input
+          type="url"
+          maxLength={500}
+          placeholder="https://zenodo.org/records/…"
+          value={form.zenodoUrl ?? ""}
+          onChange={(e) => set("zenodoUrl", e.target.value || null)}
+          className={inputClass}
+        />
+      </Field>
+
+      <Toggle checked={form.published} onChange={(v) => set("published", v)} label="Published" hint="Off keeps it as a private draft only you can see here." />
+
+      {save.isError && (
+        <p role="alert" className="text-sm text-destructive">
+          {save.error.message}
+        </p>
+      )}
+
+      <button
+        type="submit"
+        disabled={save.isPending || uploading}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground disabled:opacity-60 sm:w-auto"
+      >
+        {save.isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
+        {form.published ? "Save and publish" : "Save draft"}
+      </button>
+    </form>
+  );
+};
+
+const useAdminArticles = () =>
+  useQuery({
+    queryKey: ["admin-articles"],
+    queryFn: () => api<{ articles: Article[] }>("/api/admin/articles").then((r) => r.articles),
+  });
+
+/** Planned topics already covered by a published article. */
+const useTakenTopics = () => {
+  const { data } = useAdminArticles();
+  return new Set((data ?? []).filter((a) => a.published && a.topic).map((a) => a.topic as string));
+};
+
+const ArticleList = ({ onEdit }: { onEdit: (article: Article) => void }) => {
+  const queryClient = useQueryClient();
+  const list = useAdminArticles();
+  const remove = useMutation({
+    mutationFn: (id: string) => api(`/api/admin/articles?id=${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-articles"] });
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
+    },
+  });
+
+  if (list.isLoading) return <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" aria-label="Loading" />;
+  if (list.isError) return <p className="text-sm text-destructive">{list.error.message}</p>;
+  if (list.data?.length === 0) return <p className="text-muted-foreground">No articles yet. Tap “New article” to upload your first one.</p>;
+
+  return (
+    <ul className="space-y-3">
+      {remove.isError && <p className="text-sm text-destructive">{remove.error.message}</p>}
+      {list.data?.map((a) => (
+        <li key={a.id} className="flex items-center gap-3 rounded-2xl border border-border p-3">
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-semibold text-foreground">{a.title}</p>
+            <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <span className={cn("rounded-full px-2 py-0.5 font-medium", a.published ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" : "bg-secondary")}>
+                {a.published ? "Published" : "Draft"}
+              </span>
+              {a.topic ? <span>Planned topic</span> : <span>New topic</span>}
+              {fileKind(a) && <span>{fileKind(a)}</span>}
+              {a.scholarUrl && <GraduationCap className="h-3.5 w-3.5" aria-label="Has Google Scholar link" />}
+              {a.zenodoUrl && <span>Zenodo</span>}
+              <span>{articleTracks.find((t) => t.id === a.track)?.label ?? a.track}</span>
+              <span>{articleDate(a)}</span>
+            </div>
+          </div>
+          <div className="flex shrink-0 gap-1">
+            {a.published && (
+              <Link to="/articles" aria-label="View on site" className="rounded-full p-2 text-muted-foreground hover:text-primary">
+                <Eye className="h-4 w-4" />
+              </Link>
+            )}
+            <button type="button" onClick={() => onEdit(a)} aria-label="Edit" className="rounded-full p-2 text-muted-foreground hover:text-primary">
+              <Pencil className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              aria-label="Delete"
+              disabled={remove.isPending}
+              onClick={() => {
+                if (window.confirm(`Delete “${a.title}” and its file? This can't be undone.`)) remove.mutate(a.id);
+              }}
+              className="rounded-full p-2 text-muted-foreground hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+/* ------------------------------------------------------------------ */
 /* Dashboard                                                           */
 /* ------------------------------------------------------------------ */
 
 const tabs = [
   { value: "updates", label: "Updates" },
+  { value: "articles", label: "Articles" },
   { value: "recommendations", label: "Recommendations" },
   { value: "comments", label: "Comments" },
 ] as const;
@@ -536,6 +849,8 @@ const tabs = [
 const Dashboard = ({ onSignedOut }: { onSignedOut: () => void }) => {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<Update | "new" | null>(null);
+  const [editingArticle, setEditingArticle] = useState<Article | "new" | null>(null);
+  const takenTopics = useTakenTopics();
   const [tab, setTab] = useState<(typeof tabs)[number]["value"]>("updates");
   const pending: Record<string, number> = {
     recommendations: useModeration("recommendations").data?.filter((i) => i.status === "pending").length ?? 0,
@@ -558,6 +873,15 @@ const Dashboard = ({ onSignedOut }: { onSignedOut: () => void }) => {
   });
 
   if (editing) return <Editor initial={editing === "new" ? null : editing} onDone={() => setEditing(null)} />;
+  if (editingArticle) {
+    return (
+      <ArticleEditor
+        initial={editingArticle === "new" ? null : editingArticle}
+        taken={takenTopics}
+        onDone={() => setEditingArticle(null)}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -595,6 +919,15 @@ const Dashboard = ({ onSignedOut }: { onSignedOut: () => void }) => {
               <Plus className="h-4 w-4" aria-hidden /> New post
             </button>
           )}
+          {tab === "articles" && (
+            <button
+              type="button"
+              onClick={() => setEditingArticle("new")}
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+            >
+              <Plus className="h-4 w-4" aria-hidden /> New article
+            </button>
+          )}
           <button
             type="button"
             onClick={() => logout.mutate()}
@@ -605,7 +938,8 @@ const Dashboard = ({ onSignedOut }: { onSignedOut: () => void }) => {
         </div>
       </div>
 
-      {tab !== "updates" && <Moderation key={tab} kind={tab} />}
+      {(tab === "recommendations" || tab === "comments") && <Moderation key={tab} kind={tab} />}
+      {tab === "articles" && <ArticleList onEdit={setEditingArticle} />}
 
       {tab === "updates" && list.isLoading && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" aria-label="Loading" />}
       {tab === "updates" && list.isError && <p className="text-sm text-destructive">{list.error.message}</p>}

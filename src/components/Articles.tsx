@@ -4,10 +4,13 @@ import { Link, useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
   ArrowUpRight,
+  BookOpen,
   Bot,
   Database,
+  Download,
   FileText,
   GitBranch,
+  GraduationCap,
   Landmark,
   Layers,
   Lightbulb,
@@ -17,163 +20,87 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { site } from "@/config/site";
+import {
+  articleDate,
+  articleTracks,
+  fileKind,
+  matchPlannedTopic,
+  plannedTopics,
+  useArticles,
+  type Article,
+  type TrackId,
+} from "@/lib/articles";
 
-// To publish an article: set status to "published" and add its href. Planned topics never render as links.
-type ArticleStatus = "planned" | "published";
-
-interface Article {
-  title: string;
-  status: ArticleStatus;
-  href?: string;
-}
+// Published articles come from /admin; planned topics live in src/lib/articles.ts. An article uploaded for a planned
+// topic takes that topic's place (Planned → Published), so a topic is never listed twice.
 
 interface ArticleCategory {
-  id: string;
+  id: TrackId;
   label: string;
   icon: LucideIcon;
-  articles: Article[];
+  topics: string[];
 }
 
-const planned = (titles: string[]): Article[] => titles.map((title) => ({ title, status: "planned" }));
+const trackIcons: Record<TrackId, LucideIcon> = {
+  "full-stack": Layers,
+  ai: Bot,
+  database: Database,
+  quality: ShieldCheck,
+  product: Lightbulb,
+  fintech: Landmark,
+  devops: GitBranch,
+  "case-studies": NotebookPen,
+};
 
-const categories: ArticleCategory[] = [
-  {
-    id: "full-stack",
-    label: "Full-Stack Engineering",
-    icon: Layers,
-    articles: planned([
-      "Building Full-Stack Applications with React, Node.js, and PostgreSQL",
-      "Designing Maintainable REST APIs for Modern Web Applications",
-      "Connecting Frontend Applications to Backend Services",
-      "Structuring TypeScript Projects for Long-Term Maintainability",
-      "Common Full-Stack Development Challenges and How to Solve Them",
-      "From Feature Requirements to Production-Ready Software",
-      "Building Reusable UI Components Without Overcomplicating Your Architecture",
-      "Debugging Frontend and Backend Integration Issues",
-    ]),
-  },
-  {
-    id: "ai",
-    label: "AI Engineering",
-    icon: Bot,
-    articles: planned([
-      "Integrating Large Language Models into Real-World Applications",
-      "Prompt Engineering vs. Context Engineering: Understanding the Difference",
-      "Combining Deterministic Business Rules with AI Reasoning",
-      "Building AI-Powered Customer Support Workflows",
-      "Designing More Reliable AI Application Workflows",
-      "Handling AI Errors, Invalid Responses, and Unexpected Outputs",
-      "Understanding Prompt Injection and Application-Level Defences",
-      "Integrating OpenAI and Google Gemini APIs into Web Applications",
-      "Moving Beyond AI Demos: Building Useful AI-Powered Products",
-      "Lessons from Integrating AI into Existing Software Systems",
-    ]),
-  },
-  {
-    id: "database",
-    label: "Database & Modernization",
-    icon: Database,
-    articles: planned([
-      "Lessons from Migrating a JavaScript Codebase to TypeScript",
-      "Moving from MySQL to PostgreSQL: Technical Considerations and Lessons",
-      "Introducing Prisma into a Database-Backed Application",
-      "Designing Database Schemas for Maintainable Applications",
-      "Planning Safe and Repeatable Database Migrations",
-      "Understanding ORM Trade-Offs in Modern Backend Development",
-      "Troubleshooting Database Connectivity and Authentication Problems",
-      "Maintaining Data Consistency During Application Modernization",
-    ]),
-  },
-  {
-    id: "quality",
-    label: "Testing & Quality",
-    icon: ShieldCheck,
-    articles: planned([
-      "Debugging Software by Investigating Root Causes",
-      "Why Type Checking and Linting Matter in Team Projects",
-      "Building Reliable API Integration Tests",
-      "Testing Authentication and Authorization Workflows",
-      "Making Database Migrations Safer to Run Repeatedly",
-      "Improving Code Quality Through Review and Refactoring",
-      "Diagnosing Build Failures and CI/CD Pipeline Issues",
-      "Turning Repeated Bugs into Better Engineering Practices",
-    ]),
-  },
-  {
-    id: "product",
-    label: "Product Engineering",
-    icon: Lightbulb,
-    articles: planned([
-      "Building Software Around Real User Problems",
-      "How to Turn an Idea into a Practical MVP",
-      "Balancing Product Requirements with Engineering Constraints",
-      "What I Learned from Leading a Student-Focused Technology Initiative",
-      "Designing Technology Solutions for Transportation Challenges",
-      "Lessons from Collaborating Across Engineering Teams",
-      "Building Portfolio Projects That Demonstrate Engineering Ability",
-      "Communicating Technical Decisions to Non-Technical Stakeholders",
-      "From Product Concept to Technical Architecture",
-      "Measuring Project Success Beyond Writing Code",
-    ]),
-  },
-  {
-    id: "fintech",
-    label: "Fintech & Transactions",
-    icon: Landmark,
-    articles: planned([
-      "Designing Reliable Transaction-Oriented Application Workflows",
-      "Building Database-Backed Financial Operations",
-      "Approaches to Transaction Matching and Discrepancy Detection",
-      "Designing Audit Trails for Administrative Workflows",
-      "Combining Business Rules, Data Validation, and AI in Financial Systems",
-      "Lessons from Building Software for Business-Critical Workflows",
-    ]),
-  },
-  {
-    id: "devops",
-    label: "DevOps & Collaboration",
-    icon: GitBranch,
-    articles: planned([
-      "Setting Up CI/CD Pipelines for TypeScript Applications",
-      "Organizing Git Branches and Merge Requests in Team Projects",
-      "Automating Build, Lint, and Test Checks",
-      "Managing Environment Variables Across Development and Deployment",
-      "Troubleshooting Docker-Based Development Environments",
-      "Improving Collaboration Through Better Technical Documentation",
-    ]),
-  },
-  {
-    id: "case-studies",
-    label: "Case Studies",
-    icon: NotebookPen,
-    articles: planned([
-      "ZoomTrans: Turning a Transportation Problem into a Technology Initiative",
-      "RefundOps: Combining Deterministic Refund Rules with AI Reasoning",
-      "Database Modernization: Lessons from MySQL, PostgreSQL, and Prisma",
-      "TypeScript Migration: Improving Type Safety in an Existing Codebase",
-      "Building AI-Powered Features That Solve Practical Problems",
-      "Lessons from Team Leadership and Collaborative Software Development",
-      "Building and Maintaining Software Across Multiple Services",
-      "What I Would Do Differently When Building My Next Product",
-    ]),
-  },
-];
+const categories: ArticleCategory[] = articleTracks.map((track) => ({
+  ...track,
+  icon: trackIcons[track.id],
+  topics: plannedTopics[track.id],
+}));
 
-const allArticles = categories.flatMap((category) =>
-  category.articles.map((article) => ({ ...article, category })),
-);
+interface ListItem {
+  key: string;
+  title: string;
+  category: ArticleCategory;
+  /** Set for published articles; planned topics have none. */
+  article: Article | null;
+}
+
+const categoryOf = (track: string) => categories.find((c) => c.id === track) ?? categories[0];
+
+/**
+ * Every topic once: published articles first (newest first), then the planned topics nobody has written yet.
+ * An article fills the planned topic it was linked to in /admin; older uploads without a link are matched by title.
+ */
+const useArticleList = () => {
+  const { data } = useArticles();
+  return useMemo(() => {
+    const filled = new Set<string>();
+    const published: ListItem[] = (data ?? []).map((article) => {
+      const topic = article.topic ?? matchPlannedTopic(article.title)?.topic;
+      if (topic) filled.add(topic);
+      return { key: article.id, title: article.title, category: categoryOf(article.track), article };
+    });
+    const planned: ListItem[] = categories.flatMap((category) =>
+      category.topics
+        .filter((topic) => !filled.has(topic))
+        .map((topic) => ({ key: `${category.id}:${topic}`, title: topic, category, article: null })),
+    );
+    const all = [...published, ...planned];
+    const countIn = (id: string) => all.filter((item) => item.category.id === id).length;
+    const stats = [
+      { value: all.length, label: "Topics" },
+      { value: categories.length, label: "Tracks" },
+      { value: published.length, label: "Published" },
+    ];
+    return { all, countIn, stats };
+  }, [data]);
+};
 
 const INITIAL_VISIBLE = 9;
 
-const publishedCount = allArticles.filter((a) => a.status === "published").length;
-
-const stats = [
-  { value: allArticles.length, label: "Topics" },
-  { value: categories.length, label: "Tracks" },
-  { value: publishedCount, label: "Published" },
-];
-
-const StatStrip = ({ inView, delay = 0.15 }: { inView: boolean; delay?: number }) => (
+const StatStrip = ({ stats, inView, delay = 0.15 }: { stats: { value: number; label: string }[]; inView: boolean; delay?: number }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -193,6 +120,7 @@ const StatStrip = ({ inView, delay = 0.15 }: { inView: boolean; delay?: number }
 const ArticlesPreview = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { all, countIn, stats } = useArticleList();
 
   return (
     <section id="articles" className="section-padding relative" ref={ref}>
@@ -213,7 +141,7 @@ const ArticlesPreview = () => {
         </motion.div>
 
         <div className="mx-auto max-w-5xl">
-          <StatStrip inView={isInView} />
+          <StatStrip stats={stats} inView={isInView} />
 
           <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
             {categories.map((category, index) => (
@@ -235,7 +163,7 @@ const ArticlesPreview = () => {
                     {category.label}
                   </span>
                   <span className="mt-2 inline-flex items-center gap-1 font-mono text-xs text-muted-foreground transition-colors group-hover:text-primary">
-                    {category.articles.length} topics
+                    {countIn(category.id)} topics
                     <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
                   </span>
                 </Link>
@@ -255,7 +183,7 @@ const ArticlesPreview = () => {
               to="/articles"
               className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/60 px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary hover:text-primary"
             >
-              Browse all {allArticles.length} topics
+              Browse all {all.length} topics
               <ArrowRight className="h-4 w-4" aria-hidden />
             </Link>
           </motion.div>
@@ -274,13 +202,16 @@ const ArticlesFull = () => {
   const activeId = categories.some((c) => c.id === trackParam) ? (trackParam as string) : "all";
   const [query, setQuery] = useState("");
   const [showAll, setShowAll] = useState(false);
+  const { all, countIn, stats } = useArticleList();
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return allArticles.filter(
-      (a) => (activeId === "all" || a.category.id === activeId) && (!q || a.title.toLowerCase().includes(q)),
+    return all.filter(
+      (a) =>
+        (activeId === "all" || a.category.id === activeId) &&
+        (!q || a.title.toLowerCase().includes(q) || a.article?.summary.toLowerCase().includes(q)),
     );
-  }, [activeId, query]);
+  }, [all, activeId, query]);
 
   const visible = showAll ? filtered : filtered.slice(0, INITIAL_VISIBLE);
 
@@ -290,14 +221,14 @@ const ArticlesFull = () => {
     setShowAll(false);
   };
 
-  const filters = [{ id: "all", label: "All topics", icon: FileText, count: allArticles.length }].concat(
-    categories.map((c) => ({ id: c.id, label: c.label, icon: c.icon, count: c.articles.length })),
+  const filters = [{ id: "all", label: "All topics", icon: FileText, count: all.length }].concat(
+    categories.map((c) => ({ id: c.id, label: c.label, icon: c.icon, count: countIn(c.id) })),
   );
 
   return (
     <section aria-label="All article topics" className="relative pb-12 md:pb-16" ref={ref}>
       <div className="container mx-auto px-4 sm:px-6">
-        <StatStrip inView={isInView} delay={0} />
+        <StatStrip stats={stats} inView={isInView} delay={0} />
 
         {/* Controls */}
         <motion.div
@@ -365,51 +296,87 @@ const ArticlesFull = () => {
         <LayoutGroup>
           <motion.ul layout className="grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
             <AnimatePresence mode="popLayout" initial={false}>
-              {visible.map((article) => {
-                const published = article.status === "published" && article.href;
-                const Wrapper = published ? motion.a : motion.div;
+              {visible.map((item) => {
+                const { article } = item;
+                const kind = article ? fileKind(article) : null;
                 return (
                   <motion.li
-                    key={article.title}
+                    key={item.key}
                     layout
                     initial={{ opacity: 0, scale: 0.94, y: 16 }}
                     animate={isInView ? { opacity: 1, scale: 1, y: 0 } : {}}
                     exit={{ opacity: 0, scale: 0.94 }}
                     transition={{ duration: 0.3, layout: { type: "spring", stiffness: 300, damping: 30 } }}
                   >
-                    <Wrapper
-                      {...(published ? { href: article.href, target: "_blank", rel: "noopener noreferrer" } : {})}
+                    <motion.div
                       whileHover={{ y: -6 }}
-                      className={cn(
-                        "glass-card group flex h-full flex-col rounded-2xl p-5 transition-colors duration-300 hover:border-primary/50 sm:p-6",
-                        published && "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                      )}
+                      className="glass-card group flex h-full flex-col rounded-2xl p-5 transition-colors duration-300 hover:border-primary/50 sm:p-6"
                     >
                       <div className="mb-4 flex items-center justify-between gap-3">
                         <span className="inline-flex items-center gap-1.5 font-mono text-xs text-primary">
-                          <article.category.icon className="h-3.5 w-3.5" aria-hidden />
-                          {article.category.label}
+                          <item.category.icon className="h-3.5 w-3.5" aria-hidden />
+                          {item.category.label}
                         </span>
                         <span
                           className={cn(
                             "shrink-0 rounded-full border px-2.5 py-0.5 font-mono text-[0.7rem]",
-                            published
+                            article
                               ? "border-primary/40 bg-primary/10 text-primary"
                               : "border-border bg-secondary/60 text-muted-foreground",
                           )}
                         >
-                          {published ? "Published" : "Planned"}
+                          {article ? "Published" : "Planned"}
                         </span>
                       </div>
-                      <h3 className="flex-1 text-base font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
-                        {article.title}
+                      <h3 className="text-base font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
+                        {item.title}
                       </h3>
-                      {published && (
-                        <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
-                          Read article <ArrowUpRight className="h-4 w-4" aria-hidden />
-                        </span>
+                      {article && (
+                        <>
+                          {article.summary && (
+                            <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{article.summary}</p>
+                          )}
+                          <p className="mt-3 font-mono text-xs text-muted-foreground">{articleDate(article)}</p>
+                        </>
                       )}
-                    </Wrapper>
+                      <div className="flex-1" />
+                      {article && (
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {article.fileUrl && (
+                            <a
+                              href={article.fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              {...(kind === "PDF" ? {} : { download: article.fileName ?? true })}
+                              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-sm font-semibold text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                              {kind === "PDF" ? <FileText className="h-4 w-4" aria-hidden /> : <Download className="h-4 w-4" aria-hidden />}
+                              {kind === "PDF" ? "Read PDF" : `Download ${kind}`}
+                            </a>
+                          )}
+                          {article.scholarUrl && (
+                            <a
+                              href={article.scholarUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                              <GraduationCap className="h-4 w-4" aria-hidden /> Google Scholar
+                            </a>
+                          )}
+                          {article.zenodoUrl && (
+                            <a
+                              href={article.zenodoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                              <BookOpen className="h-4 w-4" aria-hidden /> Zenodo
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </motion.div>
                   </motion.li>
                 );
               })}
@@ -448,12 +415,21 @@ const ArticlesFull = () => {
             projects are kept distinct from professional work, confidential details stay private, and planned topics
             are never presented as finished work.
           </p>
-          <Link
-            to="/#contact"
-            className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
-          >
-            Want a topic written first? Let me know <ArrowUpRight className="h-4 w-4" aria-hidden />
-          </Link>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            {site.scholarUrl && (
+              <a
+                href={site.scholarUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+              >
+                <GraduationCap className="h-4 w-4" aria-hidden /> All my papers on Google Scholar
+              </a>
+            )}
+            <Link to="/#contact" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+              Want a topic written first? Let me know <ArrowUpRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </div>
         </motion.div>
       </div>
     </section>
