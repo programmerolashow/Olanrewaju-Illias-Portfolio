@@ -9,6 +9,11 @@ export interface CaseStudy {
   features?: { name: string; status: "Implemented" | "In Progress" | "Prototype" | "Planned" }[];
   /** Real outcomes only: users, numbers, feedback, what you learned. */
   outcome?: string;
+  /**
+   * Headline numbers shown as a row at the top of the project page, e.g. { value: "1,200+", label: "Active users" }.
+   * Only figures you can back up; `asOf` says when it was measured ("Oct 2026"), `source` how ("Umami", "Neon query").
+   */
+  metrics?: Metric[];
   /** How a request moves through the system, in order, e.g. ["Next.js UI", "API route", "Prisma", "PostgreSQL (Neon)"]. */
   architecture?: string[];
   /** Key technical decisions: what was chosen, over what, and why. */
@@ -19,6 +24,13 @@ export interface CaseStudy {
   code?: CodeSample[];
   /** Possible next steps. Shown as potential improvements, not as gaps. */
   improvements?: string[];
+}
+
+export interface Metric {
+  value: string;
+  label: string;
+  asOf?: string;
+  source?: string;
 }
 
 export interface Decision {
@@ -44,7 +56,8 @@ export interface Project {
   title: string;
   description: string;
   tags: string[];
-  github: string;
+  /** Public repository. Leave unset for closed-source work (e.g. company products); the Source Code button is hidden. */
+  github?: string;
   live?: string;
   featured: boolean;
   /** Optional screenshot in /public/projects. imageFocus = CSS object-position. */
@@ -56,9 +69,79 @@ export interface Project {
   status?: string;
   /** Optional write-up shown on the project page. Sections left empty are not rendered. */
   caseStudy?: CaseStudy;
+  /**
+   * Products that live inside this one. They have no card or page of their own: they're shown only on this
+   * project's page, each in its own section (linkable as /projects/<slug>#<product slug>).
+   */
+  products?: SubProduct[];
 }
 
+/** A product within a project (see Project.products). Same fields as a project, minus listing-only ones. */
+export type SubProduct = Pick<Project, "slug" | "title" | "description" | "tags" | "live" | "image" | "imageFocus" | "category" | "status" | "caseStudy">;
+
 export const projects: Project[] = [
+  {
+    slug: "qorelly",
+    title: "Qorelly",
+    description:
+      "Qorelly is a multi-vertical SaaS platform for Nigerian small and medium-sized businesses, built by Core Technologies LTD. It brings point of sale, online orders, menus, inventory, invoicing and payments into one dashboard, alongside two companion products: Qore Catalog and Qore Maps.",
+    tags: ["SaaS", "PostgreSQL", "Payments", "Point of Sale", "Inventory", "Claude Code"],
+    category: "SaaS / Multi-Vertical Business Platform",
+    // Company product: closed source, so no github link. live, status and metrics stay unset until confirmed.
+    featured: true,
+    image: "/projects/qorelly.webp",
+    imageFocus: "center top",
+    caseStudy: {
+      problem:
+        "Small and medium-sized businesses in Nigeria often run sales, orders, stock and payments across separate tools, paper records and chat apps. Qorelly gives them one place to set up their business, take orders in person and online, track inventory, send invoices and see how the day is going, with amounts in Naira.",
+      role: "Software Engineer in the Engineering Department at Core Technologies LTD (Aug 2026 – present). I contribute to full-stack engineering across the platform: frontend and backend features, API integration, database work, debugging, code reviews and testing. I built inventory interface improvements, including product variation table columns, inventory pricing and stock-value displays, and category selection across product workflows.",
+      features: [
+        { name: "Business dashboard: revenue, orders, average ticket, new customers", status: "Implemented" },
+        { name: "Guided setup to the first order", status: "Implemented" },
+        { name: "Menu builder: categories, dishes, menus and QR code", status: "Implemented" },
+        { name: "Online orders", status: "Implemented" },
+        { name: "Point of sale", status: "Implemented" },
+        { name: "Inventory", status: "Implemented" },
+        { name: "Invoicing", status: "Implemented" },
+        { name: "Payment setup: online, card terminal, cash register, bank account", status: "Implemented" },
+        { name: "Website builder and visitor analytics", status: "Implemented" },
+      ],
+      decisions: [
+        {
+          decision: "Revenue is reported from recorded payments, not from order totals",
+          why: "An order's total is what was asked for, not what was received. Reading revenue only from payment records keeps dashboards and reports honest when orders are part-paid, refunded or abandoned.",
+          tradeOff: "Every report has to join through payment data, and new reports must follow the same rule.",
+        },
+        {
+          decision: "The amount paid on an order is maintained by the database, never written by the client",
+          why: "A server-side trigger keeps it in step with the payments recorded against the order, so no screen or integration can set it to a wrong value.",
+          tradeOff: "Logic in the database is less visible than application code and needs to be documented and tested.",
+        },
+        {
+          decision: "File-first database migrations, verified on staging before production",
+          why: "Every schema change is a reviewed file applied by a migration runner, never a one-off edit in a SQL console, so each environment can be rebuilt and audited.",
+          tradeOff: "Small fixes take longer to ship than editing the database directly.",
+        },
+      ],
+    },
+    products: [
+      {
+        slug: "qore-catalog",
+        title: "Qore Catalog",
+        description:
+          "Qore Catalog is a dataset of products sold in Nigerian commerce, available through an API, so businesses and developers can work from consistent product data instead of typing it in by hand.",
+        tags: ["API", "Dataset", "PostgreSQL"],
+        category: "Data / API Product",
+      },
+      {
+        slug: "qore-maps",
+        title: "Qore Maps",
+        description: "Qore Maps is Core Technologies' navigation product, part of the same family as Qorelly and Qore Catalog.",
+        tags: ["Maps", "Navigation"],
+        category: "Navigation",
+      },
+    ],
+  },
   {
     slug: "bankspace",
     title: "BankSpace",

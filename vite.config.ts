@@ -2,7 +2,7 @@ import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { site, staticRoutes } from "./src/config/site";
+import { person, site, staticRoutes } from "./src/config/site";
 import { pageMeta, pageRoutes } from "./src/config/pages";
 import { projects } from "./src/data/projects";
 import { excerpt, replaceSeo, type SeoMeta } from "./api/_lib/seo.js";
@@ -23,6 +23,35 @@ const defaultSeo = (): SeoMeta => ({
   imageAlt: `${site.name}, Full-Stack Product Engineer`,
 });
 
+/** schema.org Person + Organization (JSON-LD) from `person` in src/config/site.ts, for search engines. */
+const structuredData = () => {
+  const orgId = `${site.url}/#employer`;
+  const graph = [
+    {
+      "@type": "Person",
+      "@id": `${site.url}/#person`,
+      name: person.name,
+      alternateName: person.alternateNames,
+      jobTitle: person.jobTitle,
+      description: site.description,
+      url: `${site.url}/`,
+      image: `${site.url}${person.image}`,
+      worksFor: { "@id": orgId },
+      sameAs: [site.scholarUrl, ...person.sameAs].filter(Boolean),
+    },
+    {
+      "@type": "Organization",
+      "@id": orgId,
+      name: person.employer.name,
+      address: { "@type": "PostalAddress", addressCountry: person.employer.country },
+      brand: person.employer.products.map((p) => ({ "@type": "Brand", name: p.name, ...(p.url ? { url: p.url } : {}) })),
+    },
+    { "@type": "WebSite", "@id": `${site.url}/#website`, url: `${site.url}/`, name: site.name, author: { "@id": `${site.url}/#person` } },
+  ];
+  // "<" escaped so no value can close the <script> tag early.
+  return JSON.stringify({ "@context": "https://schema.org", "@graph": graph }).replace(/</g, "\\u003c");
+};
+
 /**
  * Fills index.html from src/config/site.ts (tokens + the home page's link-preview tags), adds the Umami script
  * when a website ID is set, writes sitemap.xml and robots.txt, and writes a copy of index.html for every fixed
@@ -36,15 +65,25 @@ const sitePlugin = (): Plugin => ({
     order: "pre",
     handler(html) {
       const filled = replaceSeo(html, defaultSeo()).replace(/%SITE_NAME%/g, escapeAttr(site.name));
-      if (!site.umamiWebsiteId) return filled;
       return {
         html: filled,
         tags: [
+          { tag: "script", attrs: { type: "application/ld+json" }, children: structuredData(), injectTo: "head" },
+          // Lets feed readers find the Updates feed from any page (api/feed.js).
           {
-            tag: "script",
-            attrs: { defer: true, src: "https://cloud.umami.is/script.js", "data-website-id": site.umamiWebsiteId },
+            tag: "link",
+            attrs: { rel: "alternate", type: "application/rss+xml", title: `${site.name}: Updates`, href: `${site.url}/api/feed` },
             injectTo: "head",
           },
+          ...(site.umamiWebsiteId
+            ? [
+                {
+                  tag: "script",
+                  attrs: { defer: true, src: "https://cloud.umami.is/script.js", "data-website-id": site.umamiWebsiteId },
+                  injectTo: "head" as const,
+                },
+              ]
+            : []),
         ],
       };
     },

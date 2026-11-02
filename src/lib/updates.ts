@@ -20,11 +20,13 @@ export interface Update {
   images: UpdateImage[];
   published: boolean;
   pinned: boolean;
+  /** When it was emailed to subscribers. Only present in the admin list. */
+  emailedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
-export type UpdateInput = Omit<Update, "id" | "createdAt" | "updatedAt">;
+export type UpdateInput = Omit<Update, "id" | "createdAt" | "updatedAt" | "emailedAt">;
 
 export type EventStatus = "happening" | "upcoming" | "past";
 

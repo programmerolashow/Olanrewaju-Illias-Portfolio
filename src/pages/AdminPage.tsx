@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ArrowRight, Check, Eye, FileUp, GraduationCap, ImagePlus, Linkedin, Loader2, LogOut, Mail, Pencil, Pin, Plus, Star, Trash2, Undo2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Eye, FileUp, GraduationCap, ImagePlus, Linkedin, Loader2, LogOut, Mail, Pencil, Pin, Plus, Send, Star, Trash2, Undo2, X } from "lucide-react";
 import { StatusBadge } from "@/components/UpdateCard";
 import { cn } from "@/lib/utils";
 import { displayDate, type Update, type UpdateImage, type UpdateInput } from "@/lib/updates";
@@ -871,6 +871,27 @@ const Dashboard = ({ onSignedOut }: { onSignedOut: () => void }) => {
     mutationFn: () => api("/api/admin/logout", { method: "POST" }),
     onSuccess: onSignedOut,
   });
+  const subscribers = useQuery({
+    queryKey: ["admin-subscribers"],
+    queryFn: () => api<{ counts: { pending: number; confirmed: number; unsubscribed: number } }>("/api/admin/subscribers").then((r) => r.counts),
+  });
+  const notify = useMutation({
+    mutationFn: ({ id, again }: { id: string; again: boolean }) =>
+      api<{ sent: number; failed: number }>(`/api/admin/subscribers?updateId=${id}${again ? "&again=1" : ""}`, { method: "POST" }),
+    onSuccess: (r) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-updates"] });
+      window.alert(`Sent to ${r.sent} subscriber${r.sent === 1 ? "" : "s"}${r.failed ? `; ${r.failed} failed (see the logs)` : ""}.`);
+    },
+    onError: (error) => window.alert(error.message),
+  });
+  const emailSubscribers = (u: Update) => {
+    const count = subscribers.data?.confirmed ?? 0;
+    const again = Boolean(u.emailedAt);
+    const question = again
+      ? `“${u.title}” was already emailed on ${new Date(u.emailedAt!).toLocaleString()}. Send it again to ${count} subscriber${count === 1 ? "" : "s"}?`
+      : `Email “${u.title}” to ${count} confirmed subscriber${count === 1 ? "" : "s"}?`;
+    if (window.confirm(question)) notify.mutate({ id: u.id, again });
+  };
 
   if (editing) return <Editor initial={editing === "new" ? null : editing} onDone={() => setEditing(null)} />;
   if (editingArticle) {
@@ -941,6 +962,14 @@ const Dashboard = ({ onSignedOut }: { onSignedOut: () => void }) => {
       {(tab === "recommendations" || tab === "comments") && <Moderation key={tab} kind={tab} />}
       {tab === "articles" && <ArticleList onEdit={setEditingArticle} />}
 
+      {tab === "updates" && subscribers.data && (
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Mail className="h-4 w-4" aria-hidden />
+          {subscribers.data.confirmed} confirmed email subscriber{subscribers.data.confirmed === 1 ? "" : "s"}
+          {subscribers.data.pending > 0 && ` · ${subscribers.data.pending} awaiting confirmation`}
+          {subscribers.data.unsubscribed > 0 && ` · ${subscribers.data.unsubscribed} unsubscribed`}
+        </p>
+      )}
       {tab === "updates" && list.isLoading && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" aria-label="Loading" />}
       {tab === "updates" && list.isError && <p className="text-sm text-destructive">{list.error.message}</p>}
       {tab === "updates" && list.data?.length === 0 && <p className="text-muted-foreground">No posts yet. Tap “New post” to share your first event.</p>}
@@ -960,6 +989,7 @@ const Dashboard = ({ onSignedOut }: { onSignedOut: () => void }) => {
                 {u.pinned && <Pin className="h-3.5 w-3.5" aria-label="Pinned" />}
                 <StatusBadge update={u} className="px-2 py-0.5" />
                 <span>{displayDate(u)}</span>
+                {u.emailedAt && <span title={new Date(u.emailedAt).toLocaleString()}>Emailed</span>}
               </div>
             </div>
             <div className="flex shrink-0 gap-1">
@@ -967,6 +997,18 @@ const Dashboard = ({ onSignedOut }: { onSignedOut: () => void }) => {
                 <Link to={`/updates/${u.id}`} aria-label="View on site" className="rounded-full p-2 text-muted-foreground hover:text-primary">
                   <Eye className="h-4 w-4" />
                 </Link>
+              )}
+              {u.published && (
+                <button
+                  type="button"
+                  onClick={() => emailSubscribers(u)}
+                  disabled={notify.isPending || !subscribers.data?.confirmed}
+                  aria-label="Email to subscribers"
+                  title={subscribers.data?.confirmed ? "Email to subscribers" : "No confirmed subscribers yet"}
+                  className="rounded-full p-2 text-muted-foreground hover:text-primary disabled:opacity-40"
+                >
+                  {notify.isPending && notify.variables?.id === u.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                </button>
               )}
               <button type="button" onClick={() => setEditing(u)} aria-label="Edit" className="rounded-full p-2 text-muted-foreground hover:text-primary">
                 <Pencil className="h-4 w-4" />

@@ -26,7 +26,7 @@ export default async function handler(req, res) {
     if (req.method === "GET") {
       const rows = await sql`
         select id, kind, title, body, location, starts_on::text as starts_on, ends_on::text as ends_on,
-               link_url, images, published, pinned, created_at, updated_at
+               link_url, images, published, pinned, emailed_at, created_at, updated_at
         from updates
         order by created_at desc`;
       return res.status(200).json({ updates: rows.map(toUpdate) });

@@ -42,6 +42,8 @@ export const overLimit = async (table, hash, max, hours) => {
   const [{ count }] =
     table === "recommendations"
       ? await sql`select count(*)::int as count from recommendations where ip_hash = ${hash} and created_at > now() - ${window}::interval`
-      : await sql`select count(*)::int as count from update_comments where ip_hash = ${hash} and created_at > now() - ${window}::interval`;
+      : table === "subscribers"
+        ? await sql`select count(*)::int as count from subscribers where ip_hash = ${hash} and confirm_sent_at > now() - ${window}::interval`
+        : await sql`select count(*)::int as count from update_comments where ip_hash = ${hash} and created_at > now() - ${window}::interval`;
   return count >= max;
 };

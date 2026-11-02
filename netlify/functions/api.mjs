@@ -5,11 +5,14 @@
 import articles from "../../api/articles.js";
 import comments from "../../api/comments.js";
 import contact from "../../api/contact.js";
+import feed from "../../api/feed.js";
 import recommendations from "../../api/recommendations.js";
+import subscribe from "../../api/subscribe.js";
 import updates from "../../api/updates.js";
 import adminArticles from "../../api/admin/articles.js";
 import adminAuth from "../../api/admin/auth.js";
 import moderation from "../../api/admin/moderation.js";
+import adminSubscribers from "../../api/admin/subscribers.js";
 import adminUpdates from "../../api/admin/updates.js";
 import upload from "../../api/admin/upload.js";
 import shareUpdate from "../../api/share/update.js";
@@ -18,13 +21,16 @@ const ROUTES = {
   "/api/articles": articles,
   "/api/comments": comments,
   "/api/contact": contact,
+  "/api/feed": feed,
   "/api/recommendations": recommendations,
+  "/api/subscribe": subscribe,
   "/api/updates": updates,
   "/api/admin/articles": adminArticles,
   "/api/admin/login": adminAuth,
   "/api/admin/logout": adminAuth,
   "/api/admin/session": adminAuth,
   "/api/admin/moderation": moderation,
+  "/api/admin/subscribers": adminSubscribers,
   "/api/admin/updates": adminUpdates,
   "/api/admin/upload": upload,
 };

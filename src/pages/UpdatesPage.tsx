@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { Loader2, Rss } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";
 import UpdateCard from "@/components/UpdateCard";
+import SubscribeForm from "@/components/SubscribeForm";
 import { cn } from "@/lib/utils";
 import { useUpdates } from "@/lib/updates";
 import { usePageMeta } from "@/hooks/use-page-meta";
@@ -15,8 +17,18 @@ const filters = [
   { value: "post", label: "Posts" },
 ] as const;
 
+/** Where the confirm / unsubscribe links in emails land (api/subscribe.js redirects here with ?subscription=…). */
+const subscriptionNotes: Record<string, { text: string; error?: boolean }> = {
+  confirmed: { text: "You're subscribed. You'll get an email when I post something new." },
+  unsubscribed: { text: "You've been unsubscribed and won't get any more emails." },
+  invalid: { text: "That link is no longer valid. Sign up again below if you'd like updates.", error: true },
+  error: { text: "Something went wrong with that link. Please try again later.", error: true },
+};
+
 const UpdatesPage = () => {
   usePageMeta(pageMeta.updates.title, pageMeta.updates.description);
+  const [params] = useSearchParams();
+  const note = subscriptionNotes[params.get("subscription") ?? ""];
   const { data, isLoading, isError } = useUpdates();
   const [filter, setFilter] = useState<(typeof filters)[number]["value"]>("all");
   const shown = (data ?? []).filter((u) => filter === "all" || u.kind === filter);
@@ -45,9 +57,27 @@ const UpdatesPage = () => {
             </button>
           ))}
         </div>
+        <a
+          href="/api/feed"
+          className="ml-2 inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-1.5 align-top text-sm font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+        >
+          <Rss className="h-4 w-4" aria-hidden /> RSS feed
+        </a>
       </PageHeader>
 
       <div className="container mx-auto px-4 pb-12 sm:px-6 md:pb-16">
+        {note && (
+          <p
+            role="status"
+            className={cn(
+              "mb-6 rounded-2xl border px-4 py-3 text-sm font-medium",
+              note.error ? "border-destructive/40 text-destructive" : "border-primary/40 bg-primary/10 text-foreground",
+            )}
+          >
+            {note.text}
+          </p>
+        )}
+        <SubscribeForm className="mb-8 max-w-2xl" />
         {isLoading && (
           <p className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> Loading updates…
