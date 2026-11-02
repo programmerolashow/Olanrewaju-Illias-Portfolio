@@ -1,0 +1,26 @@
+// Cloudflare Workers deployment (static assets + API in one Worker).
+// The built site in dist/ is served as static assets; /api/* and /updates/* run worker/index.mjs, which serves
+// the same api/ handlers Vercel and Netlify run.
+// Secrets: set with `npx wrangler secret put <NAME>` (or Dashboard → Workers → this Worker → Settings → Variables):
+//   DATABASE_URL, ADMIN_PASSWORD, SESSION_SECRET, EMAIL_USER, EMAIL_PASS,
+//   NEON_S3_ENDPOINT, NEON_S3_REGION, NEON_S3_ACCESS_KEY_ID, NEON_S3_SECRET_ACCESS_KEY  (optional: CONTACT_TO)
+// With nodejs_compat they're available on process.env, so the handlers need no changes.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "olanrewaju-illias-portfolio",
+  "main": "worker/index.mjs",
+  "compatibility_date": "2025-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "build": { "command": "npm run build" },
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    // /services → services.html, /projects/bankspace → projects/bankspace.html (the per-page preview copies).
+    "html_handling": "auto-trailing-slash",
+    // Client-side routes without their own HTML file (e.g. /admin) load the app.
+    "not_found_handling": "single-page-application",
+    // Only these paths reach the Worker; everything else is served straight from dist/.
+    "run_worker_first": ["/api/*", "/updates/*"]
+  },
+  "observability": { "enabled": true }
+}

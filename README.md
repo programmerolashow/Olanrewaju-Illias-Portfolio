@@ -47,6 +47,16 @@ Set these in Vercel → Project → Settings → Environment Variables (Producti
 
 Vercel reserves the `AWS_*` names, so the `NEON_S3_*` ones are required there for photo uploads in `/admin`.
 
+## Cloudflare Workers
+
+`wrangler.jsonc` deploys the site as one Worker: `dist/` is served as static assets and `/api/*` plus `/updates/*` run `worker/index.mjs`, which serves the same `api/` handlers.
+
+1. `npx wrangler login` (once).
+2. Set each secret from the table above, plus `EMAIL_USER` and `EMAIL_PASS` for the contact form: `npx wrangler secret put DATABASE_URL`, and so on. Use the `NEON_S3_*` names here too.
+3. `npm run cf:deploy` builds and deploys. `npm run cf:dev` runs it locally (secrets from a `.dev.vars` file).
+
+To deploy on every push instead, connect the repo in Cloudflare → Workers & Pages → Create → Import a repository. Leave the build command empty (wrangler.jsonc runs `npm run build`) and set the deploy command to `npx wrangler deploy`.
+
 ## Link previews (LinkedIn, X, Facebook, WhatsApp, Instagram DMs)
 
 - **Fixed pages and projects:** the build writes `services.html`, `projects/<slug>.html`, … each with its own title, description and image (titles and descriptions live in `src/config/pages.ts` and `src/data/projects.ts`). After adding or renaming a project, run `npm run og:cards` (needs Python + Pillow) to make its 1200×630 card in `public/og/projects/`.
