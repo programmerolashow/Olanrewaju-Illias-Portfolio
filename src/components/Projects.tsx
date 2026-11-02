@@ -210,17 +210,19 @@ const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => 
                         <ExternalLink className="h-4 w-4" />
                       </motion.a>
                     )}
-                    <motion.a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      whileHover={{ scale: 1.04, y: -2 }}
-                      whileTap={{ scale: 0.96 }}
-                      className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-5 py-2.5 text-sm font-semibold text-foreground backdrop-blur-sm transition-colors hover:border-primary hover:text-primary"
-                    >
-                      <Github className="h-4 w-4" />
-                      Source Code
-                    </motion.a>
+                    {project.github && (
+                      <motion.a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.04, y: -2 }}
+                        whileTap={{ scale: 0.96 }}
+                        className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-5 py-2.5 text-sm font-semibold text-foreground backdrop-blur-sm transition-colors hover:border-primary hover:text-primary"
+                      >
+                        <Github className="h-4 w-4" />
+                        Source Code
+                      </motion.a>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -273,15 +275,17 @@ const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => 
                     <div className="flex items-start justify-between mb-4">
                       <Folder className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
                       <div className="flex gap-3">
-                        <a
-                          href={project.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-muted-foreground hover:text-primary transition-colors"
-                          aria-label={`${project.title} source code on GitHub`}
-                        >
-                          <Github size={20} />
-                        </a>
+                        {project.github && (
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-muted-foreground hover:text-primary transition-colors"
+                            aria-label={`${project.title} source code on GitHub`}
+                          >
+                            <Github size={20} />
+                          </a>
+                        )}
                         {project.live && (
                           <a
                             href={project.live}
