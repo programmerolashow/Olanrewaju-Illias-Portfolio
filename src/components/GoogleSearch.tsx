@@ -2,6 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { ArrowUpRight, Search } from "lucide-react";
 import { site } from "@/config/site";
+import TypewriterText from "@/components/TypewriterText";
 
 const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(site.name)}`;
 
@@ -22,7 +23,7 @@ const GoogleSearch = () => {
           >
             <p className="mb-4 font-mono text-sm text-primary">Find Me Online</p>
             <h2 className="section-heading">
-              Searchable on <span className="gradient-text">Google</span>
+              <TypewriterText text="Searchable on " highlight="Google" />
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground md:text-lg lg:mx-0">
               Search my name and Google pulls together my work, projects and community involvement from across the web.

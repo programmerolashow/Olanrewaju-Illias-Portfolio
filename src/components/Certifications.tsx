@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { BadgeCheck, ExternalLink, Maximize2 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { certifications, type Certification } from "@/data/certifications";
+import TypewriterText from "@/components/TypewriterText";
 
 /** Licenses & certifications: click a certificate to view it full size, or open the issuer's verification page. */
 const Certifications = () => {
@@ -21,7 +22,7 @@ const Certifications = () => {
         >
           <p className="mb-4 font-mono text-sm text-primary">Licenses & Certifications</p>
           <h2 className="section-heading">
-            Verified <span className="gradient-text">Credentials</span>
+            <TypewriterText text="Verified " highlight="Credentials" />
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
             Every certificate links to the issuer's page so you can check it for yourself.

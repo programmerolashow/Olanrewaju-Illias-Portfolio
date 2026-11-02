@@ -133,6 +133,17 @@
     box-shadow: var(--glow-primary);
   }
 
+  /* Blinking cursor for TypewriterText headings. */
+  .typewriter-caret {
+    animation: typewriter-caret-blink 0.9s steps(1) infinite;
+  }
+
+  @keyframes typewriter-caret-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
   .nav-link {
     @apply relative text-muted-foreground transition-colors duration-300 hover:text-foreground;
   }

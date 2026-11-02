@@ -3,6 +3,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { pageLinks } from "@/data/navigation";
+import TypewriterText from "@/components/TypewriterText";
 
 /** Closing band for dedicated pages: links to the sibling pages plus a contact call to action. */
 const ExploreMore = () => {
@@ -62,7 +63,7 @@ const ExploreMore = () => {
           <div className="relative flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
             <div>
               <h2 className="text-2xl font-bold sm:text-3xl">
-                Have something to <span className="gradient-text">build?</span>
+                <TypewriterText text="Have something to " highlight="build?" />
               </h2>
               <p className="mt-2 max-w-xl text-sm text-muted-foreground sm:text-base">
                 A product, a feature or a codebase that needs care. Tell me what you are working on.

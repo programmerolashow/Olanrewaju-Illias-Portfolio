@@ -14,6 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import TypewriterText from "@/components/TypewriterText";
 
 interface SkillCategory {
   id: string;
@@ -306,7 +307,7 @@ const Skills = () => {
         >
           <p className="mb-4 font-mono text-sm text-primary">Skills & Expertise</p>
           <h2 className="section-heading">
-            The Full-Stack <span className="gradient-text">Toolkit</span>
+            <TypewriterText text="The Full-Stack " highlight="Toolkit" />
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
             Frontend to backend, data to AI, pipelines to product decisions: the tools and practices I use to ship.

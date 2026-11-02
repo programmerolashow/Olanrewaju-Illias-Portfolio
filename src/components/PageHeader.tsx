@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
+import TypewriterText from "@/components/TypewriterText";
 
 interface PageHeaderProps {
   eyebrow: string;
@@ -61,7 +62,7 @@ const PageHeader = ({ eyebrow, title, highlight, description, parent, children }
         transition={{ duration: 0.55, delay: 0.05 }}
         className="section-heading mt-5 max-w-4xl"
       >
-        {title} <span className="gradient-text">{highlight}</span>
+        <TypewriterText text={title ? `${title} ` : ""} highlight={highlight} />
       </motion.h1>
 
       {description && (

@@ -27,6 +27,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import TypewriterText from "@/components/TypewriterText";
 
 interface Service {
   id: string;
@@ -489,7 +490,7 @@ const Services = ({ variant = "preview" }: { variant?: "preview" | "full" }) => 
         >
           <p className="mb-4 font-mono text-sm text-primary">What I Offer</p>
           <h2 className="section-heading">
-            Services Built Around <span className="gradient-text">Real Problems</span>
+            <TypewriterText text="Services Built Around " highlight="Real Problems" />
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
             Full-stack and AI-powered software, from interfaces to APIs and databases, built to be maintainable and

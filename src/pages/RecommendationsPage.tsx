@@ -7,6 +7,7 @@ import RecommendationForm from "@/components/RecommendationForm";
 import { useRecommendations } from "@/lib/feedback";
 import { usePageMeta } from "@/hooks/use-page-meta";
 import { pageMeta } from "@/config/pages";
+import TypewriterText from "@/components/TypewriterText";
 
 const RecommendationsPage = () => {
   usePageMeta(pageMeta.recommendations.title, pageMeta.recommendations.description);
@@ -46,7 +47,7 @@ const RecommendationsPage = () => {
             <div className="glass-card mx-auto max-w-3xl rounded-3xl p-5 sm:p-8">
               <p className="font-mono text-sm text-primary">Worked with me?</p>
               <h2 id="write-heading" className="mt-1 text-2xl font-bold text-foreground md:text-3xl">
-                Leave a <span className="gradient-text">recommendation</span>
+                <TypewriterText text="Leave a " highlight="recommendation" />
               </h2>
               <p className="mb-6 mt-2 text-sm text-muted-foreground md:text-base">
                 {recs.length === 0

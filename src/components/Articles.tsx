@@ -31,6 +31,7 @@ import {
   type Article,
   type TrackId,
 } from "@/lib/articles";
+import TypewriterText from "@/components/TypewriterText";
 
 // Published articles come from /admin; planned topics live in src/lib/articles.ts. An article uploaded for a planned
 // topic takes that topic's place (Planned → Published), so a topic is never listed twice.
@@ -133,7 +134,7 @@ const ArticlesPreview = () => {
         >
           <p className="mb-4 font-mono text-sm text-primary">Writing</p>
           <h2 className="section-heading">
-            Technical Articles & <span className="gradient-text">Project Lessons</span>
+            <TypewriterText text="Technical Articles & " highlight="Project Lessons" />
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
             What I'm writing up from real projects, practical experiments and clearly labelled research.
