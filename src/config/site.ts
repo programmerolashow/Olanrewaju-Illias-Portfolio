@@ -5,7 +5,7 @@
  */
 export const site = {
   /** Production origin, no trailing slash. Used for link previews (Open Graph) and the sitemap. */
-  url: "https://olanrewaju-illias-portfolio.vercel.app",
+  url: "https://olanrewaju-illias-portfolio.olanrewajuillias.workers.dev",
   name: "Olanrewaju Illias",
   title: "Olanrewaju Illias | Full-Stack Product Engineer",
   description:

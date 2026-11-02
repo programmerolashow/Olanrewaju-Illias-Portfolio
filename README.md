@@ -2,11 +2,11 @@
 
 Personal portfolio of Olanrewaju Illias, full-stack product engineer.
 
-Live site: https://olanrewaju-illias-portfolio.vercel.app
+Live site: https://olanrewaju-illias-portfolio.olanrewajuillias.workers.dev
 
 ## Stack
 
-Vite, React, TypeScript, Tailwind CSS, shadcn/ui and Framer Motion, deployed on Vercel. The contact form is handled by `api/contact.js` on Vercel, and by the Express server in `backend/` during local development.
+Vite, React, TypeScript, Tailwind CSS, shadcn/ui and Framer Motion, deployed on Cloudflare Workers (see below; Vercel and Netlify copies also run). The contact form is handled by `api/contact.js` in production, and by the Express server in `backend/` during local development.
 
 ## Running locally
 
