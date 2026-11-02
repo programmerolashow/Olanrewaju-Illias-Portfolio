@@ -28,6 +28,11 @@ dist-ssr
 .env.*
 !.env.example
 backend/.env
+.dev.vars*
+!.dev.vars.example
+
+# Cloudflare Wrangler local state
+.wrangler
 
 # Personal photos kept out of the served /public folder
 media-archive/

@@ -10,8 +10,15 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 let cachedTemplate = null;
 
 /** The deployed home page HTML (index.html, with its hashed script/style tags). Fetched once per function instance. */
-const loadTemplate = async (origin) => {
+const loadTemplate = async (origin, fetchIndex) => {
   if (cachedTemplate) return cachedTemplate;
+  // Cloudflare: worker/index.mjs reads it from the Worker's static assets (a Worker can't fetch its own URL).
+  if (fetchIndex) {
+    const res = await fetchIndex();
+    if (!res.ok) throw new Error(`index.html fetch failed (${res.status})`);
+    cachedTemplate = await res.text();
+    return cachedTemplate;
+  }
   const headers = {};
   // Lets preview deployments with Vercel Authentication fetch their own page (Settings → Deployment Protection).
   if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) headers["x-vercel-protection-bypass"] = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
@@ -45,7 +52,7 @@ export default async function handler(req, res) {
 
   let template;
   try {
-    template = await loadTemplate(origin);
+    template = await loadTemplate(origin, req.fetchIndex);
   } catch (error) {
     console.error("share/update: could not load index.html", error);
     // Without the template the app can't boot from here, so send people to the Updates page.
