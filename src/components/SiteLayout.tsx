@@ -4,6 +4,7 @@ import { AnimatePresence, MotionConfig, motion, useScroll, useSpring } from "fra
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AmbientBackground from "@/components/AmbientBackground";
+import CommandMenu from "@/components/CommandMenu";
 
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -68,6 +69,7 @@ const SiteLayout = () => {
           className="fixed left-0 right-0 top-0 z-[60] h-[3px] origin-left"
         />
         <Navbar />
+        <CommandMenu />
         <AnimatePresence mode="wait" initial={false} onExitComplete={handleExitComplete}>
           <motion.main
             id="content"

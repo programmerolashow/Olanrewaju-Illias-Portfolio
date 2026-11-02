@@ -19,8 +19,38 @@ export const site = {
   bookingUrl: "https://calendly.com/olanrewajuillias/30min",
   /** Drop your CV in public/ and point this at it; the download buttons appear on the next build. */
   cvPath: "/ILLIAS_OLANREWAJU_CV.pdf",
-  /** Google Scholar profile, linked from the Articles page. Empty hides the link. */
-  scholarUrl: "",
+  /** Google Scholar profile, linked from the Articles page and listed in the search-engine data. Empty hides the link. */
+  scholarUrl: "https://scholar.google.com/citations?user=4lVtohYAAAAJ&hl=en",
+};
+
+/**
+ * Who you are, for search engines (schema.org JSON-LD, written into every page at build time by vite.config.ts).
+ * Google uses this for the name, job and profile links it shows about you. Only list things that are true today.
+ */
+export const person = {
+  name: "Olanrewaju Illias",
+  /** Other orders/spellings of your name people search for. */
+  alternateNames: ["Illias Olanrewaju"],
+  jobTitle: "Software Engineer",
+  /** Path under public/ for your photo. */
+  image: "/illias-hero.webp",
+  employer: {
+    name: "Core Technologies LTD",
+    country: "NG",
+    /** Products you work on there. Add a url to each once it has a public site. */
+    products: [
+      { name: "Qorelly", url: "" },
+      { name: "Qore Catalog", url: "" },
+      { name: "Qore Maps", url: "" },
+    ],
+  },
+  /** Your profiles elsewhere; search engines use these to tie them to you. */
+  sameAs: [
+    "https://github.com/programmerolashow",
+    "https://www.linkedin.com/in/olanrewaju-illias-993a982bb",
+    "https://www.instagram.com/programmer_olashow",
+    "https://x.com/olanrewajuillias",
+  ],
 };
 
 /** Static routes for the sitemap; project pages are added from src/data/projects.ts. */

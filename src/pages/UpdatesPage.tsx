@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Rss } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";
@@ -45,6 +45,12 @@ const UpdatesPage = () => {
             </button>
           ))}
         </div>
+        <a
+          href="/api/feed"
+          className="ml-2 inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-1.5 align-top text-sm font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+        >
+          <Rss className="h-4 w-4" aria-hidden /> RSS feed
+        </a>
       </PageHeader>
 
       <div className="container mx-auto px-4 pb-12 sm:px-6 md:pb-16">

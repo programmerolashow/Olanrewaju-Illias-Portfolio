@@ -5,6 +5,7 @@
 import articles from "../../api/articles.js";
 import comments from "../../api/comments.js";
 import contact from "../../api/contact.js";
+import feed from "../../api/feed.js";
 import recommendations from "../../api/recommendations.js";
 import updates from "../../api/updates.js";
 import adminArticles from "../../api/admin/articles.js";
@@ -18,6 +19,7 @@ const ROUTES = {
   "/api/articles": articles,
   "/api/comments": comments,
   "/api/contact": contact,
+  "/api/feed": feed,
   "/api/recommendations": recommendations,
   "/api/updates": updates,
   "/api/admin/articles": adminArticles,

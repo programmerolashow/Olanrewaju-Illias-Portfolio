@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sun, Moon, ChevronDown, ArrowRight, Send } from "lucide-react";
+import { Menu, X, Sun, Moon, ChevronDown, ArrowRight, Send, Search } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
+import { openCommandMenu } from "@/lib/command-menu";
 import { cn } from "@/lib/utils";
 import { homeSections, navGroups, type NavGroup, type NavItem } from "@/data/navigation";
 import { useActiveSection } from "@/hooks/use-active-section";
@@ -315,6 +316,19 @@ const Navbar = () => {
               <Send className="h-3.5 w-3.5" aria-hidden />
             </Link>
           </motion.div>
+
+          {/* Search (also Ctrl/⌘+K) */}
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={openCommandMenu}
+            className="p-2.5 rounded-full border border-border bg-secondary/80 text-foreground hover:text-primary hover:border-primary transition-all duration-300 flex items-center justify-center cursor-pointer"
+            aria-label="Search the site"
+            title="Search (Ctrl+K)"
+          >
+            <Search className="w-4 h-4" aria-hidden />
+          </motion.button>
 
           {/* Theme Toggle Button */}
           <motion.button
