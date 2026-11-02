@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import UpdateCard from "@/components/UpdateCard";
 import { useUpdates } from "@/lib/updates";
+import TypewriterText from "@/components/TypewriterText";
 
 /** Home-page strip of the three most relevant updates. Renders nothing until there's something to show. */
 const LatestUpdates = () => {
@@ -17,7 +18,7 @@ const LatestUpdates = () => {
           <div>
             <p className="mb-3 font-mono text-sm text-primary">What I'm Up To</p>
             <h2 id="updates-heading" className="section-heading">
-              Latest <span className="gradient-text">Updates</span>
+              <TypewriterText text="Latest " highlight="Updates" />
             </h2>
           </div>
           {data.length > latest.length && (

@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Briefcase, Calendar, MapPin, Building2, CheckCircle2 } from "lucide-react";
+import TypewriterText from "@/components/TypewriterText";
 
 interface ExperienceItem {
   id: string;
@@ -155,7 +156,7 @@ const Experience = () => {
         >
           <p className="text-primary font-mono text-sm mb-4">Career Journey</p>
           <h2 className="section-heading">
-            Work <span className="gradient-text">Experience</span>
+            <TypewriterText text="Work " highlight="Experience" />
           </h2>
           <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto mt-4">
             Proven track record of delivering production-grade software across fintech, AI technology, and freelance solutions.

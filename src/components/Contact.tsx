@@ -35,6 +35,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { site } from "@/config/site";
+import TypewriterText from "@/components/TypewriterText";
 
 // Served by api/contact.js on Vercel, or proxied to backend/server.js in development.
 // Set VITE_CONTACT_ENDPOINT only if the backend lives on a different domain (e.g. https://api.example.com/api/contact).
@@ -448,7 +449,7 @@ const Contact = () => {
         >
           <p className="mb-4 font-mono text-sm text-primary">Get In Touch</p>
           <h2 className="section-heading mb-4 md:mb-6">
-            Let's Work <span className="gradient-text">Together</span>
+            <TypewriterText text="Let's Work " highlight="Together" />
           </h2>
           <p className="mx-auto max-w-2xl text-base text-muted-foreground md:text-lg">
             Have a role, a project or an idea in mind? Send me a message. It lands straight in my inbox.

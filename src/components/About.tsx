@@ -3,6 +3,7 @@ import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Bot, Code2, Palette, Server, Database, ShieldCheck, GitPullRequest, HeartHandshake, ExternalLink, type LucideIcon } from "lucide-react";
 import FeatureArt, { type FeatureArtName } from "./FeatureArt";
+import TypewriterText from "@/components/TypewriterText";
 
 const skills = [
   // Frontend
@@ -175,8 +176,7 @@ const About = () => {
         >
           <p className="text-primary font-mono text-sm mb-4">About Me</p>
           <h2 className="section-heading">
-            Passionate About{" "}
-            <span className="gradient-text">Software Development</span>
+            <TypewriterText text="Passionate About " highlight="Software Development" />
           </h2>
         </motion.div>
 
@@ -320,7 +320,7 @@ const About = () => {
               Impact & Ecosystems
             </span>
             <h3 className="text-2xl md:text-3xl font-bold text-foreground">
-              Open Source & <span className="gradient-text">Community Advocacy</span>
+              <TypewriterText text="Open Source & " highlight="Community Advocacy" />
             </h3>
           </div>
 

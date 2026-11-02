@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import MotionImage from "@/components/MotionImage";
 import GitHubStrip from "@/components/GitHubStrip";
 import { projects, type Project } from "@/data/projects";
+import TypewriterText from "@/components/TypewriterText";
 
 type Availability = "all" | "live" | "source";
 
@@ -61,7 +62,7 @@ const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => 
           >
             <p className="text-primary font-mono text-sm mb-4">My Work</p>
             <h2 className="section-heading">
-              Featured <span className="gradient-text">Projects</span>
+              <TypewriterText text="Featured " highlight="Projects" />
             </h2>
           </motion.div>
         )}

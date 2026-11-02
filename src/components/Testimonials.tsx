@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, PenLine } from "lucide-react";
 import RecommendationCard from "@/components/RecommendationCard";
 import { useRecommendations } from "@/lib/feedback";
+import TypewriterText from "@/components/TypewriterText";
 
 const SLOTS = 3;
 const ROTATE_MS = 3000;
@@ -52,7 +53,7 @@ const Testimonials = () => {
         >
           <p className="text-primary font-mono text-sm mb-4">Kind Words</p>
           <h2 className="section-heading">
-            What People <span className="gradient-text">Say</span>
+            <TypewriterText text="What People " highlight="Say" />
           </h2>
         </motion.div>
 

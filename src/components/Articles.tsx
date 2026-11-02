@@ -31,6 +31,7 @@ import {
   type Article,
   type TrackId,
 } from "@/lib/articles";
+import TypewriterText from "@/components/TypewriterText";
 
 // Published articles come from /admin; planned topics live in src/lib/articles.ts. An article uploaded for a planned
 // topic takes that topic's place (Planned → Published), so a topic is never listed twice.
@@ -133,7 +134,7 @@ const ArticlesPreview = () => {
         >
           <p className="mb-4 font-mono text-sm text-primary">Writing</p>
           <h2 className="section-heading">
-            Technical Articles & <span className="gradient-text">Project Lessons</span>
+            <TypewriterText text="Technical Articles & " highlight="Project Lessons" />
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
             What I'm writing up from real projects, practical experiments and clearly labelled research.
@@ -348,9 +349,9 @@ const ArticlesFull = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               {...(kind === "PDF" ? {} : { download: article.fileName ?? true })}
-                              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-sm font-semibold text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-primary px-3 py-1.5 text-[0.8125rem] font-semibold text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
-                              {kind === "PDF" ? <FileText className="h-4 w-4" aria-hidden /> : <Download className="h-4 w-4" aria-hidden />}
+                              {kind === "PDF" ? <FileText className="h-3.5 w-3.5" aria-hidden /> : <Download className="h-3.5 w-3.5" aria-hidden />}
                               {kind === "PDF" ? "Read PDF" : `Download ${kind}`}
                             </a>
                           )}
@@ -359,9 +360,9 @@ const ArticlesFull = () => {
                               href={article.scholarUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-border px-3 py-1.5 text-[0.8125rem] font-medium text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
-                              <GraduationCap className="h-4 w-4" aria-hidden /> Google Scholar
+                              <GraduationCap className="h-3.5 w-3.5" aria-hidden /> Google Scholar
                             </a>
                           )}
                           {article.zenodoUrl && (
@@ -369,9 +370,9 @@ const ArticlesFull = () => {
                               href={article.zenodoUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-border px-3 py-1.5 text-[0.8125rem] font-medium text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
-                              <BookOpen className="h-4 w-4" aria-hidden /> Zenodo
+                              <BookOpen className="h-3.5 w-3.5" aria-hidden /> Zenodo
                             </a>
                           )}
                         </div>

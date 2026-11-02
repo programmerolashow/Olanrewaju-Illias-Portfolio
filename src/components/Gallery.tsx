@@ -14,6 +14,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Calendar, ChevronLeft, ChevronRight, Expand, MapPin, Play, X } from "lucide-react";
 import { gallery, type GalleryItem, type GalleryItemSize } from "@/data/gallery";
 import { cn } from "@/lib/utils";
+import TypewriterText from "@/components/TypewriterText";
 
 const sizeClasses: Record<GalleryItemSize, string> = {
   square: "",
@@ -412,7 +413,7 @@ const Gallery = ({ showHeader = true }: { showHeader?: boolean }) => {
           >
             <p className="mb-4 font-mono text-sm text-primary">Moments</p>
             <h2 className="section-heading">
-              Beyond the <span className="gradient-text">Code</span>
+              <TypewriterText text="Beyond the " highlight="Code" />
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
               Snapshots from events, talks, community meetups and the people I build with.
