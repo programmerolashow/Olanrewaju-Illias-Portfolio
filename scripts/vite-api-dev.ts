@@ -11,6 +11,8 @@ const ROUTES: Record<string, string> = {
   "/api/articles": "api/articles.js",
   "/api/admin/articles": "api/admin/articles.js",
   "/api/recommendations": "api/recommendations.js",
+  "/api/subscribe": "api/subscribe.js",
+  "/api/admin/subscribers": "api/admin/subscribers.js",
   "/api/comments": "api/comments.js",
   "/api/admin/moderation": "api/admin/moderation.js",
   "/api/admin/session": "api/admin/auth.js",

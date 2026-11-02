@@ -26,6 +26,8 @@ export const toUpdate = (row) => ({
   images: row.images ?? [],
   published: row.published,
   pinned: row.pinned,
+  // Only selected by the admin list; undefined (and so left out of the JSON) everywhere else.
+  emailedAt: row.emailed_at,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
