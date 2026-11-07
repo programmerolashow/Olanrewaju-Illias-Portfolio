@@ -1,7 +1,11 @@
 /**
  * GALLERY / "MOMENTS" CONTENT
  * ---------------------------------------------------------------
- * How to add your photos and videos:
+ * The Moments page is now managed in /admin → Moments (the `moments` table, seeded from this list by
+ * db/migrations/008_moments.sql). This list is only shown if the database can't be reached, so changes here
+ * won't appear on the live page. The notes below still describe the fields.
+ *
+ * How to add your photos and videos (old way):
  *
  * 1. Drop the files into  public/gallery/
  *    e.g. public/gallery/devfest-lagos.jpg
@@ -59,6 +63,72 @@ export interface GalleryItem {
 }
 
 export const gallery: GalleryItem[] = [
+  // DevFest Ilorin 2026
+  {
+    type: "image",
+    src: "/gallery/devfest-ilorin-2026-main-hall.webp",
+    title: "DevFest Ilorin 2026",
+    caption: "Connecting Developers Globally: the main hall at DevFest Ilorin 2026",
+    category: "Events",
+    date: "2026",
+    location: "Ilorin, Nigeria",
+    size: "large",
+    focus: "center 45%",
+  },
+  {
+    type: "image",
+    src: "/gallery/devfest-ilorin-2026-portrait.webp",
+    title: "Back at DevFest",
+    caption: "At the DevFest Ilorin 2026 backdrop",
+    category: "Portraits",
+    date: "2026",
+    location: "Ilorin, Nigeria",
+    size: "tall",
+    focus: "center 25%",
+  },
+  {
+    type: "image",
+    src: "/gallery/devfest-ilorin-2026-qorelly-corner.webp",
+    title: "DevFest Ilorin × Qorelly",
+    caption: "A conversation at the Qorelly corner",
+    category: "Community",
+    date: "2026",
+    location: "Ilorin, Nigeria",
+    size: "tall",
+    focus: "center 60%",
+  },
+  {
+    type: "image",
+    src: "/gallery/devfest-ilorin-2026-firebase-session.webp",
+    title: "Building with Firebase",
+    caption: "A Firebase session on the main stage",
+    category: "Events",
+    date: "2026",
+    location: "Ilorin, Nigeria",
+    size: "square",
+    focus: "center 40%",
+  },
+  {
+    type: "image",
+    src: "/gallery/devfest-ilorin-2026-live-demo.webp",
+    title: "Live on Stage",
+    caption: "Android development, demoed live",
+    category: "Events",
+    date: "2026",
+    location: "Ilorin, Nigeria",
+    size: "square",
+    focus: "center 55%",
+  },
+  {
+    type: "image",
+    src: "/gallery/devfest-ilorin-2026-audience.webp",
+    title: "Notebooks Out",
+    caption: "Developers taking notes through the sessions",
+    category: "Community",
+    date: "2026",
+    location: "Ilorin, Nigeria",
+    size: "tall",
+  },
   {
     type: "image",
     src: "/gallery/build-with-ai-group.webp",

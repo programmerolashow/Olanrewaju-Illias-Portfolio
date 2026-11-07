@@ -12,7 +12,12 @@ export interface UpdateVideo {
   /** Still frame grabbed at upload time, shown before the video plays. Missing if the browser couldn't decode it. */
   posterUrl?: string;
   caption: string;
+  /** The one video shown beside the photo banner. When none is marked, the first video is used. */
+  featured?: boolean;
 }
+
+/** The video that sits beside the photo banner: the one the admin marked, or else the first. */
+export const bannerVideo = (videos: UpdateVideo[] = []) => videos.find((v) => v.featured) ?? videos[0];
 
 export interface Update {
   id: string;

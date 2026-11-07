@@ -12,7 +12,8 @@ import {
 } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Calendar, ChevronLeft, ChevronRight, Expand, MapPin, Play, X } from "lucide-react";
-import { gallery, type GalleryItem, type GalleryItemSize } from "@/data/gallery";
+import type { GalleryItem, GalleryItemSize } from "@/data/gallery";
+import { useMoments } from "@/lib/moments";
 import { cn } from "@/lib/utils";
 import TypewriterText from "@/components/TypewriterText";
 
@@ -373,10 +374,13 @@ const Gallery = ({ showHeader = true }: { showHeader?: boolean }) => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [direction, setDirection] = useState(0);
 
-  const categories = useMemo(() => ["All", ...Array.from(new Set(gallery.map((g) => g.category)))], []);
+  // Managed in /admin → Moments.
+  const { data, isLoading } = useMoments();
+  const gallery = useMemo(() => data ?? [], [data]);
+  const categories = useMemo(() => ["All", ...Array.from(new Set(gallery.map((g) => g.category)))], [gallery]);
   const items = useMemo(
     () => gallery.filter((g) => activeCategory === "All" || g.category === activeCategory),
-    [activeCategory],
+    [gallery, activeCategory],
   );
 
   const navigate = useCallback(
@@ -388,7 +392,7 @@ const Gallery = ({ showHeader = true }: { showHeader?: boolean }) => {
   );
   const close = useCallback(() => setOpenIndex(null), []);
 
-  if (gallery.length === 0) return null;
+  if (!isLoading && gallery.length === 0) return null;
 
   return (
     <section

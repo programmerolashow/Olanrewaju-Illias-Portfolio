@@ -43,14 +43,51 @@ export const updateInput = z
       .max(12)
       .default([]),
     videos: z
-      .array(z.object({ url: videoUrl, posterUrl: photoUrl.optional(), caption: z.string().trim().max(300).default("") }))
+      .array(z.object({
+          url: videoUrl,
+          posterUrl: photoUrl.optional(),
+          caption: z.string().trim().max(300).default(""),
+          featured: z.boolean().default(false),
+        }),)
       .max(4)
-      .default([]),
+      .default([])
+      .refine((videos) => videos.filter((v) => v.featured).length <= 1, "Choose only one video for the banner."),
     published: z.boolean().default(false),
     pinned: z.boolean().default(false),
   })
   .refine((v) => !v.endsOn || v.startsOn, { message: "Add a start date before an end date.", path: ["startsOn"] })
   .refine((v) => !v.endsOn || !v.startsOn || v.endsOn >= v.startsOn, { message: "The end date is before the start date.", path: ["endsOn"] });
+
+// Moments: anything added in /admin lives in our bucket; the photos that shipped with the site are /gallery/ files.
+const shippedFile = /^\/gallery\/[a-z0-9][a-z0-9._-]*\.(webp|jpe?g|png|mp4|webm)$/i;
+const momentFile = z
+  .string()
+  .trim()
+  .max(500)
+  .refine((u) => u.startsWith(publicBase()) || shippedFile.test(u), "Files must be uploaded through the admin page.");
+
+// CSS object-position, kept to plain keywords and percentages, e.g. "center 30%".
+const place = "(top|bottom|left|right|center|\\d{1,3}%)";
+const focusValue = new RegExp(`^${place}( ${place})?$`);
+
+export const momentInput = z.object({
+  type: z.enum(["image", "video"]),
+  src: momentFile,
+  poster: momentFile
+    .nullable()
+    .optional()
+    .transform((v) => v || null),
+  title: z.string().trim().min(1, "Add a title.").max(120),
+  caption: z.string().trim().max(300).default(""),
+  category: z.string().trim().min(1, "Add a category, e.g. Events.").max(40),
+  date: optionalText(40),
+  location: optionalText(120),
+  size: z.enum(["square", "tall", "wide", "large"]).default("square"),
+  focus: optionalText(40).refine((v) => !v || focusValue.test(v), "Use a position like “center 30%” or “top”."),
+  published: z.boolean().default(true),
+});
+
+export const momentOrderInput = z.object({ ids: z.array(z.string().uuid()).min(1).max(500) });
 
 export const articleInput = z
   .object({

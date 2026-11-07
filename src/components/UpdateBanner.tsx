@@ -5,8 +5,9 @@ import MotionImage from "@/components/MotionImage";
 import { cn } from "@/lib/utils";
 import type { UpdateImage } from "@/lib/updates";
 
-const frame =
-  "relative mb-10 flex aspect-[4/3] max-h-[75vh] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-muted sm:aspect-[16/10]";
+/** Shared with the video beside the banner on the update page, so the two cards line up exactly. */
+export const mediaFrame =
+  "relative flex aspect-[4/3] max-h-[75vh] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-muted sm:aspect-[16/10]";
 
 /** Blurred fill of the photo behind it, so portraits show whole instead of being cropped. */
 const Backdrop = ({ url }: { url: string }) => (
@@ -21,6 +22,8 @@ const Backdrop = ({ url }: { url: string }) => (
  *    Arrows, the segments and swiping move by hand.
  *    Visitors who ask for reduced motion get no autoplay or zoom, only the manual controls.
  */
+const frame = mediaFrame;
+
 const UpdateBanner = ({ images }: { images: UpdateImage[] }) => {
   const reduce = useReducedMotion();
   const [index, setIndex] = useState(0);
