@@ -4,15 +4,37 @@ import PageHeader from "@/components/PageHeader";
 import { StatusBadge } from "@/components/UpdateCard";
 import MotionImage from "@/components/MotionImage";
 import UpdateComments from "@/components/UpdateComments";
-import UpdateBanner from "@/components/UpdateBanner";
-import { displayDate, useUpdates } from "@/lib/updates";
+import UpdateBanner, { mediaFrame } from "@/components/UpdateBanner";
+import { bannerVideo, displayDate, useUpdates, type UpdateVideo } from "@/lib/updates";
+import { cn } from "@/lib/utils";
 import { usePageMeta } from "@/hooks/use-page-meta";
+
+/** A video in the same frame as the photo banner, so cards side by side line up. Portrait clips letterbox inside it. */
+const VideoCard = ({ video, index }: { video: UpdateVideo; index: number }) => (
+  <figure>
+    <div className={cn(mediaFrame, "bg-black")}>
+      <video
+        src={video.url}
+        poster={video.posterUrl}
+        controls
+        playsInline
+        // Only the banner video fetches its length up front; the rest load nothing until played.
+        preload={index === 0 ? "metadata" : "none"}
+        aria-label={video.caption || `Video ${index + 1}`}
+        className="absolute inset-0 h-full w-full object-contain"
+      />
+    </div>
+    {video.caption && <figcaption className="mt-2 text-sm text-muted-foreground">{video.caption}</figcaption>}
+  </figure>
+);
 
 const UpdateDetailPage = () => {
   const { id = "" } = useParams();
   const { data, isLoading } = useUpdates();
   const update = data?.find((u) => u.id === id);
   usePageMeta(update?.title, update?.body.slice(0, 160));
+  const featured = bannerVideo(update?.videos);
+  const moreVideos = (update?.videos ?? []).filter((v) => v !== featured);
 
   if (isLoading) {
     return (
@@ -59,25 +81,18 @@ const UpdateDetailPage = () => {
 
       <article className="container mx-auto px-4 pb-16 sm:px-6 md:pb-24">
         <div className="max-w-4xl">
-          {/* Photos only, even when the post also has videos; those play below. */}
-          <UpdateBanner images={update.images} />
+          {/* One row: the photo banner (photos only) and beside it the chosen video. Phones stack the two. */}
+          {(update.images.length > 0 || featured) && (
+            <div className={cn("mb-10 grid items-start gap-4", update.images.length > 0 && featured && "sm:grid-cols-2")}>
+              <UpdateBanner images={update.images} />
+              {featured && <VideoCard video={featured} index={0} />}
+            </div>
+          )}
 
-          {update.videos?.length > 0 && (
-            <div className="mb-10 space-y-6">
-              {update.videos.map((video, i) => (
-                <figure key={video.url}>
-                  <video
-                    src={video.url}
-                    poster={video.posterUrl}
-                    controls
-                    playsInline
-                    // Only the first video fetches its length up front; the rest load nothing until played.
-                    preload={i === 0 ? "metadata" : "none"}
-                    aria-label={video.caption || `Video ${i + 1}`}
-                    className="aspect-video max-h-[75vh] w-full rounded-2xl border border-border bg-black object-contain"
-                  />
-                  {video.caption && <figcaption className="mt-2 text-sm text-muted-foreground">{video.caption}</figcaption>}
-                </figure>
+          {moreVideos.length > 0 && (
+            <div className="mb-10 grid items-start gap-4 sm:grid-cols-2">
+              {moreVideos.map((video, i) => (
+                <VideoCard key={video.url} video={video} index={i + 1} />
               ))}
             </div>
           )}

@@ -33,6 +33,22 @@ export const toUpdate = (row) => ({
   updatedAt: row.updated_at,
 });
 
+export const toMoment = (row) => ({
+  id: row.id,
+  type: row.type,
+  src: row.src,
+  poster: row.poster ?? undefined,
+  title: row.title,
+  caption: row.caption,
+  category: row.category,
+  date: row.date_label ?? undefined,
+  location: row.location ?? undefined,
+  size: row.size,
+  focus: row.focus ?? undefined,
+  position: row.position,
+  published: row.published,
+});
+
 export const toArticle = (row) => ({
   id: row.id,
   title: row.title,

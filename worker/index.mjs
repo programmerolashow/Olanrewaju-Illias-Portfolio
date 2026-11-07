@@ -8,11 +8,13 @@ import contact from "../api/contact.js";
 import feed from "../api/feed.js";
 import recommendations from "../api/recommendations.js";
 import subscribe from "../api/subscribe.js";
+import moments from "../api/moments.js";
 import updates from "../api/updates.js";
 import adminArticles from "../api/admin/articles.js";
 import adminAuth from "../api/admin/auth.js";
 import moderation from "../api/admin/moderation.js";
 import adminSubscribers from "../api/admin/subscribers.js";
+import adminMoments from "../api/admin/moments.js";
 import adminUpdates from "../api/admin/updates.js";
 import upload from "../api/admin/upload.js";
 import videoUpload from "../api/admin/video-upload.js";
@@ -25,6 +27,7 @@ const ROUTES = {
   "/api/feed": feed,
   "/api/recommendations": recommendations,
   "/api/subscribe": subscribe,
+  "/api/moments": moments,
   "/api/updates": updates,
   "/api/admin/articles": adminArticles,
   "/api/admin/login": adminAuth,
@@ -32,6 +35,7 @@ const ROUTES = {
   "/api/admin/session": adminAuth,
   "/api/admin/moderation": moderation,
   "/api/admin/subscribers": adminSubscribers,
+  "/api/admin/moments": adminMoments,
   "/api/admin/updates": adminUpdates,
   "/api/admin/upload": upload,
   "/api/admin/video-upload": videoUpload,
