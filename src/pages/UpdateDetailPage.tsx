@@ -80,23 +80,23 @@ const UpdateDetailPage = () => {
       </PageHeader>
 
       <article className="container mx-auto px-4 pb-16 sm:px-6 md:pb-24">
+        {/*
+          Banner row: the photo banner (photos only) and the video the admin picked, as two equal cards across the
+          full width of the section. On its own, either one keeps the narrower text column's width. Phones stack them.
+        */}
+        {(update.images.length > 0 || featured) && (
+          <div
+            className={cn(
+              "mb-10 grid items-start gap-4 md:gap-6",
+              update.images.length > 0 && featured ? "sm:grid-cols-2" : "max-w-4xl",
+            )}
+          >
+            {update.images.length > 0 && <UpdateBanner images={update.images} />}
+            {featured && <VideoCard video={featured} index={0} />}
+          </div>
+        )}
+
         <div className="max-w-4xl">
-          {/* One row: the photo banner (photos only) and beside it the chosen video. Phones stack the two. */}
-          {(update.images.length > 0 || featured) && (
-            <div className={cn("mb-10 grid items-start gap-4", update.images.length > 0 && featured && "sm:grid-cols-2")}>
-              <UpdateBanner images={update.images} />
-              {featured && <VideoCard video={featured} index={0} />}
-            </div>
-          )}
-
-          {moreVideos.length > 0 && (
-            <div className="mb-10 grid items-start gap-4 sm:grid-cols-2">
-              {moreVideos.map((video, i) => (
-                <VideoCard key={video.url} video={video} index={i + 1} />
-              ))}
-            </div>
-          )}
-
           {update.body && <p className="max-w-3xl whitespace-pre-line leading-relaxed text-foreground/90 md:text-lg">{update.body}</p>}
 
           {update.linkUrl && (
@@ -110,6 +110,15 @@ const UpdateDetailPage = () => {
               {update.kind === "event" ? "Event details" : "Read more"}
               <ExternalLink className="h-4 w-4" aria-hidden />
             </a>
+          )}
+
+          {/* The other videos, with the rest of the media below the description. */}
+          {moreVideos.length > 0 && (
+            <div className="mt-10 grid items-start gap-4 sm:grid-cols-2">
+              {moreVideos.map((video, i) => (
+                <VideoCard key={video.url} video={video} index={i + 1} />
+              ))}
+            </div>
           )}
 
           {update.images.length > 1 && (
