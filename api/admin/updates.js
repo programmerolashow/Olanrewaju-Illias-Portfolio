@@ -2,14 +2,15 @@
 //   GET    /api/admin/updates          all posts, drafts included
 //   POST   /api/admin/updates          create
 //   PUT    /api/admin/updates?id=...   replace
-//   DELETE /api/admin/updates?id=...   delete (and its uploaded images)
+//   DELETE /api/admin/updates?id=...   delete (and its uploaded photos and videos)
 import { sql, toUpdate } from "../_lib/db.js";
 import { deleteFiles } from "../_lib/storage.js";
 import { readBody, requireAdmin } from "../_lib/auth.js";
 import { firstError, updateInput } from "../_lib/validate.js";
 
-/** Every stored file behind a post's photos: the display image and its link-preview copy. */
-const fileUrls = (images) => (images ?? []).flatMap((i) => [i.url, i.shareUrl]).filter(Boolean);
+/** Every stored file behind a post's media: each photo and its link-preview copy, each video and its poster frame. */
+const fileUrls = (row) =>
+  [...(row.images ?? []).flatMap((i) => [i.url, i.shareUrl]), ...(row.videos ?? []).flatMap((v) => [v.url, v.posterUrl])].filter(Boolean);
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -26,7 +27,7 @@ export default async function handler(req, res) {
     if (req.method === "GET") {
       const rows = await sql`
         select id, kind, title, body, location, starts_on::text as starts_on, ends_on::text as ends_on,
-               link_url, images, published, pinned, emailed_at, created_at, updated_at
+               link_url, images, videos, published, pinned, emailed_at, created_at, updated_at
         from updates
         order by created_at desc`;
       return res.status(200).json({ updates: rows.map(toUpdate) });
@@ -37,36 +38,37 @@ export default async function handler(req, res) {
       if (!parsed.success) return res.status(400).json({ error: firstError(parsed.error) });
       const v = parsed.data;
       const images = JSON.stringify(v.images);
+      const videos = JSON.stringify(v.videos);
 
       if (req.method === "POST") {
         const [row] = await sql`
-          insert into updates (kind, title, body, location, starts_on, ends_on, link_url, images, published, pinned)
+          insert into updates (kind, title, body, location, starts_on, ends_on, link_url, images, videos, published, pinned)
           values (${v.kind}, ${v.title}, ${v.body}, ${v.location}, ${v.startsOn}, ${v.endsOn}, ${v.linkUrl},
-                  ${images}::jsonb, ${v.published}, ${v.pinned})
+                  ${images}::jsonb, ${videos}::jsonb, ${v.published}, ${v.pinned})
           returning id, kind, title, body, location, starts_on::text as starts_on, ends_on::text as ends_on,
-                    link_url, images, published, pinned, created_at, updated_at`;
+                    link_url, images, videos, published, pinned, created_at, updated_at`;
         return res.status(201).json({ update: toUpdate(row) });
       }
 
-      const [before] = await sql`select images from updates where id = ${id}`;
+      const [before] = await sql`select images, videos from updates where id = ${id}`;
       if (!before) return res.status(404).json({ error: "Post not found." });
       const [row] = await sql`
         update updates set
           kind = ${v.kind}, title = ${v.title}, body = ${v.body}, location = ${v.location},
-          starts_on = ${v.startsOn}, ends_on = ${v.endsOn}, link_url = ${v.linkUrl}, images = ${images}::jsonb,
+          starts_on = ${v.startsOn}, ends_on = ${v.endsOn}, link_url = ${v.linkUrl}, images = ${images}::jsonb, videos = ${videos}::jsonb,
           published = ${v.published}, pinned = ${v.pinned}, updated_at = now()
         where id = ${id}
         returning id, kind, title, body, location, starts_on::text as starts_on, ends_on::text as ends_on,
-                  link_url, images, published, pinned, created_at, updated_at`;
-      const kept = new Set(fileUrls(v.images));
-      await deleteFiles(fileUrls(before.images).filter((url) => !kept.has(url)));
+                  link_url, images, videos, published, pinned, created_at, updated_at`;
+      const kept = new Set(fileUrls(v));
+      await deleteFiles(fileUrls(before).filter((url) => !kept.has(url)));
       return res.status(200).json({ update: toUpdate(row) });
     }
 
     if (req.method === "DELETE") {
-      const [row] = await sql`delete from updates where id = ${id} returning images`;
+      const [row] = await sql`delete from updates where id = ${id} returning images, videos`;
       if (!row) return res.status(404).json({ error: "Post not found." });
-      await deleteFiles(fileUrls(row.images));
+      await deleteFiles(fileUrls(row));
       return res.status(200).json({ deleted: true });
     }
 

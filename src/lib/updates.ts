@@ -7,6 +7,13 @@ export interface UpdateImage {
   shareUrl?: string;
 }
 
+export interface UpdateVideo {
+  url: string;
+  /** Still frame grabbed at upload time, shown before the video plays. Missing if the browser couldn't decode it. */
+  posterUrl?: string;
+  caption: string;
+}
+
 export interface Update {
   id: string;
   kind: "event" | "post";
@@ -18,6 +25,7 @@ export interface Update {
   endsOn: string | null;
   linkUrl: string | null;
   images: UpdateImage[];
+  videos: UpdateVideo[];
   published: boolean;
   pinned: boolean;
   /** When it was emailed to subscribers. Only present in the admin list. */
@@ -25,6 +33,10 @@ export interface Update {
   createdAt: string;
   updatedAt: string;
 }
+
+/** The picture that stands for a post: its first photo, or else a video's poster frame. */
+export const coverUrl = (u: Pick<Update, "images" | "videos">) =>
+  u.images[0]?.url ?? (u.videos ?? []).find((v) => v.posterUrl)?.posterUrl;
 
 export type UpdateInput = Omit<Update, "id" | "createdAt" | "updatedAt" | "emailedAt">;
 

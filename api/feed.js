@@ -29,7 +29,7 @@ export default async function handler(req, res) {
   try {
     // Newest first by when it was posted (not pinned order: readers expect a chronological feed).
     rows = await sql`
-      select id, kind, title, body, location, starts_on::text as starts_on, images, created_at, updated_at
+      select id, kind, title, body, location, starts_on::text as starts_on, images, videos, created_at, updated_at
       from updates
       where published
       order by created_at desc
@@ -44,7 +44,8 @@ export default async function handler(req, res) {
     const link = `${origin}/updates/${row.id}`;
     const where = [row.kind === "event" && row.starts_on ? row.starts_on : "", row.location ?? ""].filter(Boolean).join(" · ");
     const description = [where, excerpt(row.body, 400)].filter(Boolean).join(" — ");
-    const cover = (row.images ?? [])[0];
+    const poster = (row.videos ?? []).find((v) => v.posterUrl)?.posterUrl;
+    const cover = (row.images ?? [])[0] ?? (poster ? { url: poster } : undefined);
     return [
       "    <item>",
       `      <title>${xml(row.title)}</title>`,

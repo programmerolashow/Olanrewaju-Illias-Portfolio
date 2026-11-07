@@ -12,10 +12,12 @@
     "cf:dev": "npm run build && wrangler dev",
     "cf:deploy": "wrangler deploy",
     "db:migrate": "node scripts/migrate.mjs",
-    "og:cards": "node --input-type=module -e \"const {projects}=await import('./src/data/projects.ts');const {site}=await import('./src/config/site.ts');console.log(JSON.stringify({host:new URL(site.url).host,projects}))\" | python scripts/og-cards.py"
+    "og:cards": "node --input-type=module -e \"const {projects}=await import('./src/data/projects.ts');const {site}=await import('./src/config/site.ts');console.log(JSON.stringify({host:new URL(site.url).host,projects}))\" | python scripts/og-cards.py",
+    "storage:cors": "node scripts/storage-cors.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1152.0",
+    "@aws-sdk/s3-request-presigner": "^3.1164.0",
     "@hookform/resolvers": "^3.10.0",
     "@neon/config": "^1.9.2",
     "@neon/env": "^1.6.3",

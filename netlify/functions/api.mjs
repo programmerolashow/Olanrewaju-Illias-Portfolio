@@ -15,6 +15,7 @@ import moderation from "../../api/admin/moderation.js";
 import adminSubscribers from "../../api/admin/subscribers.js";
 import adminUpdates from "../../api/admin/updates.js";
 import upload from "../../api/admin/upload.js";
+import videoUpload from "../../api/admin/video-upload.js";
 import shareUpdate from "../../api/share/update.js";
 
 const ROUTES = {
@@ -33,6 +34,7 @@ const ROUTES = {
   "/api/admin/subscribers": adminSubscribers,
   "/api/admin/updates": adminUpdates,
   "/api/admin/upload": upload,
+  "/api/admin/video-upload": videoUpload,
 };
 
 const toReq = async (request, context, url, extraQuery = {}) => {

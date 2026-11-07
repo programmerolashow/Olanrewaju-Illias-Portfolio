@@ -24,6 +24,7 @@ export const toUpdate = (row) => ({
   endsOn: row.ends_on,
   linkUrl: row.link_url,
   images: row.images ?? [],
+  videos: row.videos ?? [],
   published: row.published,
   pinned: row.pinned,
   // Only selected by the admin list; undefined (and so left out of the JSON) everywhere else.

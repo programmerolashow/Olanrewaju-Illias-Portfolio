@@ -20,6 +20,7 @@ const ROUTES: Record<string, string> = {
   "/api/admin/logout": "api/admin/auth.js",
   "/api/admin/updates": "api/admin/updates.js",
   "/api/admin/upload": "api/admin/upload.js",
+  "/api/admin/video-upload": "api/admin/video-upload.js",
 };
 
 /** Loads KEY=value lines into process.env without overriding anything already set. */
