@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   try {
     const rows = await sql`
       select id, kind, title, body, location, starts_on::text as starts_on, ends_on::text as ends_on,
-             link_url, images, published, pinned, created_at, updated_at
+             link_url, images, videos, published, pinned, created_at, updated_at
       from updates
       where published
       order by pinned desc, coalesce(starts_on, created_at::date) desc, created_at desc

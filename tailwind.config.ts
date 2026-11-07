@@ -95,9 +95,21 @@ export default {
           from: { transform: "translateX(-50%)" },
           to: { transform: "translateX(0)" },
         },
+        // Fills one segment of the update banner's progress bar; the slide changes when it ends.
+        "banner-progress": {
+          from: { transform: "scaleX(0)" },
+          to: { transform: "scaleX(1)" },
+        },
+        "banner-zoom": {
+          from: { transform: "scale(1)" },
+          to: { transform: "scale(1.06)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
+        "banner-progress": "banner-progress 6s linear forwards",
+        // Outlasts the 6s slide so the photo is still moving while it fades out.
+        "banner-zoom": "banner-zoom 7.2s linear forwards",
         "accordion-up": "accordion-up 0.2s ease-out",
         "float": "float 6s ease-in-out infinite",
         "pulse-glow": "pulse-glow 3s ease-in-out infinite",

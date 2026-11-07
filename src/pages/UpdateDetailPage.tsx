@@ -4,6 +4,7 @@ import PageHeader from "@/components/PageHeader";
 import { StatusBadge } from "@/components/UpdateCard";
 import MotionImage from "@/components/MotionImage";
 import UpdateComments from "@/components/UpdateComments";
+import UpdateBanner from "@/components/UpdateBanner";
 import { displayDate, useUpdates } from "@/lib/updates";
 import { usePageMeta } from "@/hooks/use-page-meta";
 
@@ -58,24 +59,27 @@ const UpdateDetailPage = () => {
 
       <article className="container mx-auto px-4 pb-16 sm:px-6 md:pb-24">
         <div className="max-w-4xl">
-          {update.images[0] && (
-            // Show the whole photo (portraits included) on a blurred fill of itself instead of cropping it.
-            <figure className="relative mb-10 flex aspect-[4/3] max-h-[75vh] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-muted sm:aspect-[16/10]">
-              <img
-                src={update.images[0].url}
-                alt=""
-                aria-hidden
-                decoding="async"
-                className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl"
-              />
-              <MotionImage
-                src={update.images[0].url}
-                alt={update.images[0].alt}
-                loading="eager"
-                hover={false}
-                imgClassName="object-contain"
-              />
-            </figure>
+          {/* Photos only, even when the post also has videos; those play below. */}
+          <UpdateBanner images={update.images} />
+
+          {update.videos?.length > 0 && (
+            <div className="mb-10 space-y-6">
+              {update.videos.map((video, i) => (
+                <figure key={video.url}>
+                  <video
+                    src={video.url}
+                    poster={video.posterUrl}
+                    controls
+                    playsInline
+                    // Only the first video fetches its length up front; the rest load nothing until played.
+                    preload={i === 0 ? "metadata" : "none"}
+                    aria-label={video.caption || `Video ${i + 1}`}
+                    className="aspect-video max-h-[75vh] w-full rounded-2xl border border-border bg-black object-contain"
+                  />
+                  {video.caption && <figcaption className="mt-2 text-sm text-muted-foreground">{video.caption}</figcaption>}
+                </figure>
+              ))}
+            </div>
           )}
 
           {update.body && <p className="max-w-3xl whitespace-pre-line leading-relaxed text-foreground/90 md:text-lg">{update.body}</p>}

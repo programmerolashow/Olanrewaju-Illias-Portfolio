@@ -47,6 +47,8 @@ Set these in Vercel → Project → Settings → Environment Variables (Producti
 
 Vercel reserves the `AWS_*` names, so the `NEON_S3_*` ones are required there for photo uploads in `/admin`.
 
+Videos on Updates (MP4, WebM or MOV, up to 200 MB) go from `/admin` straight to the bucket with a signed URL, so the bucket must allow the site's origin. Run `npm run storage:cors` once (and again after adding a custom domain to `ORIGINS` in `scripts/storage-cors.mjs`).
+
 ## Cloudflare Workers
 
 `wrangler.jsonc` deploys the site as one Worker: `dist/` is served as static assets and `/api/*` plus `/updates/*` run `worker/index.mjs`, which serves the same `api/` handlers.

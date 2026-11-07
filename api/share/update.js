@@ -64,7 +64,7 @@ export default async function handler(req, res) {
   if (UUID.test(id)) {
     try {
       [row] = await sql`
-        select title, body, kind, location, starts_on::text as starts_on, ends_on::text as ends_on, images, created_at
+        select title, body, kind, location, starts_on::text as starts_on, ends_on::text as ends_on, images, videos, created_at
         from updates where id = ${id} and published`;
     } catch (error) {
       console.error("share/update: query failed", error);
@@ -80,7 +80,9 @@ export default async function handler(req, res) {
 
   const siteName = attr(template, /property="og:site_name" content="([^"]*)"/) || "Olanrewaju Illias";
   const twitter = attr(template, /name="twitter:site" content="([^"]*)"/);
-  const cover = (row.images ?? [])[0];
+  // No photos: a video's poster frame is the next best preview image.
+  const poster = (row.videos ?? []).find((v) => v.posterUrl)?.posterUrl;
+  const cover = (row.images ?? [])[0] ?? (poster ? { url: poster } : undefined);
   const when = [row.kind === "event" ? dateLabel(row) : "", row.location ?? ""].filter(Boolean).join(" · ");
   const body = excerpt(row.body, when ? 170 : 200);
   const description = [when, body].filter(Boolean).join(" — ") || `${row.kind === "event" ? "Event" : "Post"} by ${siteName}`;

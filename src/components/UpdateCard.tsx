@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CalendarDays, MapPin, Megaphone } from "lucide-react";
+import { CalendarDays, MapPin, Megaphone, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import MotionImage from "@/components/MotionImage";
-import { displayDate, eventStatus, statusLabel, type Update } from "@/lib/updates";
+import { coverUrl, displayDate, eventStatus, statusLabel, type Update } from "@/lib/updates";
 
 export const StatusBadge = ({ update, className }: { update: Update; className?: string }) => {
   const status = eventStatus(update);
@@ -30,7 +30,12 @@ export const StatusBadge = ({ update, className }: { update: Update; className?:
 };
 
 const UpdateCard = ({ update, index = 0 }: { update: Update; index?: number }) => {
-  const cover = update.images[0];
+  const cover = coverUrl(update);
+  const videoCount = update.videos?.length ?? 0;
+  const media = [
+    update.images.length > 1 && `${update.images.length} photos`,
+    videoCount > 0 && (videoCount === 1 ? "Video" : `${videoCount} videos`),
+  ].filter(Boolean);
 
   return (
     <motion.article
@@ -42,16 +47,17 @@ const UpdateCard = ({ update, index = 0 }: { update: Update; index?: number }) =
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
         {cover ? (
-          <MotionImage src={cover.url} alt={cover.alt} delay={index * 0.08} />
+          <MotionImage src={cover} alt={update.images[0]?.alt ?? ""} delay={index * 0.08} />
         ) : (
           <div className="flex h-full items-center justify-center text-primary/60">
             <Megaphone className="h-10 w-10" aria-hidden />
           </div>
         )}
         <StatusBadge update={update} className="absolute left-3 top-3" />
-        {update.images.length > 1 && (
-          <span className="absolute bottom-3 right-3 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white">
-            {update.images.length} photos
+        {media.length > 0 && (
+          <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white">
+            {videoCount > 0 && <Play className="h-3 w-3 fill-current" aria-hidden />}
+            {media.join(" · ")}
           </span>
         )}
       </div>

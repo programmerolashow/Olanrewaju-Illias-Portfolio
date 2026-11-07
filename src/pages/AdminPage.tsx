@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ArrowRight, Check, Eye, FileUp, GraduationCap, ImagePlus, Linkedin, Loader2, LogOut, Mail, Pencil, Pin, Plus, Send, Star, Trash2, Undo2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Eye, FileUp, GraduationCap, ImagePlus, Linkedin, Loader2, LogOut, Mail, Pencil, Pin, Plus, Send, Star, Trash2, Undo2, Video, X } from "lucide-react";
 import { StatusBadge } from "@/components/UpdateCard";
 import { cn } from "@/lib/utils";
-import { displayDate, type Update, type UpdateImage, type UpdateInput } from "@/lib/updates";
+import { coverUrl, displayDate, type Update, type UpdateImage, type UpdateInput, type UpdateVideo } from "@/lib/updates";
 import { articleDate, articleTracks, fileKind, matchPlannedTopic, plannedTopics, type Article, type ArticleInput } from "@/lib/articles";
 import { recommenderLine, relationshipLabels, shortDate, type AdminComment, type AdminRecommendation, type ReviewStatus } from "@/lib/feedback";
 
@@ -62,6 +62,73 @@ const uploadBlob = (blob: Blob) =>
   api<{ url: string }>("/api/admin/upload", { method: "POST", body: blob, headers: { "Content-Type": blob.type } }).then(
     (r) => r.url,
   );
+
+const VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
+const MAX_VIDEO_BYTES = 200 * 1024 * 1024;
+const MAX_VIDEOS = 4;
+
+/**
+ * A still from about one second in (or the middle of a shorter clip), at most 1600px, as WebP (JPEG on Safari).
+ * Returns null when this browser can't decode the file, e.g. an HEVC .mov in Chrome; the video still uploads.
+ */
+const grabPoster = (file: File) =>
+  new Promise<Blob | null>((resolve) => {
+    const video = document.createElement("video");
+    const src = URL.createObjectURL(file);
+    const done = (blob: Blob | null) => {
+      URL.revokeObjectURL(src);
+      resolve(blob);
+    };
+    const timeout = window.setTimeout(() => done(null), 15_000);
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    video.onerror = () => {
+      window.clearTimeout(timeout);
+      done(null);
+    };
+    video.onloadedmetadata = () => {
+      video.currentTime = Math.min(1, (video.duration || 0) / 2);
+    };
+    video.onseeked = async () => {
+      window.clearTimeout(timeout);
+      if (!video.videoWidth) return done(null);
+      const scale = Math.min(1, 1600 / Math.max(video.videoWidth, video.videoHeight));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(video.videoWidth * scale);
+      canvas.height = Math.round(video.videoHeight * scale);
+      canvas.getContext("2d")!.drawImage(video, 0, 0, canvas.width, canvas.height);
+      try {
+        let blob = await encode(canvas, "image/webp", 0.82);
+        if (blob.type !== "image/webp") blob = await encode(canvas, "image/jpeg", 0.85);
+        done(blob);
+      } catch {
+        done(null);
+      }
+    };
+    video.src = src;
+  });
+
+/** Asks the API for a signed URL, then sends the file straight to storage, reporting progress from 0 to 1. */
+const uploadVideo = async (file: File, type: string, onProgress: (fraction: number) => void) => {
+  const { uploadUrl, headers, url } = await api<{ uploadUrl: string; headers: Record<string, string>; url: string }>(
+    "/api/admin/video-upload",
+    { method: "POST", body: JSON.stringify({ type, size: file.size }) },
+  );
+  // XHR rather than fetch: fetch can't report upload progress.
+  await new Promise<void>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", uploadUrl);
+    for (const [name, value] of Object.entries(headers)) xhr.setRequestHeader(name, value);
+    xhr.upload.onprogress = (e) => e.lengthComputable && onProgress(e.loaded / e.total);
+    xhr.onload = () =>
+      xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error(`Video upload failed: storage returned HTTP ${xhr.status}.`));
+    // A blocked CORS preflight lands here with no status: the bucket's CORS rules don't list this site.
+    xhr.onerror = () => reject(new Error("Video upload failed. If this keeps happening, run `npm run storage:cors` to allow this site."));
+    xhr.send(file);
+  });
+  return url;
+};
 
 /* ------------------------------------------------------------------ */
 /* Shared bits                                                         */
@@ -155,16 +222,22 @@ const blank: UpdateInput = {
   endsOn: null,
   linkUrl: null,
   images: [],
+  videos: [],
   published: false,
   pinned: false,
 };
 
 const Editor = ({ initial, onDone }: { initial: Update | null; onDone: () => void }) => {
   const queryClient = useQueryClient();
-  const [form, setForm] = useState<UpdateInput>(initial ? { ...initial } : blank);
+  // Posts saved before videos existed may come back without the field.
+  const [form, setForm] = useState<UpdateInput>(initial ? { ...initial, videos: initial.videos ?? [] } : blank);
   const [uploading, setUploading] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
+  /** The video being uploaded: its name and progress from 0 to 1. One at a time, since they're large. */
+  const [videoUpload, setVideoUpload] = useState<{ name: string; progress: number } | null>(null);
+  const [videoError, setVideoError] = useState<string | null>(null);
+  const videoInput = useRef<HTMLInputElement>(null);
   const set = <K extends keyof UpdateInput>(key: K, value: UpdateInput[K]) => setForm((f) => ({ ...f, [key]: value }));
 
   const save = useMutation({
@@ -207,6 +280,40 @@ const Editor = ({ initial, onDone }: { initial: Update | null; onDone: () => voi
     if (target < 0 || target >= next.length) return;
     [next[index], next[target]] = [next[target], next[index]];
     set("images", next);
+  };
+
+  const addVideo = async (file: File | undefined) => {
+    if (videoInput.current) videoInput.current.value = "";
+    if (!file) return;
+    setVideoError(null);
+    // Some browsers leave .mov files untyped.
+    const type = file.type || (file.name.toLowerCase().endsWith(".mov") ? "video/quicktime" : "");
+    if (!VIDEO_TYPES.includes(type)) return setVideoError("Upload an MP4, WebM or MOV video.");
+    if (file.size > MAX_VIDEO_BYTES) return setVideoError("That video is over 200 MB. Trim or compress it and try again.");
+
+    setVideoUpload({ name: file.name, progress: 0 });
+    try {
+      const posterBlob = await grabPoster(file);
+      const [url, posterUrl] = await Promise.all([
+        uploadVideo(file, type, (progress) => setVideoUpload({ name: file.name, progress })),
+        posterBlob ? uploadBlob(posterBlob).catch(() => undefined) : undefined,
+      ]);
+      setForm((f) => ({ ...f, videos: [...f.videos, { url, posterUrl, caption: "" }] }));
+    } catch (error) {
+      setVideoError(error instanceof Error ? error.message : "Video upload failed.");
+    } finally {
+      setVideoUpload(null);
+    }
+  };
+
+  const updateVideo = (index: number, patch: Partial<UpdateVideo>) =>
+    set("videos", form.videos.map((v, i) => (i === index ? { ...v, ...patch } : v)));
+  const moveVideo = (index: number, by: -1 | 1) => {
+    const next = [...form.videos];
+    const target = index + by;
+    if (target < 0 || target >= next.length) return;
+    [next[index], next[target]] = [next[target], next[index]];
+    set("videos", next);
   };
 
   const submit = (e: FormEvent) => {
@@ -332,6 +439,71 @@ const Editor = ({ initial, onDone }: { initial: Update | null; onDone: () => voi
         )}
       </div>
 
+      <div>
+        <span className="mb-1.5 block text-sm font-medium text-foreground">Videos</span>
+        <p className="mb-3 text-xs text-muted-foreground">
+          MP4, WebM or MOV, up to 200 MB each and {MAX_VIDEOS} per post. MP4 plays in every browser. Add a short caption for each.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {form.videos.map((video, i) => (
+            <div key={video.url} className="overflow-hidden rounded-xl border border-border">
+              <div className="relative">
+                <video src={video.url} poster={video.posterUrl} controls preload="metadata" playsInline className="aspect-video w-full bg-black object-contain" />
+                <div className="absolute right-2 top-2 flex gap-1">
+                  <button type="button" onClick={() => moveVideo(i, -1)} disabled={i === 0} aria-label="Move earlier" className="rounded-full bg-black/60 p-1.5 text-white disabled:opacity-40">
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                  </button>
+                  <button type="button" onClick={() => moveVideo(i, 1)} disabled={i === form.videos.length - 1} aria-label="Move later" className="rounded-full bg-black/60 p-1.5 text-white disabled:opacity-40">
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </button>
+                  <button type="button" onClick={() => set("videos", form.videos.filter((_, j) => j !== i))} aria-label="Remove video" className="rounded-full bg-black/60 p-1.5 text-white">
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+              <input
+                aria-label={`Caption for video ${i + 1}`}
+                placeholder="What's in this video?"
+                maxLength={300}
+                value={video.caption}
+                onChange={(e) => updateVideo(i, { caption: e.target.value })}
+                className="w-full border-0 border-t border-border bg-background px-3 py-2 text-sm focus-visible:outline-none"
+              />
+            </div>
+          ))}
+          {form.videos.length < MAX_VIDEOS && (
+            <button
+              type="button"
+              onClick={() => videoInput.current?.click()}
+              disabled={videoUpload !== null}
+              className="flex aspect-video flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border px-4 text-sm font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:opacity-60"
+            >
+              {videoUpload ? (
+                <>
+                  <Loader2 className="h-6 w-6 animate-spin" aria-hidden />
+                  <span className="max-w-full truncate">Uploading {videoUpload.name}</span>
+                  <span className="h-1.5 w-full max-w-[12rem] overflow-hidden rounded-full bg-secondary" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(videoUpload.progress * 100)}>
+                    <span className="block h-full rounded-full bg-primary transition-all" style={{ width: `${videoUpload.progress * 100}%` }} />
+                  </span>
+                  <span className="text-xs">{Math.round(videoUpload.progress * 100)}%</span>
+                </>
+              ) : (
+                <>
+                  <Video className="h-6 w-6" aria-hidden />
+                  Add a video
+                </>
+              )}
+            </button>
+          )}
+        </div>
+        <input ref={videoInput} type="file" accept="video/mp4,video/webm,video/quicktime,.mov" hidden onChange={(e) => addVideo(e.target.files?.[0])} />
+        {videoError && (
+          <p role="alert" className="mt-2 text-sm text-destructive">
+            {videoError}
+          </p>
+        )}
+      </div>
+
       <div className="space-y-3">
         <Toggle checked={form.published} onChange={(v) => set("published", v)} label="Published" hint="Off keeps it as a private draft only you can see here." />
         <Toggle checked={form.pinned} onChange={(v) => set("pinned", v)} label="Pin to top" hint="Shows first on the home page and Updates page." />
@@ -345,7 +517,7 @@ const Editor = ({ initial, onDone }: { initial: Update | null; onDone: () => voi
 
       <button
         type="submit"
-        disabled={save.isPending || uploading > 0}
+        disabled={save.isPending || uploading > 0 || videoUpload !== null}
         className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground disabled:opacity-60 sm:w-auto"
       >
         {save.isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
@@ -978,7 +1150,7 @@ const Dashboard = ({ onSignedOut }: { onSignedOut: () => void }) => {
         {list.data?.map((u) => (
           <li key={u.id} className="flex items-center gap-3 rounded-2xl border border-border p-3">
             <div className="h-16 w-20 shrink-0 overflow-hidden rounded-lg bg-secondary">
-              {u.images[0] && <img src={u.images[0].url} alt="" className="h-full w-full object-cover" />}
+              {coverUrl(u) && <img src={coverUrl(u)} alt="" className="h-full w-full object-cover" />}
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate font-semibold text-foreground">{u.title}</p>
@@ -1018,7 +1190,7 @@ const Dashboard = ({ onSignedOut }: { onSignedOut: () => void }) => {
                 aria-label="Delete"
                 disabled={remove.isPending}
                 onClick={() => {
-                  if (window.confirm(`Delete “${u.title}” and its photos? This can't be undone.`)) remove.mutate(u.id);
+                  if (window.confirm(`Delete “${u.title}” and its photos and videos? This can't be undone.`)) remove.mutate(u.id);
                 }}
                 className="rounded-full p-2 text-muted-foreground hover:text-destructive"
               >

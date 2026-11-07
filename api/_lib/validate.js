@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicBase } from "./storage.js";
+import { publicBase, videoBase } from "./storage.js";
 
 const date = z
   .string()
@@ -23,6 +23,12 @@ const photoUrl = z
   .url()
   .refine((u) => u.startsWith(publicBase()), "Images must be uploaded through the admin page.");
 
+// Videos are uploaded from /admin straight to our bucket's videos/ folder.
+const videoUrl = z
+  .string()
+  .url()
+  .refine((u) => u.startsWith(videoBase()), "Videos must be uploaded through the admin page.");
+
 export const updateInput = z
   .object({
     kind: z.enum(["event", "post"]),
@@ -35,6 +41,10 @@ export const updateInput = z
     images: z
       .array(z.object({ url: photoUrl, shareUrl: photoUrl.optional(), alt: z.string().trim().max(300).default("") }))
       .max(12)
+      .default([]),
+    videos: z
+      .array(z.object({ url: videoUrl, posterUrl: photoUrl.optional(), caption: z.string().trim().max(300).default("") }))
+      .max(4)
       .default([]),
     published: z.boolean().default(false),
     pinned: z.boolean().default(false),

@@ -58,6 +58,49 @@ const DOCUMENT_TYPES = {
 
 const EXTENSIONS = { ...IMAGE_TYPES, ...DOCUMENT_TYPES };
 
+/**
+ * Videos are too big for the 4.5 MB request limit, so the browser uploads them straight to the bucket with a
+ * short-lived signed URL (see presignVideoUpload). That needs the bucket's CORS rules: scripts/storage-cors.mjs.
+ */
+export const VIDEO_TYPES = {
+  "video/mp4": "mp4",
+  "video/webm": "webm",
+  "video/quicktime": "mov",
+};
+
+export const MAX_VIDEO_BYTES = 200 * 1024 * 1024;
+
+/** Every uploaded video URL starts with this, so validation can tell videos from photos. */
+export const videoBase = () => `${publicBase()}videos/`;
+
+/**
+ * A signed PUT URL for one video, valid for 15 minutes. The browser must send exactly these headers, since
+ * they're part of the signature; ContentLength is signed too, so the uploaded file can't be larger than declared.
+ */
+let presignClient;
+export const presignVideoUpload = async (type, size) => {
+  const { getSignedUrl } = await import("@aws-sdk/s3-request-presigner");
+  if (!presignClient) {
+    const { endpoint, accessKeyId, secretAccessKey, region } = config();
+    // No default CRC32 checksum: the SDK would sign one for an empty body, and the browser's real upload would fail it.
+    presignClient = new S3Client({
+      endpoint,
+      region,
+      forcePathStyle: true,
+      credentials: { accessKeyId, secretAccessKey },
+      requestChecksumCalculation: "WHEN_REQUIRED",
+    });
+  }
+  const key = `videos/${new Date().toISOString().slice(0, 7)}/${randomUUID()}.${VIDEO_TYPES[type]}`;
+  const headers = { "Content-Type": type, "Cache-Control": "public, max-age=31536000, immutable" };
+  const uploadUrl = await getSignedUrl(
+    presignClient,
+    new PutObjectCommand({ Bucket: BUCKET, Key: key, ContentType: type, ContentLength: size, CacheControl: headers["Cache-Control"] }),
+    { expiresIn: 15 * 60, signableHeaders: new Set(["content-type", "content-length", "cache-control"]) },
+  );
+  return { uploadUrl, headers, url: `${publicBase()}${key}` };
+};
+
 /** Checks the file's leading bytes, so a renamed file of another type can't be stored. */
 const looksLike = (type, bytes) => {
   if (type === "application/pdf") return bytes.subarray(0, 5).toString() === "%PDF-";
