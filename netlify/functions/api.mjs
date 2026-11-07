@@ -8,6 +8,7 @@ import contact from "../../api/contact.js";
 import feed from "../../api/feed.js";
 import recommendations from "../../api/recommendations.js";
 import subscribe from "../../api/subscribe.js";
+import likes from "../../api/likes.js";
 import moments from "../../api/moments.js";
 import updates from "../../api/updates.js";
 import adminArticles from "../../api/admin/articles.js";
@@ -27,6 +28,7 @@ const ROUTES = {
   "/api/feed": feed,
   "/api/recommendations": recommendations,
   "/api/subscribe": subscribe,
+  "/api/likes": likes,
   "/api/moments": moments,
   "/api/updates": updates,
   "/api/admin/articles": adminArticles,

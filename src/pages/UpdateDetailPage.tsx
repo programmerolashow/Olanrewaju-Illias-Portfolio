@@ -4,6 +4,7 @@ import PageHeader from "@/components/PageHeader";
 import { StatusBadge } from "@/components/UpdateCard";
 import MotionImage from "@/components/MotionImage";
 import UpdateComments from "@/components/UpdateComments";
+import { EngageBar, EngagePanda } from "@/components/EngagePanda";
 import UpdateBanner, { mediaFrame } from "@/components/UpdateBanner";
 import { bannerVideo, displayDate, useUpdates, type UpdateVideo } from "@/lib/updates";
 import { cn } from "@/lib/utils";
@@ -58,12 +59,7 @@ const UpdateDetailPage = () => {
 
   return (
     <>
-      <PageHeader
-        eyebrow={update.title}
-        parent={{ label: "Updates", to: "/updates" }}
-        title=""
-        highlight={update.title}
-      >
+      <PageHeader eyebrow={update.title} parent={{ label: "Updates", to: "/updates" }} title="" highlight={update.title}>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
           <StatusBadge update={update} />
           <span className="inline-flex items-center gap-1.5">
@@ -96,47 +92,65 @@ const UpdateDetailPage = () => {
           </div>
         )}
 
-        <div className="max-w-4xl">
-          {update.body && <p className="max-w-3xl whitespace-pre-line leading-relaxed text-foreground/90 md:text-lg">{update.body}</p>}
+        {/* Text column, and beside it on wide screens the panda inviting a like or share; it stays in view while you scroll. */}
+        <div className="xl:grid xl:grid-cols-[minmax(0,56rem)_1fr] xl:gap-10">
+          <div className="max-w-4xl">
+            {update.body && (
+              <p className="max-w-3xl whitespace-pre-line leading-relaxed text-foreground/90 md:text-lg">{update.body}</p>
+            )}
 
-          {update.linkUrl && (
-            <a
-              href={update.linkUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-6 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-primary-foreground"
-              style={{ background: "var(--gradient-primary)" }}
-            >
-              {update.kind === "event" ? "Event details" : "Read more"}
-              <ExternalLink className="h-4 w-4" aria-hidden />
-            </a>
-          )}
+            {update.linkUrl && (
+              <a
+                href={update.linkUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+                style={{ background: "var(--gradient-primary)" }}
+              >
+                {update.kind === "event" ? "Event details" : "Read more"}
+                <ExternalLink className="h-4 w-4" aria-hidden />
+              </a>
+            )}
 
-          {/* The other videos, with the rest of the media below the description. */}
-          {moreVideos.length > 0 && (
-            <div className="mt-10 grid items-start gap-4 sm:grid-cols-2">
-              {moreVideos.map((video, i) => (
-                <VideoCard key={video.url} video={video} index={i + 1} />
-              ))}
+            {/* The other videos, with the rest of the media below the description. */}
+            {moreVideos.length > 0 && (
+              <div className="mt-10 grid items-start gap-4 sm:grid-cols-2">
+                {moreVideos.map((video, i) => (
+                  <VideoCard key={video.url} video={video} index={i + 1} />
+                ))}
+              </div>
+            )}
+
+            {update.images.length > 1 && (
+              <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3">
+                {update.images.slice(1).map((img, i) => (
+                  <a
+                    key={img.url}
+                    href={img.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block overflow-hidden rounded-xl border border-border"
+                  >
+                    <MotionImage src={img.url} alt={img.alt} delay={(i % 3) * 0.1} className="aspect-square" />
+                  </a>
+                ))}
+              </div>
+            )}
+
+            <UpdateComments updateId={update.id} />
+
+            <Link to="/updates" className="mt-12 inline-flex items-center gap-2 font-semibold text-primary hover:underline">
+              <ArrowLeft className="h-4 w-4" aria-hidden /> All updates
+            </Link>
+          </div>
+          <aside className="hidden xl:block" aria-label="Like or share">
+            <div className="sticky top-[28vh] flex justify-center">
+              <EngagePanda updateId={update.id} title={update.title} />
             </div>
-          )}
-
-          {update.images.length > 1 && (
-            <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3">
-              {update.images.slice(1).map((img, i) => (
-                <a key={img.url} href={img.url} target="_blank" rel="noopener noreferrer" className="block overflow-hidden rounded-xl border border-border">
-                  <MotionImage src={img.url} alt={img.alt} delay={(i % 3) * 0.1} className="aspect-square" />
-                </a>
-              ))}
-            </div>
-          )}
-
-          <UpdateComments updateId={update.id} />
-
-          <Link to="/updates" className="mt-12 inline-flex items-center gap-2 font-semibold text-primary hover:underline">
-            <ArrowLeft className="h-4 w-4" aria-hidden /> All updates
-          </Link>
+          </aside>
         </div>
+        {/* Narrower screens: a compact like/share pill in the corner instead. */}
+        <EngageBar updateId={update.id} title={update.title} className="fixed bottom-4 right-4 z-40 xl:hidden" />
       </article>
     </>
   );
