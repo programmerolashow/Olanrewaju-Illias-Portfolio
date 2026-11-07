@@ -8,6 +8,7 @@ import type { Plugin } from "vite";
 const ROUTES: Record<string, string> = {
   "/api/updates": "api/updates.js",
   "/api/moments": "api/moments.js",
+  "/api/likes": "api/likes.js",
   "/api/admin/moments": "api/admin/moments.js",
   "/api/feed": "api/feed.js",
   "/api/articles": "api/articles.js",
