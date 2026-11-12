@@ -5,6 +5,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AmbientBackground from "@/components/AmbientBackground";
 import CommandMenu from "@/components/CommandMenu";
+import ZipperIntro from "@/components/ZipperIntro";
+import SiteTour from "@/components/SiteTour";
 
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -70,6 +72,8 @@ const SiteLayout = () => {
         />
         <Navbar />
         <CommandMenu />
+        <ZipperIntro />
+        <SiteTour />
         <AnimatePresence mode="wait" initial={false} onExitComplete={handleExitComplete}>
           <motion.main
             id="content"
