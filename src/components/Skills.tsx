@@ -56,6 +56,8 @@ const categories: SkillCategory[] = [
       "Forms & Validation",
       "Interactive Dashboards",
       "Frontend Performance",
+      "Mobile Development",
+      "Web Development",
     ],
   },
   {
@@ -79,6 +81,10 @@ const categories: SkillCategory[] = [
       "Error Handling",
       "Modular Architecture",
       "Third-Party Integrations",
+      "API Integration",
+      "QR Code Integration",
+      "Digital Payments",
+      "Digital Wallets",
     ],
   },
   {
@@ -101,6 +107,7 @@ const categories: SkillCategory[] = [
       "NoSQL Modelling",
       "Database Technology Migration",
       "Data Access Layers",
+      "Redis",
     ],
   },
   {
@@ -143,6 +150,9 @@ const categories: SkillCategory[] = [
       "VS Code",
       "PowerShell",
       "Trello",
+      "Render",
+      "Postman",
+      "Cloud Deployment",
     ],
   },
   {
@@ -185,6 +195,10 @@ const categories: SkillCategory[] = [
       "Stakeholder Communication",
       "Open-Source Collaboration",
       "Developer Advocacy",
+      "Full-Stack Development",
+      "Software Engineering",
+      "Smart Mobility",
+      "Transportation Technology",
     ],
   },
 ];
@@ -222,7 +236,7 @@ const marqueeTop = [
 ];
 const marqueeBottom = [
   "OpenAI", "Gemini", "Claude", "Docker", "GitLab CI/CD", "Express.js", "React Native", "Expo", "Zustand", "shadcn/ui",
-  "Clerk", "Stripe", "NeonDB",
+  "Clerk", "Stripe", "NeonDB", "Redis", "Render", "Postman",
 ];
 
 const Marquee = ({ items, reverse = false }: { items: string[]; reverse?: boolean }) => (
