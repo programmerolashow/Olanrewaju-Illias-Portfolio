@@ -1,14 +1,16 @@
-import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import { useReducedMotion } from "framer-motion";
 import SkillIcon from "@/components/SkillIcon";
 import { cn } from "@/lib/utils";
+import type { AnimalKind, AnimalStage } from "@/components/AnimalStage";
 
 /**
  * The About section's "Core Toolkit" scene:
  * - SkillSky (rendered twice, `back` behind the content and `front` over it): clouds, birds, and colourful skill
  *   balloons falling to the floor, some carrying monkeys.
- * - SkillFloor: a full-width grass floor where a panda, a lion and a giraffe kick colourful skill balls around.
- *   The floor runs on a tiny rAF physics loop that writes transforms straight to the DOM (no React re-renders).
+ * - SkillFloor: a full-width grass floor where 3D animals (a husky, a shiba inu and a fox; see AnimalStage) chase and
+ *   pounce on colourful skill balls. The floor runs on a small rAF physics loop that writes transforms straight to
+ *   the DOM (no React re-renders) and drives the 3D stage.
  * With reduced motion everything stays still.
  */
 
@@ -320,75 +322,14 @@ export const SkillSky = ({ balloons, layer }: { balloons: string[]; layer: "back
 
 /* --------------------------------------------------------------- floor --------------------------------------------------------------- */
 
-const Panda = () => (
-  <svg viewBox="0 0 80 72" aria-hidden className="h-full w-full overflow-visible">
-    <rect className="critter-leg critter-leg-b fill-slate-900" x="22" y="50" width="11" height="18" rx="5.5" />
-    <rect className="critter-leg critter-leg-a fill-slate-900" x="44" y="50" width="11" height="18" rx="5.5" />
-    <ellipse cx="38" cy="46" rx="25" ry="18" className="fill-white" stroke="#0f172a" strokeWidth="1.5" />
-    <path d="M28 32c6 6 14 8 22 6l2 10c-9 3-19 1-26-6z" className="fill-slate-900" />
-    <circle cx="13" cy="42" r="4" className="fill-slate-900" />
-    <circle cx="57" cy="13" r="6.5" className="fill-slate-900" />
-    <circle cx="73" cy="16" r="6" className="fill-slate-900" />
-    <circle cx="63" cy="26" r="15" className="fill-white" stroke="#0f172a" strokeWidth="1.5" />
-    <ellipse cx="60" cy="25" rx="4" ry="5.5" transform="rotate(20 60 25)" className="fill-slate-900" />
-    <ellipse cx="70" cy="25" rx="3.5" ry="5" transform="rotate(-15 70 25)" className="fill-slate-900" />
-    <circle cx="60.5" cy="24" r="1.4" className="fill-white" />
-    <circle cx="70" cy="24" r="1.3" className="fill-white" />
-    <ellipse cx="74" cy="32" rx="3" ry="2" className="fill-slate-900" />
-    <path d="M70 35q3 2.5 6 0" fill="none" stroke="#0f172a" strokeWidth="1.2" strokeLinecap="round" />
-    <circle cx="56" cy="33" r="2.5" className="fill-pink-300/70" />
-  </svg>
-);
-
-const Lion = () => (
-  <svg viewBox="0 0 92 72" aria-hidden className="h-full w-full overflow-visible">
-    <path d="M14 40c-10-2-12-14-6-18" fill="none" stroke="#c2862f" strokeWidth="3" strokeLinecap="round" />
-    <circle cx="8" cy="21" r="4" fill="#7c3f12" />
-    <rect className="critter-leg critter-leg-b" x="20" y="48" width="10" height="20" rx="5" fill="#d99a3d" />
-    <rect className="critter-leg critter-leg-a" x="50" y="48" width="10" height="20" rx="5" fill="#d99a3d" />
-    <ellipse cx="40" cy="44" rx="27" ry="15" fill="#e8b04f" />
-    <circle cx="66" cy="28" r="19" fill="#9a4a14" />
-    <circle cx="66" cy="28" r="13" fill="#f2c46d" />
-    <circle cx="57" cy="17" r="3.5" fill="#f2c46d" />
-    <circle cx="75" cy="17" r="3.5" fill="#f2c46d" />
-    <circle cx="62" cy="26" r="1.6" fill="#1c1917" />
-    <circle cx="71" cy="26" r="1.6" fill="#1c1917" />
-    <path d="M64 31h5l-2.5 3z" fill="#7c2d12" />
-    <path d="M63.5 36q3 2.5 6 0" fill="none" stroke="#7c2d12" strokeWidth="1.2" strokeLinecap="round" />
-  </svg>
-);
-
-const Giraffe = () => (
-  <svg viewBox="0 0 70 110" aria-hidden className="h-full w-full overflow-visible">
-    <rect className="critter-leg critter-leg-b" x="14" y="74" width="7" height="34" rx="3.5" fill="#e8b04f" />
-    <rect className="critter-leg critter-leg-a" x="34" y="74" width="7" height="34" rx="3.5" fill="#e8b04f" />
-    <path d="M8 68c-6 4-6 12-2 14" fill="none" stroke="#c2862f" strokeWidth="2.5" strokeLinecap="round" />
-    <ellipse cx="28" cy="70" rx="22" ry="12" fill="#f2c46d" />
-    <path d="M38 64 50 20l10 3-6 46z" fill="#f2c46d" />
-    <ellipse cx="57" cy="16" rx="11" ry="7" fill="#f2c46d" transform="rotate(15 57 16)" />
-    <path d="M52 9V2M58 10V3" stroke="#a16207" strokeWidth="2.5" strokeLinecap="round" />
-    <circle cx="52" cy="2" r="2" fill="#7c2d12" />
-    <circle cx="58" cy="3" r="2" fill="#7c2d12" />
-    <circle cx="57" cy="14" r="1.6" fill="#1c1917" />
-    <circle cx="66" cy="19" r="1" fill="#7c2d12" />
-    <g fill="#b45309" opacity=".75">
-      <circle cx="20" cy="66" r="4" />
-      <circle cx="32" cy="74" r="3.5" />
-      <circle cx="38" cy="64" r="3" />
-      <circle cx="16" cy="76" r="2.5" />
-      <circle cx="50" cy="34" r="2.6" />
-      <circle cx="47" cy="48" r="3" />
-      <circle cx="53" cy="56" r="2.4" />
-    </g>
-  </svg>
-);
-
-type Critter = { key: string; w: number; h: number; speed: number; start: number; art: ReactNode; lift: number };
-
-const CRITTERS: Critter[] = [
-  { key: "panda", w: 76, h: 68, speed: 95, start: 0.2, art: <Panda />, lift: 8 },
-  { key: "lion", w: 84, h: 66, speed: 115, start: 0.55, art: <Lion />, lift: 6 },
-  { key: "giraffe", w: 64, h: 100, speed: 75, start: 0.85, art: <Giraffe />, lift: 4 },
+/**
+ * The animals' floor behaviour. The 3D models (AnimalStage) are drawn from these positions every frame.
+ * `w` is the body length used for reaching a ball; speeds are px/s.
+ */
+const CRITTERS: { kind: AnimalKind; w: number; walk: number; run: number; start: number }[] = [
+  { kind: "husky", w: 78, walk: 60, run: 175, start: 0.2 },
+  { kind: "shiba-inu", w: 64, walk: 55, run: 160, start: 0.55 },
+  { kind: "fox", w: 62, walk: 58, run: 185, start: 0.85 },
 ];
 
 type Ball = { x: number; y: number; vx: number; vy: number; rot: number };
@@ -397,7 +338,7 @@ type Ball = { x: number; y: number; vx: number; vy: number; rot: number };
 export const SkillFloor = ({ balls, className }: { balls: string[]; className?: string }) => {
   const reduce = useReducedMotion();
   const floorRef = useRef<HTMLDivElement>(null);
-  const critterRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const ballRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [count, setCount] = useState(balls.length);
 
@@ -414,9 +355,12 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
 
   useEffect(() => {
     const floor = floorRef.current;
-    if (!floor) return;
+    const canvas = canvasRef.current;
+    if (!floor || !canvas) return;
 
     let width = floor.clientWidth;
+    let disposed = false;
+    let stage: AnimalStage | null = null;
     const state: Ball[] = Array.from({ length: count }, (_, i) => ({
       x: ((i + 0.5) / count) * width,
       y: 0,
@@ -426,12 +370,12 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
     }));
     const critters = CRITTERS.map((c, i) => ({
       ...c,
-      el: critterRefs.current[i],
       x: c.start * width,
-      dir: i % 2 ? -1 : 1,
+      dir: (i % 2 ? -1 : 1) as 1 | -1,
+      speed: 0,
+      moving: false,
       target: Math.floor(c.start * count),
-      pause: i * 0.4,
-      kickTimer: undefined as ReturnType<typeof setTimeout> | undefined,
+      pause: 0.6 + i * 0.5,
     }));
 
     const draw = () => {
@@ -439,52 +383,45 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
         const el = ballRefs.current[i];
         if (el) el.style.transform = `translate(${b.x - BALL_R}px, ${-b.y}px) rotate(${b.rot}rad)`;
       });
-      for (const c of critters) {
-        if (c.el) c.el.style.transform = `translateX(${c.x - c.w / 2}px) scaleX(${c.dir})`;
-      }
     };
+    const poses = () => critters.map((c) => ({ x: c.x, dir: c.dir, speed: c.speed, moving: c.moving }));
 
     const ro = new ResizeObserver(() => {
       const next = floor.clientWidth;
       state.forEach((b) => (b.x = (b.x / (width || 1)) * next));
       critters.forEach((c) => (c.x = (c.x / (width || 1)) * next));
       width = next;
+      stage?.resize(width, canvas.clientHeight);
       draw();
     });
     ro.observe(floor);
 
-    if (reduce || state.length === 0) {
-      draw();
-      return () => ro.disconnect();
-    }
-
     let raf = 0;
     let last = performance.now();
-    let visible = true;
+    let visible = false;
 
     const step = (now: number) => {
       const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
 
-      // Each animal walks to its target ball, kicks it, then picks another.
-      for (const c of critters) {
-        const el = c.el;
-        if (!el) continue;
+      // Each animal trots or runs to its target ball, nudges it with a pounce, then picks another.
+      critters.forEach((c, ci) => {
         if (c.pause > 0) {
           c.pause -= dt;
-          el.classList.remove("critter-walking");
-          continue;
+          c.moving = false;
+          c.speed = 0;
+          return;
         }
         const ball = state[Math.min(c.target, state.length - 1)];
         const dx = ball.x - c.x;
         c.dir = dx >= 0 ? 1 : -1;
-        if (Math.abs(dx) < BALL_R + c.w * 0.38 && ball.y < 10) {
+        if (Math.abs(dx) < BALL_R + c.w * 0.5 && ball.y < 10) {
           ball.vx = c.dir * (240 + Math.random() * 260);
           ball.vy = 420 + Math.random() * 320; // high kicks: up to ~300px
-          el.classList.add("critter-kick");
-          clearTimeout(c.kickTimer);
-          c.kickTimer = setTimeout(() => el.classList.remove("critter-kick"), 350);
-          c.pause = 0.4 + Math.random() * 0.6;
+          stage?.kick(ci);
+          c.pause = 0.7 + Math.random() * 0.9;
+          c.moving = false;
+          c.speed = 0;
           // Next target: usually a nearby ball, sometimes one across the floor.
           let next = c.target;
           while (next === c.target && state.length > 1) {
@@ -494,11 +431,14 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
           }
           c.target = next;
         } else {
+          // Run when the ball is far, slow to a trot when close, easing between the two like a real animal.
+          const want = Math.abs(dx) > 160 ? c.run : c.walk;
+          c.speed += (want - c.speed) * Math.min(1, dt * 3);
           c.x += c.dir * c.speed * dt;
-          el.classList.add("critter-walking");
+          c.moving = true;
         }
         c.x = Math.max(c.w / 2, Math.min(width - c.w / 2, c.x));
-      }
+      });
 
       // Balls: gravity, bounce, rolling friction, walls.
       for (const b of state) {
@@ -542,24 +482,50 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
       }
 
       draw();
+      stage?.update(poses(), dt);
       if (visible) raf = requestAnimationFrame(step);
+    };
+
+    const start = () => {
+      cancelAnimationFrame(raf);
+      last = performance.now();
+      raf = requestAnimationFrame(step);
+    };
+
+    // three.js and the models load only when the floor first comes into view.
+    let loading = false;
+    const loadStage = () => {
+      if (loading) return;
+      loading = true;
+      import("@/components/AnimalStage")
+        .then(({ createAnimalStage }) => createAnimalStage(canvas, CRITTERS.map((c) => c.kind)))
+        .then((s) => {
+          if (disposed) return s.dispose();
+          stage = s;
+          stage.resize(width, canvas.clientHeight);
+          stage.update(poses(), 0);
+        })
+        .catch(() => {
+          // No WebGL or the models failed to load: the balls still play on their own.
+        });
     };
 
     const io = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
+      if (visible) loadStage();
+      if (reduce) return;
       cancelAnimationFrame(raf);
-      if (visible) {
-        last = performance.now();
-        raf = requestAnimationFrame(step);
-      }
-    });
+      if (visible) start();
+    }, { rootMargin: "200px" });
     io.observe(floor);
+    draw();
 
     return () => {
+      disposed = true;
       cancelAnimationFrame(raf);
-      critters.forEach((c) => clearTimeout(c.kickTimer));
       io.disconnect();
       ro.disconnect();
+      stage?.dispose();
     };
   }, [count, reduce]);
 
@@ -580,20 +546,9 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
         style={{ height: GRASS_H }}
       />
 
-      {/* Animals (behind the balls, so a kicked ball flies in front of them) */}
-      {CRITTERS.map((c, i) => (
-        <div
-          key={c.key}
-          ref={(el) => {
-            critterRefs.current[i] = el;
-          }}
-          aria-hidden
-          className="critter absolute left-0"
-          style={{ bottom: GRASS_H - c.lift, width: c.w, height: c.h }}
-        >
-          {c.art}
-        </div>
-      ))}
+      {/* 3D animals (behind the balls, so a kicked ball flies in front of them). Taller than the floor so a
+          pouncing animal isn't clipped. */}
+      <canvas ref={canvasRef} aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[150%] w-full" />
 
       {/* Balls */}
       <div aria-hidden className="absolute inset-x-0" style={{ bottom: GRASS_H - 3 }}>
