@@ -87,7 +87,8 @@ export const projects: Project[] = [
       "Qorelly is a multi-vertical SaaS platform for Nigerian small and medium-sized businesses, built by Core Technologies LTD. It brings point of sale, online orders, menus, inventory, invoicing and payments into one dashboard, alongside two companion products: Qore Catalog and Qore Maps.",
     tags: ["SaaS", "PostgreSQL", "Payments", "Point of Sale", "Inventory", "Claude Code"],
     category: "SaaS / Multi-Vertical Business Platform",
-    // Company product: closed source, so no github link. live, status and metrics stay unset until confirmed.
+    // Company product: closed source, so no github link. status and metrics stay unset until confirmed.
+    live: "https://qorelly.com/",
     featured: true,
     image: "/projects/qorelly.webp",
     imageFocus: "center top",
@@ -141,6 +142,57 @@ export const projects: Project[] = [
         category: "Navigation",
       },
     ],
+  },
+  {
+    slug: "maiukha",
+    title: "Maiukha",
+    description:
+      "Maiukha is an AI career coach platform built at AidenAI Technologies LLP. It helps students, fresh graduates and professionals with career guidance, résumé analysis, interview practice and profile management, all through personalised, conversational AI.",
+    tags: ["React 19", "TypeScript", "Node.js", "PostgreSQL", "Prisma", "Gemini"],
+    category: "AI / Career Technology Platform",
+    // Company product: closed source, so no github link. status and metrics stay unset until confirmed.
+    live: "https://maiukha.com/",
+    featured: true,
+    image: "/projects/maiukha.webp",
+    imageFocus: "left top",
+    caseStudy: {
+      problem:
+        "Career development is often scattered across job boards, résumé tools and generic chatbots, with little that remembers who you are. Maiukha brings career guidance, résumé intelligence, interview preparation, profile management and conversational AI into one experience, combining conversation with persistent user information, career workflows and personalised recommendations so the guidance stays in context.",
+      role: "Full-Stack Web Development Intern at AidenAI Technologies LLP (Jul 2026 – present), in a team of three engineers. I worked across frontend engineering, backend integration, authentication and database architecture: building React and TypeScript features, wiring them to backend APIs, helping migrate JavaScript to TypeScript and MySQL to PostgreSQL with Prisma, working on Google and email/password sign-in, improving session security, refining the conversational interface, and debugging, testing and reviewing code in an Agile workflow.",
+      features: [
+        { name: "AI career coaching conversations", status: "Implemented" },
+        { name: "Career profile management", status: "Implemented" },
+        { name: "Résumé upload and ATS-focused analysis", status: "Implemented" },
+        { name: "AI-assisted interview preparation", status: "Implemented" },
+        { name: "Skills and career insights", status: "Implemented" },
+        { name: "Persistent conversation history across sessions", status: "Implemented" },
+      ],
+      challenges: [
+        {
+          title: "JavaScript to TypeScript migration",
+          detail:
+            "Moving existing JavaScript to TypeScript meant improving type definitions and resolving compatibility issues while keeping the application's behaviour intact, so the codebase became easier to maintain without regressions.",
+        },
+        {
+          title: "MySQL to PostgreSQL migration",
+          detail:
+            "Moving the database to PostgreSQL with Prisma ORM required careful handling of existing data models, relationships, queries and the services that depended on them.",
+        },
+        {
+          title: "Authentication security",
+          detail:
+            "I worked on Google OAuth validation and JWT handling, strengthening token validation and removing insecure fallback behaviour.",
+        },
+        {
+          title: "A conversational experience, not just a chat window",
+          detail:
+            "The AI interface needed conversation persistence, interaction states, suggestions, Markdown responses and history management, with a consistent experience at every stage of a conversation.",
+        },
+      ],
+      architecture: ["React 19 + Vite UI (Zustand, Radix UI)", "Express.js REST API", "Prisma ORM", "PostgreSQL", "Gemini (via the backend)"],
+      outcome:
+        "My work helped advance the platform's frontend and backend engineering, authentication, database modernisation and AI experience. One authentication verification milestone ran 9 test files with all 40 tests passing and a successful frontend production build. Development ran through GitLab merge requests, code reviews, Agile/Scrum, staging and production deployments, and user acceptance feedback. It taught me to design AI features around real user workflows, manage complex state and persistent conversations, migrate databases safely in an evolving app, and balance feature work with testing and reliability.",
+    },
   },
   {
     slug: "bankspace",
