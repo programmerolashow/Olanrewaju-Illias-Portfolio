@@ -7,6 +7,7 @@ import MotionImage from "@/components/MotionImage";
 import GitHubStrip from "@/components/GitHubStrip";
 import { projects, type Project } from "@/data/projects";
 import TypewriterText from "@/components/TypewriterText";
+import SkillIcon from "@/components/SkillIcon";
 
 type Availability = "all" | "live" | "source";
 
@@ -180,8 +181,9 @@ const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => 
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2.5 py-1 text-xs sm:px-3 sm:text-sm font-mono text-primary bg-primary/10 rounded-full"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs sm:px-3 sm:text-sm font-mono text-primary bg-primary/10 rounded-full"
                       >
+                        <SkillIcon name={tag} />
                         {tag}
                       </span>
                     ))}
@@ -314,8 +316,9 @@ const Projects = ({ variant = "preview" }: { variant?: "preview" | "full" }) => 
                       {project.tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="text-xs font-mono text-muted-foreground"
+                          className="inline-flex items-center gap-1 text-xs font-mono text-muted-foreground"
                         >
+                          <SkillIcon name={tag} className="h-3 w-3" />
                           {tag}
                         </span>
                       ))}

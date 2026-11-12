@@ -1,113 +1,48 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef, useState } from "react";
-import { Bot, Code2, Palette, Server, Database, ShieldCheck, GitPullRequest, HeartHandshake, ExternalLink, type LucideIcon } from "lucide-react";
+import { useRef } from "react";
+import { Bot, Code2, Palette, Server, Database, ShieldCheck, GitPullRequest, HeartHandshake, ExternalLink, ArrowRight, type LucideIcon } from "lucide-react";
 import FeatureArt, { type FeatureArtName } from "./FeatureArt";
 import TypewriterText from "@/components/TypewriterText";
+import SkillIcon from "@/components/SkillIcon";
+import { SkillFloor, SkillSky } from "@/components/SkillPlayground";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-const skills = [
-  // Frontend
-  "HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Next.js", "Angular", "Vite", "Tailwind CSS", "Shadcn/UI", "Material UI", "Redux", "Framer Motion",
-  // Backend
-  "Node.js", "Express.js", "Python", "Django", "PHP",
-  // Databases
-  "PostgreSQL", "MySQL", "MongoDB", "Prisma", "Neon",
-  // Mobile
-  "React Native", "Expo",
-  // Tools / APIs
-  "Git", "GitHub", "Postman", "Stripe", "Nodemailer", "Supabase", "OpenAI",
-  // Other
-  "Visual Basic", "REST APIs", "Authentication", "OAuth", "Webhooks", "AI integrations"
+/** 24 balls the panda kicks around the floor (icons only; narrow screens show as many as fit). */
+const floorBalls = [
+  "React", "TypeScript", "Node.js", "Next.js", "PostgreSQL", "Python", "JavaScript", "Tailwind CSS",
+  "HTML5", "CSS3", "Express.js", "Django", "MongoDB", "MySQL", "Prisma", "React Native",
+  "Expo", "Git", "GitHub", "Docker", "Redis", "Supabase", "Stripe", "Vercel",
 ];
 
-// Brand colour per skill chip. `rgb` drives the tint, border and glow; `text` is the dark-mode label colour.
-// In light mode the label is a deeper shade of `rgb` (see .skill-chip in index.css), or `lightText` when set.
-const skillColorMap: Record<string, { rgb: string; text: string; lightText?: string }> = {
-  "HTML5": { rgb: "228, 77, 38", text: "#FF7A59" },
-  "CSS3": { rgb: "38, 77, 228", text: "#60A5FA" },
-  "JavaScript": { rgb: "234, 179, 8", text: "#FACC15", lightText: "#A16207" },
-  "TypeScript": { rgb: "49, 120, 198", text: "#38BDF8" },
-  "React": { rgb: "97, 218, 251", text: "#22D3EE", lightText: "#0E7490" },
-  "Next.js": { rgb: "148, 163, 184", text: "#F8FAFC" },
-  "Angular": { rgb: "221, 0, 49", text: "#F87171" },
-  "Vite": { rgb: "100, 108, 255", text: "#818CF8" },
-  "Tailwind CSS": { rgb: "6, 182, 212", text: "#2DD4BF" },
-  "Shadcn/UI": { rgb: "14, 165, 233", text: "#7DD3FC" },
-  "Material UI": { rgb: "0, 127, 255", text: "#60A5FA" },
-  "Redux": { rgb: "118, 74, 188", text: "#C084FC" },
-  "Framer Motion": { rgb: "255, 0, 128", text: "#F472B6" },
-
-  "Node.js": { rgb: "95, 160, 78", text: "#4ADE80" },
-  "Express.js": { rgb: "202, 138, 4", text: "#FDE047", lightText: "#854D0E" },
-  "Python": { rgb: "55, 118, 171", text: "#FCD34D", lightText: "#2B5B84" },
-  "Django": { rgb: "43, 138, 89", text: "#4ADE80" },
-  "PHP": { rgb: "119, 123, 179", text: "#A5B4FC" },
-
-  "PostgreSQL": { rgb: "65, 105, 225", text: "#93C5FD" },
-  "MySQL": { rgb: "0, 117, 143", text: "#38BDF8" },
-  "MongoDB": { rgb: "71, 162, 72", text: "#34D399" },
-  "Prisma": { rgb: "90, 103, 216", text: "#818CF8" },
-  "Neon": { rgb: "0, 229, 153", text: "#34D399", lightText: "#047857" },
-
-  "React Native": { rgb: "0, 129, 200", text: "#38BDF8" },
-  "Expo": { rgb: "168, 85, 247", text: "#C084FC" },
-
-  "Git": { rgb: "240, 80, 50", text: "#FB923C" },
-  "GitHub": { rgb: "148, 163, 184", text: "#F8FAFC" },
-  "Postman": { rgb: "255, 108, 55", text: "#F97316" },
-  "Stripe": { rgb: "99, 91, 255", text: "#A5B4FC" },
-  "Nodemailer": { rgb: "34, 197, 94", text: "#86EFAC" },
-  "Supabase": { rgb: "62, 207, 142", text: "#4ADE80", lightText: "#15803D" },
-  "OpenAI": { rgb: "16, 163, 127", text: "#2DD4BF" },
-
-  "Visual Basic": { rgb: "147, 51, 234", text: "#D8B4FE" },
-  "REST APIs": { rgb: "14, 165, 233", text: "#38BDF8" },
-  "Authentication": { rgb: "236, 72, 153", text: "#F472B6" },
-  "OAuth": { rgb: "168, 85, 247", text: "#E9D5FF" },
-  "Webhooks": { rgb: "245, 158, 11", text: "#FCD34D", lightText: "#B45309" },
-  "AI integrations": { rgb: "139, 92, 246", text: "#C4B5FD" },
-};
-
-// Floor resting scatter positions (partially resting at the bottom/floor area)
-const seedPositions = [
-  { x: -28, y: 35, rotate: -14, scale: 0.96 },
-  { x: 36, y: 42, rotate: 12, scale: 1.02 },
-  { x: -48, y: 28, rotate: -8, scale: 0.98 },
-  { x: 18, y: 52, rotate: 18, scale: 1.05 },
-  { x: 55, y: 38, rotate: -15, scale: 0.93 },
-  { x: -16, y: 48, rotate: 6, scale: 1.01 },
-  { x: 42, y: 32, rotate: -20, scale: 0.97 },
-  { x: -52, y: 45, rotate: 15, scale: 1.04 },
-  { x: 8, y: 30, rotate: -5, scale: 0.97 },
-  { x: 58, y: 50, rotate: 10, scale: 0.94 },
-  { x: -36, y: 25, rotate: -16, scale: 1.03 },
-  { x: 24, y: 40, rotate: 14, scale: 0.95 },
-  { x: -62, y: 36, rotate: -10, scale: 1.01 },
-  { x: 48, y: 48, rotate: 8, scale: 0.99 },
-  { x: -8, y: 22, rotate: -12, scale: 1.02 },
-  { x: 32, y: 34, rotate: 19, scale: 0.96 },
-  { x: -42, y: 55, rotate: -7, scale: 1.04 },
-  { x: 62, y: 28, rotate: 11, scale: 0.92 },
-  { x: -22, y: 42, rotate: -18, scale: 1.03 },
-  { x: 12, y: 26, rotate: 5, scale: 0.98 },
-  { x: 45, y: 46, rotate: -14, scale: 0.96 },
-  { x: -58, y: 32, rotate: 13, scale: 1.02 },
-  { x: 20, y: 38, rotate: -9, scale: 0.97 },
-  { x: -32, y: 50, rotate: 17, scale: 1.04 },
-  { x: 52, y: 24, rotate: -11, scale: 0.94 },
-  { x: -12, y: 44, rotate: 7, scale: 1.01 },
+/** The rest of the toolkit falls from the sky on balloons. */
+const balloonSkills = [
+  "Angular", "Vite", "Shadcn/UI", "Material UI", "Redux", "Framer Motion", "PHP", "FastAPI",
+  "Neon", "Postman", "Nodemailer", "OpenAI", "Claude", "Gemini", "GitLab", "Render",
+  "Visual Basic", "REST APIs", "Authentication", "OAuth", "Webhooks", "AI integrations",
 ];
 
-const scatterPositions = Array.from({ length: skills.length }, (_, i) => {
-  const s = seedPositions[i % seedPositions.length];
-  return {
-    x: s.x,
-    y: s.y,
-    rotate: s.rotate,
-    scale: s.scale,
-    zIndex: i + 1,
-  };
-});
+/** Shown on the page (kept under 1,000 characters so the section fits one screen). */
+const bioPreview = [
+  <>
+    I bridge the gap between complex technical architecture and intuitive user experiences. As a{" "}
+    <strong className="font-semibold text-foreground">Software Product Engineer</strong>, I turn ideas into AI-powered digital
+    products, combining full-stack rigor with a product-first mindset so every line of code serves a business goal or user need.
+  </>,
+  <>
+    I work across the stack, from responsive React and Next.js interfaces to scalable APIs in Python, Django and FastAPI, and I
+    integrate LLMs into practical applications. I don’t just write code, I solve problems: third-party integrations, database
+    design and cloud deployments included.
+  </>,
+];
+
+/** The full story, opened with "See more". */
+const bioMore = [
+  "My journey started in October 2022 as a self-employed frontend developer, building responsive interfaces with HTML, CSS, JavaScript, React and Next.js through projects like my personal portfolio, an interactive calculator and a logistics website. That grew into freelance web and full-stack development: custom web applications, APIs, databases, payment integrations and deployments for clients.",
+  "In 2026 I joined Neominds EduTech as a Fullstack Developer, building web and mobile applications with React Native and Next.js. I then joined AidenAI Technologies LLP as a Full-Stack Development Intern, working on Maiukha, an AI career coach platform, where I contribute to its TypeScript migration, its move from MySQL to PostgreSQL with Prisma, and authentication security in a team of three engineers. Since August 2026 I’ve been a Software Engineer at Qorelly, the multi-vertical SaaS platform for Nigerian small and medium-sized businesses built by Core Technologies LTD.",
+  "Alongside that, I lead ZoomTrans with a team of five: a smart transportation platform for the University of Ilorin, with a React Native and Expo mobile app, a web admin interface, a Node.js backend and PostgreSQL.",
+  "Beyond the IDE, I’m active in Google Developer Groups and hackathons, I took part in Google Summer of Code 2026 as an open-source contributor with Joplin, and I advocate for open source and continuous learning. I value clean architecture, collaborative teams and technology with real-world impact. If you’re building something ambitious, I’d love to connect.",
+];
 
 const features: { icon: LucideIcon; title: string; art: FeatureArtName; description: string }[] = [
   {
@@ -151,162 +86,116 @@ const features: { icon: LucideIcon; title: string; art: FeatureArtName; descript
 const About = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [isThrown, setIsThrown] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const triggerThrowAnimation = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-    setIsThrown(true);
-    // 1.5s total cascade delay window + 6.0s animation duration = 7.5s loop window
-    timerRef.current = setTimeout(() => {
-      setIsThrown(false);
-    }, 7500);
-  };
 
   return (
-    <section id="about" className="section-padding relative" ref={ref}>
-      <div className="container mx-auto px-4 sm:px-6">
+    <section id="about" className="section-padding relative lg:!pt-20" ref={ref}>
+      {/* On large screens the intro (heading, sky, text, cards and floor) fills exactly one screen. Measured in the
+          browser, an About link leaves the section top ~1rem below the window top (content above settles after the
+          jump), so 5rem of padding clears the fixed navbar and the intro takes the rest of the screen. */}
+      <div className="relative lg:flex lg:h-[calc(100svh-6.5rem)] lg:min-h-[35rem] lg:flex-col">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-10 md:mb-16"
+          className="container relative z-10 mx-auto shrink-0 px-4 text-center sm:px-6"
         >
-          <p className="text-primary font-mono text-sm mb-4">About Me</p>
+          <p className="text-primary font-mono text-sm mb-4 lg:mb-2">About Me</p>
           <h2 className="section-heading">
             <TypewriterText text="Passionate About " highlight="Software Development" />
           </h2>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 xl:gap-16 items-center lg:items-stretch">
-          {/* Left Side - Text */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-5 md:mb-6">
-              I bridge the gap between complex technical architecture and intuitive user experiences. As a <strong className="text-foreground font-semibold">Software Product Engineer</strong>, I turn ideas into AI-powered digital products, combining full-stack rigor with a product-first mindset so every line of code serves a business goal or user need.
-            </p>
-            <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-5 md:mb-6">
-              I work across the stack, from responsive React and Next.js interfaces to scalable APIs in Python, Django and FastAPI, and I integrate LLMs into practical applications. I don’t just write code, I solve problems: third-party integrations, database design and cloud deployments included.
-            </p>
-            <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6 md:mb-8">
-              Beyond the IDE, I’m active in Google Developer Groups and hackathons, and I advocate for open source and continuous learning. I value clean architecture, collaborative teams and technology with real-world impact. If you’re building something ambitious, I’d love to connect.
-            </p>
+        {/* Sky (clouds + falling balloons) behind the text and cards, down to the panda's floor */}
+        <div className="relative flex flex-col lg:min-h-0 lg:flex-1">
+          <SkillSky balloons={balloonSkills} layer="back" />
 
-            {/* Skills Floor Area with Depth-Sequenced 1.5s Staggered Throw Physics */}
-            <div className="space-y-3">
-              <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest block">
-                Core Toolkit <span className="normal-case tracking-normal text-muted-foreground/70">(hover to toss)</span>
-              </span>
-
-              <div 
-                className="relative min-h-[17rem] sm:min-h-[20rem] py-6 px-2 sm:px-4 bg-transparent border-none flex flex-wrap gap-2.5 sm:gap-4 items-end justify-center select-none overflow-visible z-20"
-                onMouseEnter={triggerThrowAnimation}
-              >
-                {skills.map((skill, index) => {
-                  const style = skillColorMap[skill] || {
-                    rgb: "14, 165, 233",
-                    text: "#38BDF8",
-                  };
-                  const scatter = scatterPositions[index % scatterPositions.length];
-                  
-                  // Calculate launch delay based on card depth (zIndex):
-                  // Cards at the back (lower zIndex) launch first, front cards follow over a 1.5s delay window
-                  const maxZ = skills.length;
-                  const zDelay = ((scatter.zIndex - 1) / (maxZ - 1)) * 1.5;
-
-                  return (
-                    <motion.span
-                      key={skill}
-                      initial={{ opacity: 0, y: 100, scale: 0.7 }}
-                      animate={
-                        isInView
-                          ? isThrown
-                            ? {
-                                opacity: 1,
-                                y: [scatter.y, scatter.y - 160, scatter.y - 180, scatter.y - 90, scatter.y],
-                                x: [scatter.x, scatter.x + 25, scatter.x - 20, scatter.x + 10, scatter.x],
-                                rotate: [scatter.rotate, scatter.rotate - 35, scatter.rotate + 45, scatter.rotate - 15, scatter.rotate],
-                                scale: [scatter.scale, 1.15, 1.25, 1.08, scatter.scale],
-                                zIndex: [scatter.zIndex, 40, 50, 30, scatter.zIndex],
-                              }
-                            : { 
-                                opacity: 1, 
-                                x: scatter.x, 
-                                y: scatter.y, 
-                                rotate: scatter.rotate, 
-                                scale: scatter.scale, 
-                                zIndex: scatter.zIndex 
-                              }
-                          : {}
-                      }
-                      transition={
-                        isThrown
-                          ? {
-                              duration: 6,
-                              ease: "easeInOut",
-                              delay: zDelay,
-                            }
-                          : {
-                              type: "spring",
-                              stiffness: 180,
-                              damping: 18,
-                              mass: 0.9,
-                              delay: isInView ? 0.2 + index * 0.025 : 0,
-                            }
-                      }
-                      onMouseEnter={triggerThrowAnimation}
-                      style={
-                        {
-                          "--chip-rgb": style.rgb,
-                          "--chip-text-dark": style.text,
-                          ...(style.lightText ? { "--chip-text-light": style.lightText } : {}),
-                        } as React.CSSProperties
-                      }
-                      className="skill-chip inline-flex items-center justify-center rounded-full border px-3.5 py-2 text-xs sm:px-5 sm:py-2.5 sm:text-sm xl:px-6 xl:py-3 font-semibold cursor-pointer select-none whitespace-nowrap tracking-wide leading-none transition-shadow duration-300"
-                    >
-                      {skill}
-                    </motion.span>
-                  );
-                })}
+          <div className="container relative z-10 mx-auto grid gap-8 px-4 pb-6 pt-16 sm:px-6 lg:min-h-0 lg:flex-1 lg:grid-cols-12 lg:gap-6 lg:pb-3 lg:pt-12 xl:gap-10 xl:pt-14">
+            {/* Left - Text */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="flex flex-col lg:col-span-5 lg:min-h-0"
+            >
+              <div className="space-y-4 text-base leading-relaxed text-muted-foreground md:text-lg lg:space-y-3 lg:text-sm xl:text-[0.95rem] 2xl:text-base">
+                {bioPreview.map((paragraph, i) => (
+                  <p key={i}>{paragraph}</p>
+                ))}
               </div>
-            </div>
-          </motion.div>
 
-          {/* Right Side - Feature Cards */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 lg:h-full lg:auto-rows-fr"
-          >
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
-                whileHover={{ y: -5 }}
-                className="glass-card relative overflow-hidden rounded-xl p-5 sm:p-6 group flex flex-col lg:p-7 transition-colors duration-300 hover:border-primary/40 bg-gradient-to-br from-primary/[0.04] via-transparent to-accent/[0.07] dark:bg-none"
-              >
-                <FeatureArt name={feature.art} />
-                <div className="relative w-12 h-12 lg:w-14 lg:h-14 rounded-lg bg-primary/10 backdrop-blur-sm flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
-                  <feature.icon className="w-6 h-6 lg:w-7 lg:h-7 text-primary" />
-                </div>
-                <h3 className="relative mt-auto font-semibold text-foreground mb-2 lg:text-lg">
-                  {feature.title}
-                </h3>
-                <p className="relative text-muted-foreground text-sm lg:text-base leading-relaxed">
-                  {feature.description}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button
+                    type="button"
+                    className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full text-sm font-semibold text-primary hover:underline md:text-base lg:mt-2 lg:text-sm"
+                  >
+                    See more <ArrowRight className="h-4 w-4" aria-hidden />
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="max-h-[85svh] max-w-2xl overflow-y-auto rounded-2xl">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl">About Me</DialogTitle>
+                    <DialogDescription>Full-Stack Product &amp; AI Engineer · Lagos, Nigeria</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 text-base leading-relaxed text-muted-foreground">
+                    {bioPreview.map((paragraph, i) => (
+                      <p key={`p${i}`}>{paragraph}</p>
+                    ))}
+                    {bioMore.map((paragraph, i) => (
+                      <p key={`m${i}`}>{paragraph}</p>
+                    ))}
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </motion.div>
+
+            {/* Right - Feature Cards */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="grid grid-cols-1 gap-3 xs:grid-cols-2 sm:gap-4 lg:col-span-7 lg:min-h-0 lg:grid-cols-3 lg:grid-rows-2 lg:gap-3 xl:gap-4"
+            >
+              {features.map((feature, index) => (
+                <motion.div
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                  className="glass-card relative overflow-hidden rounded-xl p-5 sm:p-6 group flex flex-col lg:min-h-0 lg:p-4 xl:p-5 transition-colors duration-300 hover:border-primary/40 bg-gradient-to-br from-primary/[0.04] via-transparent to-accent/[0.07] dark:bg-none"
+                >
+                  <FeatureArt name={feature.art} />
+                  <div className="relative w-12 h-12 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-lg bg-primary/10 backdrop-blur-sm flex items-center justify-center mb-4 lg:mb-2 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
+                    <feature.icon className="w-6 h-6 lg:w-5 lg:h-5 text-primary" />
+                  </div>
+                  <h3 className="relative mt-auto font-semibold text-foreground mb-1.5 lg:mb-1 lg:text-sm xl:text-base">
+                    {feature.title}
+                  </h3>
+                  <p className="relative text-muted-foreground text-sm leading-relaxed lg:text-xs xl:text-sm">
+                    {feature.description}
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Panda floor: full section width */}
+          <div className="relative z-10 shrink-0">
+            <span className="absolute left-4 top-0 font-mono text-[0.65rem] uppercase tracking-widest text-muted-foreground sm:left-6">
+              Core Toolkit
+            </span>
+            <SkillFloor balls={floorBalls} className="h-24 lg:h-20 xl:h-24" />
+          </div>
+
+          {/* Balloons and birds that pass in front of the text and cards (clicks go through to the content) */}
+          <div className="pointer-events-none absolute inset-0 z-20">
+            <SkillSky balloons={balloonSkills} layer="front" />
+          </div>
         </div>
+      </div>
+
+      <div className="container mx-auto px-4 sm:px-6">
 
         {/* Open Source & Community Advocacy Showcase */}
         <motion.div
@@ -374,8 +263,9 @@ const About = () => {
                 {["GSoC 2026", "Joplin Open-Source", "Moose Ecosystem", "AST Meta-Modelling", "Static Site Generation", "Fault Localization"].map((tag) => (
                   <span
                     key={tag}
-                    className="px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-primary/10 text-primary border border-primary/20"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-primary/10 text-primary border border-primary/20"
                   >
+                    <SkillIcon name={tag} className="h-3 w-3" brandColor={false} />
                     {tag}
                   </span>
                 ))}
@@ -411,8 +301,9 @@ const About = () => {
                 {["Engineering Principles", "Deep Debugging", "Code Execution Flow", "Fintech Logic", "Developer Community"].map((tag) => (
                   <span
                     key={tag}
-                    className="px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-accent/10 text-accent border border-accent/20"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-accent/10 text-accent border border-accent/20"
                   >
+                    <SkillIcon name={tag} className="h-3 w-3" brandColor={false} />
                     {tag}
                   </span>
                 ))}

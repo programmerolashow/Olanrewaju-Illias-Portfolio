@@ -4,6 +4,7 @@ import { BadgeCheck, ExternalLink, Maximize2 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { certifications, type Certification } from "@/data/certifications";
 import TypewriterText from "@/components/TypewriterText";
+import SkillIcon from "@/components/SkillIcon";
 
 /** Licenses & certifications: click a certificate to view it full size, or open the issuer's verification page. */
 const Certifications = () => {
@@ -68,7 +69,8 @@ const Certifications = () => {
 
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   {cert.skills.map((skill) => (
-                    <span key={skill} className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                    <span key={skill} className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                      <SkillIcon name={skill} className="h-3 w-3" />
                       {skill}
                     </span>
                   ))}

@@ -62,6 +62,8 @@ export interface Project {
   featured: boolean;
   /** Optional screenshot in /public/projects. imageFocus = CSS object-position. */
   image?: string;
+  /** Optional MP4 in /public/projects, shown with controls at the top of the project page in place of the screenshot. */
+  video?: string;
   imageFocus?: string;
   /** e.g. "Fintech / Full-Stack Web Application". */
   category?: string;
@@ -87,7 +89,8 @@ export const projects: Project[] = [
       "Qorelly is a multi-vertical SaaS platform for Nigerian small and medium-sized businesses, built by Core Technologies LTD. It brings point of sale, online orders, menus, inventory, invoicing and payments into one dashboard, alongside two companion products: Qore Catalog and Qore Maps.",
     tags: ["SaaS", "PostgreSQL", "Payments", "Point of Sale", "Inventory", "Claude Code"],
     category: "SaaS / Multi-Vertical Business Platform",
-    // Company product: closed source, so no github link. live, status and metrics stay unset until confirmed.
+    // Company product: closed source, so no github link. status and metrics stay unset until confirmed.
+    live: "https://qorelly.com/",
     featured: true,
     image: "/projects/qorelly.webp",
     imageFocus: "center top",
@@ -141,6 +144,57 @@ export const projects: Project[] = [
         category: "Navigation",
       },
     ],
+  },
+  {
+    slug: "maiukha",
+    title: "Maiukha",
+    description:
+      "Maiukha is an AI career coach platform built at AidenAI Technologies LLP. It helps students, fresh graduates and professionals with career guidance, résumé analysis, interview practice and profile management, all through personalised, conversational AI.",
+    tags: ["React 19", "TypeScript", "Node.js", "PostgreSQL", "Prisma", "Gemini"],
+    category: "AI / Career Technology Platform",
+    // Company product: closed source, so no github link. status and metrics stay unset until confirmed.
+    live: "https://maiukha.com/",
+    featured: true,
+    image: "/projects/maiukha.webp",
+    imageFocus: "left top",
+    caseStudy: {
+      problem:
+        "Career development is often scattered across job boards, résumé tools and generic chatbots, with little that remembers who you are. Maiukha brings career guidance, résumé intelligence, interview preparation, profile management and conversational AI into one experience, combining conversation with persistent user information, career workflows and personalised recommendations so the guidance stays in context.",
+      role: "Full-Stack Web Development Intern at AidenAI Technologies LLP (Jul 2026 – present), in a team of three engineers. I worked across frontend engineering, backend integration, authentication and database architecture: building React and TypeScript features, wiring them to backend APIs, helping migrate JavaScript to TypeScript and MySQL to PostgreSQL with Prisma, working on Google and email/password sign-in, improving session security, refining the conversational interface, and debugging, testing and reviewing code in an Agile workflow.",
+      features: [
+        { name: "AI career coaching conversations", status: "Implemented" },
+        { name: "Career profile management", status: "Implemented" },
+        { name: "Résumé upload and ATS-focused analysis", status: "Implemented" },
+        { name: "AI-assisted interview preparation", status: "Implemented" },
+        { name: "Skills and career insights", status: "Implemented" },
+        { name: "Persistent conversation history across sessions", status: "Implemented" },
+      ],
+      challenges: [
+        {
+          title: "JavaScript to TypeScript migration",
+          detail:
+            "Moving existing JavaScript to TypeScript meant improving type definitions and resolving compatibility issues while keeping the application's behaviour intact, so the codebase became easier to maintain without regressions.",
+        },
+        {
+          title: "MySQL to PostgreSQL migration",
+          detail:
+            "Moving the database to PostgreSQL with Prisma ORM required careful handling of existing data models, relationships, queries and the services that depended on them.",
+        },
+        {
+          title: "Authentication security",
+          detail:
+            "I worked on Google OAuth validation and JWT handling, strengthening token validation and removing insecure fallback behaviour.",
+        },
+        {
+          title: "A conversational experience, not just a chat window",
+          detail:
+            "The AI interface needed conversation persistence, interaction states, suggestions, Markdown responses and history management, with a consistent experience at every stage of a conversation.",
+        },
+      ],
+      architecture: ["React 19 + Vite UI (Zustand, Radix UI)", "Express.js REST API", "Prisma ORM", "PostgreSQL", "Gemini (via the backend)"],
+      outcome:
+        "My work helped advance the platform's frontend and backend engineering, authentication, database modernisation and AI experience. One authentication verification milestone ran 9 test files with all 40 tests passing and a successful frontend production build. Development ran through GitLab merge requests, code reviews, Agile/Scrum, staging and production deployments, and user acceptance feedback. It taught me to design AI features around real user workflows, manage complex state and persistent conversations, migrate databases safely in an evolving app, and balance feature work with testing and reliability.",
+    },
   },
   {
     slug: "bankspace",
@@ -348,6 +402,56 @@ export const projects: Project[] = [
       ],
       outcome: "An independently built personal project, fully working end to end. There are no user numbers or production metrics to report.",
       improvements: ["Broader automated test coverage.", "Moderation tools for handling reports.", "Institution verification for student accounts."],
+    },
+  },
+  {
+    slug: "zoomtrans",
+    title: "ZoomTrans",
+    description:
+      "ZoomTrans is a smart transportation and digital mobility platform connecting passengers, drivers and transport administrators, starting at the University of Ilorin. It combines a React Native mobile app, a web admin interface, a Node.js backend and PostgreSQL, with digital wallet payments and QR-based interactions.",
+    tags: ["React Native", "Expo", "Node.js", "PostgreSQL", "QR Payments"],
+    category: "Mobility / Mobile & Web Platform",
+    // Private repo, so no github link. No live link yet.
+    status: "In progress",
+    featured: false,
+    video: "/projects/zoomtrans.mp4",
+    caseStudy: {
+      problem:
+        "Transportation is part of everyday life in university communities, where students, staff and visitors depend on reliable mobility, yet getting a ride can still mean payment difficulties, limited coordination and inefficient processes. Inspired by discussions around student welfare and transportation at the University of Ilorin (UNILORIN), ZoomTrans asks what technology could do to make everyday transportation smarter, easier and more accessible. The first intended routes are Post Office–Hostel Area and Post Office–UITH.",
+      role: "I lead ZoomTrans, a collaborative initiative with a team of five. We are building it as an integrated mobile and web ecosystem for three groups: passengers, who access transport through a convenient digital experience; drivers, who use the platform to support transport operations; and administrators, who manage and coordinate activity across the ecosystem.",
+      architecture: [
+        "React Native + Expo mobile app",
+        "Web admin and operations interface",
+        "Node.js API (backend-managed auth)",
+        "PostgreSQL",
+      ],
+      challenges: [
+        {
+          title: "From a real-world problem to a practical product",
+          detail:
+            "Translating a transportation problem into software meant starting from genuine needs, not features, and shaping a solution people could use day to day.",
+        },
+        {
+          title: "One connected ecosystem for different roles",
+          detail:
+            "Passengers, drivers and administrators each need their own experience, sharing data through API-driven communication between the apps and the backend.",
+        },
+        {
+          title: "Constraints and real-world deployment",
+          detail:
+            "We have had to manage infrastructure and resource constraints while preparing the applications for real-world deployment.",
+        },
+      ],
+      outcome:
+        "Building ZoomTrans has taught us that useful technology starts with identifying genuine problems, and that good software needs more than functional code: thoughtful architecture, usability, security, collaboration and continuous improvement. It has strengthened our experience in full-stack development, API integration, database design, application architecture, teamwork and product development. ZoomTrans: move smarter, pay easier, travel better.",
+      improvements: [
+        "Physical ZoomTrans transit cards",
+        "Contactless tap-in transportation payments",
+        "Seamless wallet funding and payment experiences",
+        "Improved driver and administrative workflows",
+        "Intelligent transportation coordination and operational insights",
+        "Expansion to other universities and urban transportation networks",
+      ],
     },
   },
   {

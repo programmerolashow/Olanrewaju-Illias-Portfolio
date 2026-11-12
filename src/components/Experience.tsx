@@ -2,11 +2,13 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Briefcase, Calendar, MapPin, Building2, CheckCircle2 } from "lucide-react";
 import TypewriterText from "@/components/TypewriterText";
+import SkillIcon from "@/components/SkillIcon";
 
 interface ExperienceItem {
   id: string;
   role: string;
   company: string;
+  logo: string;
   type: string;
   period: string;
   location: string;
@@ -18,6 +20,7 @@ interface ExperienceItem {
 const experiences: ExperienceItem[] = [
   {
     id: "qorelly",
+    logo: "/logos/qorelly.webp",
     role: "Software Engineer",
     company: "Qorelly",
     type: "Full-time",
@@ -51,6 +54,7 @@ const experiences: ExperienceItem[] = [
   },
   {
     id: "aidenai",
+    logo: "/logos/aidenai.webp",
     role: "Full Stack Development Intern",
     company: "AIDENAI TECHNOLOGIES LLP",
     type: "Full-time",
@@ -88,6 +92,7 @@ const experiences: ExperienceItem[] = [
   },
   {
     id: "neominds",
+    logo: "/logos/neominds.webp",
     role: "Fullstack Developer",
     company: "Neominds EduTech Ltd",
     type: "Full-time",
@@ -113,9 +118,35 @@ const experiences: ExperienceItem[] = [
     ],
   },
   {
+    id: "freelance-fullstack",
+    logo: "/logos/freelance.webp",
+    role: "Full Stack Engineer",
+    company: "Freelance",
+    type: "Freelance",
+    period: "Sep 2025 - Jul 2026 · 11 mos",
+    location: "Lagos, Lagos State, Nigeria · Remote",
+    description:
+      "I am a Full-Stack Developer with experience in building responsive, scalable, and user-focused web applications. I work across both front-end and back-end technologies, turning ideas into functional digital products with clean and efficient code. My skill set includes modern JavaScript frameworks, API development, database management, and integrating third-party services to deliver seamless user experiences.",
+    responsibilities: [
+      "Built responsive, scalable, user-focused web applications across front-end and back-end.",
+      "Turned client ideas into functional digital products with clean, efficient code.",
+      "Developed APIs, managed databases, and integrated third-party services for seamless user experiences.",
+      "Focused on performance, usability, and maintainable architecture while keeping up with modern development practices.",
+    ],
+    skills: [
+      "Website Building",
+      "Full-Stack Development",
+      "JavaScript Frameworks",
+      "API Development",
+      "Database Management",
+      "Third-Party Integrations",
+    ],
+  },
+  {
     id: "Freelance",
-    role: "Web Development | Freelance",
-    company: "Self-Employed",
+    logo: "/logos/freelance.webp",
+    role: "Web Development",
+    company: "Freelance",
     type: "Freelance",
     period: "3 yrs 10 mos",
     location: "Lagos, Lagos State, Nigeria · Remote",
@@ -137,6 +168,31 @@ const experiences: ExperienceItem[] = [
       "Payment Gateways",
       "System Architecture",
       "Client Collaboration",
+    ],
+  },
+  {
+    id: "freelance-frontend",
+    logo: "/logos/freelance.webp",
+    role: "Frontend Developer",
+    company: "Self-employed",
+    type: "Freelance",
+    period: "Oct 2022 - Apr 2026 · 3 yrs 7 mos",
+    location: "Lagos, Lagos State, Nigeria · Remote",
+    description:
+      "I am a passionate frontend developer with a strong foundation in HTML, CSS, and JavaScript, and hands-on experience building responsive, visually engaging web applications.",
+    responsibilities: [
+      "Developed modern interfaces using CSS Grid, Flexbox, animations, and frameworks such as React and Next.js through personal and academic projects.",
+      "Translated ideas and designs into clean, scalable code with close attention to user experience and responsiveness.",
+      "Built projects including a personal portfolio, an interactive calculator, and a logistics website, strengthening problem-solving and frontend application structure.",
+    ],
+    skills: [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "React",
+      "Next.js",
+      "Responsive Design",
+      "CSS Animations",
     ],
   },
 ];
@@ -204,9 +260,19 @@ const Experience = () => {
                       </div>
 
                       {/* Job Title & Company */}
-                      <h3 className="text-xl md:text-2xl font-bold text-foreground group-hover:text-primary transition-colors">
-                        {exp.role}
-                      </h3>
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={exp.logo}
+                          alt={`${exp.company} logo`}
+                          width={48}
+                          height={48}
+                          loading="lazy"
+                          className="w-12 h-12 rounded-xl object-contain bg-white border border-border/60 shrink-0"
+                        />
+                        <h3 className="text-xl md:text-2xl font-bold text-foreground group-hover:text-primary transition-colors">
+                          {exp.role}
+                        </h3>
+                      </div>
                       <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mt-1 mb-4">
                         <span className="flex items-center gap-1.5 font-medium text-foreground/90">
                           <Building2 className="w-4 h-4 text-primary" />
@@ -244,8 +310,9 @@ const Experience = () => {
                           {exp.skills.map((skill) => (
                             <span
                               key={skill}
-                              className="px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-secondary/60 text-foreground/90 border border-border/80"
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-secondary/60 text-foreground/90 border border-border/80"
                             >
+                              <SkillIcon name={skill} className="h-3 w-3" />
                               {skill}
                             </span>
                           ))}

@@ -38,6 +38,11 @@ export const pageMeta = {
     title: "Recommendations",
     description: "What colleagues, managers, classmates and collaborators say about working with Olanrewaju Illias.",
   },
+  roadmap: {
+    title: "12-Month Software Engineering Roadmap",
+    description:
+      "A beginner-friendly, month-by-month path to becoming a full-stack software engineer: what to learn, what to build, and how to grow.",
+  },
 } satisfies Record<string, PageMeta>;
 
 /** Route for each entry above. */
@@ -49,4 +54,5 @@ export const pageRoutes: Record<keyof typeof pageMeta, string> = {
   approach: "/approach",
   updates: "/updates",
   recommendations: "/recommendations",
+  roadmap: "/roadmap",
 };

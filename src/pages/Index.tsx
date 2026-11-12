@@ -10,6 +10,7 @@ import Projects from "@/components/Projects";
 import Articles from "@/components/Articles";
 import Testimonials from "@/components/Testimonials";
 import Contact from "@/components/Contact";
+import RoadmapTeaser from "@/components/RoadmapTeaser";
 import ScrollSection from "@/components/ScrollSection";
 import { usePageMeta } from "@/hooks/use-page-meta";
 
@@ -50,6 +51,9 @@ const Index = () => {
       </ScrollSection>
       <ScrollSection>
         <LatestUpdates />
+      </ScrollSection>
+      <ScrollSection>
+        <RoadmapTeaser />
       </ScrollSection>
       <ScrollSection>
         <Contact />

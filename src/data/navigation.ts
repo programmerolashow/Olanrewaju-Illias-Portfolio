@@ -5,6 +5,7 @@ import {
   Camera,
   Megaphone,
   MessageSquareQuote,
+  Map,
   Code2,
   FolderGit2,
   NotebookPen,
@@ -48,6 +49,7 @@ export const navGroups: NavGroup[] = [
       { label: "Articles", to: "/articles", description: "Technical writing and project lessons", icon: NotebookPen, section: "articles" },
       { label: "How I Work", to: "/approach", description: "Process, debugging, AI practice and principles", icon: Workflow },
       { label: "Recommendations", to: "/recommendations", description: "What people I've worked with say", icon: MessageSquareQuote },
+      { label: "Learning Roadmap", to: "/roadmap", description: "A 12-month path to becoming a software engineer", icon: Map },
     ],
   },
 ];
