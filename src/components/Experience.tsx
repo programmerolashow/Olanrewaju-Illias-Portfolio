@@ -2,6 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Briefcase, Calendar, MapPin, Building2, CheckCircle2 } from "lucide-react";
 import TypewriterText from "@/components/TypewriterText";
+import SkillIcon from "@/components/SkillIcon";
 
 interface ExperienceItem {
   id: string;
@@ -309,8 +310,9 @@ const Experience = () => {
                           {exp.skills.map((skill) => (
                             <span
                               key={skill}
-                              className="px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-secondary/60 text-foreground/90 border border-border/80"
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-secondary/60 text-foreground/90 border border-border/80"
                             >
+                              <SkillIcon name={skill} className="h-3 w-3" />
                               {skill}
                             </span>
                           ))}

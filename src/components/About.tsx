@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Bot, Code2, Palette, Server, Database, ShieldCheck, GitPullRequest, HeartHandshake, ExternalLink, type LucideIcon } from "lucide-react";
 import FeatureArt, { type FeatureArtName } from "./FeatureArt";
 import TypewriterText from "@/components/TypewriterText";
+import SkillIcon from "@/components/SkillIcon";
 
 const skills = [
   // Frontend
@@ -269,6 +270,7 @@ const About = () => {
                       }
                       className="skill-chip inline-flex items-center justify-center rounded-full border px-3.5 py-2 text-xs sm:px-5 sm:py-2.5 sm:text-sm xl:px-6 xl:py-3 font-semibold cursor-pointer select-none whitespace-nowrap tracking-wide leading-none transition-shadow duration-300"
                     >
+                      <SkillIcon name={skill} className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       {skill}
                     </motion.span>
                   );
@@ -374,8 +376,9 @@ const About = () => {
                 {["GSoC 2026", "Joplin Open-Source", "Moose Ecosystem", "AST Meta-Modelling", "Static Site Generation", "Fault Localization"].map((tag) => (
                   <span
                     key={tag}
-                    className="px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-primary/10 text-primary border border-primary/20"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-primary/10 text-primary border border-primary/20"
                   >
+                    <SkillIcon name={tag} className="h-3 w-3" brandColor={false} />
                     {tag}
                   </span>
                 ))}
@@ -411,8 +414,9 @@ const About = () => {
                 {["Engineering Principles", "Deep Debugging", "Code Execution Flow", "Fintech Logic", "Developer Community"].map((tag) => (
                   <span
                     key={tag}
-                    className="px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-accent/10 text-accent border border-accent/20"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[0.7rem] font-mono bg-accent/10 text-accent border border-accent/20"
                   >
+                    <SkillIcon name={tag} className="h-3 w-3" brandColor={false} />
                     {tag}
                   </span>
                 ))}

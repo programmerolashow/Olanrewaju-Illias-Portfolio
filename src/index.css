@@ -313,6 +313,31 @@
     }
   }
 
+  /* ColorWaveText: each letter lights up in turn, first to last, and the wave loops without stopping.
+     The cycle length and per-letter delay are set inline; ~1s of each cycle is the coloured part. */
+  .color-wave-letter {
+    animation-name: color-wave;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+  }
+
+  @keyframes color-wave {
+    0% {
+      color: inherit;
+    }
+    2% {
+      color: hsl(var(--primary));
+    }
+    5% {
+      color: hsl(var(--accent));
+    }
+    8%,
+    100% {
+      color: inherit;
+    }
+  }
+
   .marquee-mask {
     -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
     mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
@@ -326,6 +351,7 @@
 
   .animate-marquee,
   .animate-marquee-reverse,
+  .color-wave-letter,
   .group:hover .feature-art-flow,
   .group:hover .feature-art-pulse,
   .group:hover .feature-art-float {

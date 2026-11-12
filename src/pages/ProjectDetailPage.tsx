@@ -6,6 +6,7 @@ import PageHeader from "@/components/PageHeader";
 import ScrollSection from "@/components/ScrollSection";
 import MotionImage from "@/components/MotionImage";
 import ExploreMore from "@/components/ExploreMore";
+import SkillIcon from "@/components/SkillIcon";
 import { getProject, projects, type CaseStudy, type CodeSample, type SubProduct } from "@/data/projects";
 import { usePageMeta } from "@/hooks/use-page-meta";
 import { cn } from "@/lib/utils";
@@ -222,7 +223,8 @@ const hasContent = (cs: CaseStudy) =>
 const Tags = ({ tags }: { tags: string[] }) => (
   <div className="flex flex-wrap gap-2">
     {tags.map((tag) => (
-      <span key={tag} className="rounded-full bg-primary/10 px-3 py-1 font-mono text-xs text-primary sm:text-sm">
+      <span key={tag} className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 font-mono text-xs text-primary sm:text-sm">
+        <SkillIcon name={tag} />
         {tag}
       </span>
     ))}
