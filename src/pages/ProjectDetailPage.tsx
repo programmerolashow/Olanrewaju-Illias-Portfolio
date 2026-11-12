@@ -331,7 +331,21 @@ const ProjectDetailPage = () => {
       </PageHeader>
 
       <div className="container mx-auto px-4 pb-12 sm:px-6 md:pb-16">
-        {project.image && (
+        {project.video ? (
+          <ScrollSection>
+            <div className="mb-10 overflow-hidden rounded-2xl border border-border bg-black md:mb-14">
+              <video
+                src={project.video}
+                poster={project.image}
+                controls
+                playsInline
+                preload="metadata"
+                aria-label={`${project.title} video`}
+                className="aspect-[16/9] w-full"
+              />
+            </div>
+          </ScrollSection>
+        ) : project.image && (
           <ScrollSection>
             <div className="mb-10 overflow-hidden rounded-2xl border border-border md:mb-14">
               <MotionImage

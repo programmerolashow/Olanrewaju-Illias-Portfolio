@@ -20,7 +20,8 @@ const pinned: PinnedRepo[] = [
   {
     repo: "ZoomTrans",
     title: "ZoomTrans",
-    description: "Transit payments for passengers, drivers and operators: Expo mobile app, FastAPI backend and QR-based driver workflows.",
+    description: "Smart campus transportation for passengers, drivers and administrators: Expo mobile app, Node.js backend, wallet payments and QR-based workflows.",
+    slug: "zoomtrans",
   },
   {
     repo: "BankSpace",
@@ -76,7 +77,7 @@ const RepoCard = ({ pin, index, inView }: { pin: PinnedRepo; index: number; inVi
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: 0.15 + index * 0.08, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -4 }}
-      className="glass-card flex h-full flex-col rounded-2xl p-5"
+      className="glass-card relative flex h-full flex-col rounded-2xl p-5"
     >
       <div className="mb-2 flex items-center justify-between gap-3">
         <p className="inline-flex min-w-0 items-center gap-2 font-mono text-xs text-muted-foreground">
@@ -92,7 +93,16 @@ const RepoCard = ({ pin, index, inView }: { pin: PinnedRepo; index: number; inVi
         )}
       </div>
 
-      <h4 className="text-lg font-bold text-foreground">{pin.title}</h4>
+      <h4 className="text-lg font-bold text-foreground">
+        {pin.slug ? (
+          // Stretched link: the whole card opens the project page; the buttons below sit above it.
+          <Link to={`/projects/${pin.slug}`} className="after:absolute after:inset-0 after:rounded-2xl hover:text-primary">
+            {pin.title}
+          </Link>
+        ) : (
+          pin.title
+        )}
+      </h4>
       <p className="mt-1 flex-1 text-sm leading-relaxed text-muted-foreground">{data?.description || pin.description}</p>
 
       {data && (
@@ -108,7 +118,7 @@ const RepoCard = ({ pin, index, inView }: { pin: PinnedRepo; index: number; inVi
         </div>
       )}
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="relative z-10 mt-4 flex flex-wrap gap-2">
         {data && (
           <a
             href={data.html_url}

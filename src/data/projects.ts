@@ -62,6 +62,8 @@ export interface Project {
   featured: boolean;
   /** Optional screenshot in /public/projects. imageFocus = CSS object-position. */
   image?: string;
+  /** Optional MP4 in /public/projects, shown with controls at the top of the project page in place of the screenshot. */
+  video?: string;
   imageFocus?: string;
   /** e.g. "Fintech / Full-Stack Web Application". */
   category?: string;
@@ -400,6 +402,56 @@ export const projects: Project[] = [
       ],
       outcome: "An independently built personal project, fully working end to end. There are no user numbers or production metrics to report.",
       improvements: ["Broader automated test coverage.", "Moderation tools for handling reports.", "Institution verification for student accounts."],
+    },
+  },
+  {
+    slug: "zoomtrans",
+    title: "ZoomTrans",
+    description:
+      "ZoomTrans is a smart transportation and digital mobility platform connecting passengers, drivers and transport administrators, starting at the University of Ilorin. It combines a React Native mobile app, a web admin interface, a Node.js backend and PostgreSQL, with digital wallet payments and QR-based interactions.",
+    tags: ["React Native", "Expo", "Node.js", "PostgreSQL", "QR Payments"],
+    category: "Mobility / Mobile & Web Platform",
+    // Private repo, so no github link. No live link yet.
+    status: "In progress",
+    featured: false,
+    video: "/projects/zoomtrans.mp4",
+    caseStudy: {
+      problem:
+        "Transportation is part of everyday life in university communities, where students, staff and visitors depend on reliable mobility, yet getting a ride can still mean payment difficulties, limited coordination and inefficient processes. Inspired by discussions around student welfare and transportation at the University of Ilorin (UNILORIN), ZoomTrans asks what technology could do to make everyday transportation smarter, easier and more accessible. The first intended routes are Post Office–Hostel Area and Post Office–UITH.",
+      role: "I lead ZoomTrans, a collaborative initiative with a team of five. We are building it as an integrated mobile and web ecosystem for three groups: passengers, who access transport through a convenient digital experience; drivers, who use the platform to support transport operations; and administrators, who manage and coordinate activity across the ecosystem.",
+      architecture: [
+        "React Native + Expo mobile app",
+        "Web admin and operations interface",
+        "Node.js API (backend-managed auth)",
+        "PostgreSQL",
+      ],
+      challenges: [
+        {
+          title: "From a real-world problem to a practical product",
+          detail:
+            "Translating a transportation problem into software meant starting from genuine needs, not features, and shaping a solution people could use day to day.",
+        },
+        {
+          title: "One connected ecosystem for different roles",
+          detail:
+            "Passengers, drivers and administrators each need their own experience, sharing data through API-driven communication between the apps and the backend.",
+        },
+        {
+          title: "Constraints and real-world deployment",
+          detail:
+            "We have had to manage infrastructure and resource constraints while preparing the applications for real-world deployment.",
+        },
+      ],
+      outcome:
+        "Building ZoomTrans has taught us that useful technology starts with identifying genuine problems, and that good software needs more than functional code: thoughtful architecture, usability, security, collaboration and continuous improvement. It has strengthened our experience in full-stack development, API integration, database design, application architecture, teamwork and product development. ZoomTrans: move smarter, pay easier, travel better.",
+      improvements: [
+        "Physical ZoomTrans transit cards",
+        "Contactless tap-in transportation payments",
+        "Seamless wallet funding and payment experiences",
+        "Improved driver and administrative workflows",
+        "Intelligent transportation coordination and operational insights",
+        "Expansion to other universities and urban transportation networks",
+      ],
     },
   },
   {
