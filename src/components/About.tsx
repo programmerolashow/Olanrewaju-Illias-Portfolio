@@ -163,7 +163,9 @@ const About = () => {
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
                   whileHover={{ y: -5 }}
-                  className="glass-card relative overflow-hidden rounded-xl p-5 sm:p-6 group flex flex-col lg:min-h-0 lg:p-4 xl:p-5 transition-colors duration-300 hover:border-primary/40 bg-gradient-to-br from-primary/[0.04] via-transparent to-accent/[0.07] dark:bg-none"
+                  // No backdrop blur here: balloons, birds and rain move behind these cards, and re-blurring that
+                  // every frame is the most expensive thing on the page. A near-opaque background reads the same.
+                  className="glass-card relative overflow-hidden rounded-xl p-5 sm:p-6 group flex flex-col lg:min-h-0 lg:p-4 xl:p-5 transition-colors duration-300 hover:border-primary/40 [backdrop-filter:none] [-webkit-backdrop-filter:none] !bg-background/90 bg-gradient-to-br from-primary/[0.04] via-transparent to-accent/[0.07]"
                 >
                   <FeatureArt name={feature.art} />
                   <div className="relative w-12 h-12 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-lg bg-primary/10 backdrop-blur-sm flex items-center justify-center mb-4 lg:mb-2 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">

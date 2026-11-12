@@ -28,6 +28,7 @@ const GALLOP_PX_S = 170;
 
 type Animal = {
   root: THREE.Group;
+  holder: THREE.Group;
   mixer: THREE.AnimationMixer;
   actions: Record<string, THREE.AnimationAction>;
   current: string;
@@ -52,10 +53,10 @@ export const createAnimalStage = async (canvas: HTMLCanvasElement, kinds: Animal
   sun.position.set(-200, 400, 300);
   scene.add(sun);
 
-  // 1 unit = 1px. Looking slightly down at the floor, so the animals show a little of their backs.
+  // 1 unit = 1px, looking straight at the floor (a tilt would lift the animals off the grass). The three-quarter
+  // turn of each animal (see update) gives the depth instead.
   const camera = new THREE.OrthographicCamera(0, 1, 1, 0, -1000, 1000);
   camera.position.set(0, 0, 400);
-  camera.rotation.x = -0.18;
 
   const loader = new GLTFLoader();
   const templates = new Map<AnimalKind, Awaited<ReturnType<GLTFLoader["loadAsync"]>>>();
@@ -71,6 +72,8 @@ export const createAnimalStage = async (canvas: HTMLCanvasElement, kinds: Animal
   const animals: Animal[] = kinds.map((kind) => {
     const gltf = templates.get(kind)!;
     const model = cloneSkinned(gltf.scene) as THREE.Group;
+    // The armature carries its own scale; measure with world matrices applied, or the size is off by that factor.
+    model.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const scale = HEIGHT_PX[kind] / size.y;
@@ -79,12 +82,13 @@ export const createAnimalStage = async (canvas: HTMLCanvasElement, kinds: Animal
 
     const root = new THREE.Group();
     root.add(model);
+    // Soft contact shadow: a flat ellipse facing the camera, kept out of the turning group so it stays wide.
     const shadow = new THREE.Mesh(shadowGeo, shadowMat);
-    shadow.rotation.x = -Math.PI / 2;
-    shadow.scale.set(Math.max(size.x, size.z) * scale * 0.45, size.z * scale * 0.25, 1);
-    shadow.position.y = 0.5;
-    root.add(shadow);
-    scene.add(root);
+    shadow.scale.set(Math.max(size.x, size.z) * scale * 0.42, 3.5, 1);
+    shadow.position.set(0, 1, -40);
+    const holder = new THREE.Group();
+    holder.add(root, shadow);
+    scene.add(holder);
 
     const mixer = new THREE.AnimationMixer(model);
     const actions: Record<string, THREE.AnimationAction> = {};
@@ -92,7 +96,7 @@ export const createAnimalStage = async (canvas: HTMLCanvasElement, kinds: Animal
     actions.Attack?.setLoop(THREE.LoopOnce, 1);
     if (actions.Attack) actions.Attack.clampWhenFinished = true;
     actions.Idle?.play();
-    return { root, mixer, actions, current: "Idle", heading: Math.PI / 2 };
+    return { root, holder, mixer, actions, current: "Idle", heading: Math.PI / 2 };
   });
 
   const play = (a: Animal, name: string, fade = 0.25) => {
@@ -105,7 +109,7 @@ export const createAnimalStage = async (canvas: HTMLCanvasElement, kinds: Animal
 
   let width = 1;
   let height = 1;
-  const groundY = 22; // px above the bottom of the canvas: on the grass
+  const groundY = 8; // px above the bottom of the canvas: standing on the grass
 
   return {
     resize(w, h) {
@@ -135,7 +139,7 @@ export const createAnimalStage = async (canvas: HTMLCanvasElement, kinds: Animal
       poses.forEach((pose, i) => {
         const a = animals[i];
         if (!a) return;
-        a.root.position.set(pose.x, groundY, (i - 1) * 30);
+        a.holder.position.set(pose.x, groundY, (i - 1) * 30);
         // Face the way it's going, turned a little toward the viewer (three-quarter view), turning smoothly.
         const target = pose.dir === 1 ? Math.PI / 2 - 0.35 : -Math.PI / 2 + 0.35;
         a.heading += (target - a.heading) * Math.min(1, dt * 8);

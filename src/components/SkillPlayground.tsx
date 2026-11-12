@@ -151,9 +151,11 @@ const Rain = ({ active }: { active: boolean }) => {
     const canvas = ref.current;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx || !active) return;
+    // Thin streaks don't need retina resolution: 1x keeps the canvas cheap to clear and draw.
+    const dpr = 1;
     const fit = () => {
-      canvas.width = canvas.clientWidth * devicePixelRatio;
-      canvas.height = canvas.clientHeight * devicePixelRatio;
+      canvas.width = canvas.clientWidth * dpr;
+      canvas.height = canvas.clientHeight * dpr;
     };
     fit();
     const ro = new ResizeObserver(fit);
@@ -172,7 +174,7 @@ const Rain = ({ active }: { active: boolean }) => {
       const { width, height } = canvas;
       ctx.clearRect(0, 0, width, height);
       ctx.strokeStyle = document.documentElement.classList.contains("dark") ? "rgba(186,200,222,0.45)" : "rgba(71,85,105,0.35)";
-      ctx.lineWidth = devicePixelRatio;
+      ctx.lineWidth = dpr;
       ctx.beginPath();
       for (const d of drops) {
         d.y += d.speed * dt;
@@ -183,16 +185,25 @@ const Rain = ({ active }: { active: boolean }) => {
         }
         const x = d.x * width;
         const y = d.y * height;
-        const l = d.len * devicePixelRatio;
+        const l = d.len * dpr;
         ctx.moveTo(x, y);
         ctx.lineTo(x - l * 0.12, y - l);
       }
       ctx.stroke();
       raf = requestAnimationFrame(step);
     };
-    raf = requestAnimationFrame(step);
+    // Only rain while the section is on screen.
+    const io = new IntersectionObserver(([entry]) => {
+      cancelAnimationFrame(raf);
+      if (entry.isIntersecting) {
+        last = performance.now();
+        raf = requestAnimationFrame(step);
+      }
+    });
+    io.observe(canvas);
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
       ro.disconnect();
     };
   }, [active]);
@@ -217,8 +228,27 @@ export const SkillSky = ({ balloons, layer }: { balloons: string[]; layer: "back
   const period = balloons.length * SPACING;
   const inLayer = (i: number) => (i % 3 === 0 ? "front" : "back") === layer;
 
+  // The sky's size, as CSS variables for the transform-only keyframes in index.css.
+  const skyRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const sky = skyRef.current;
+    if (!sky) return;
+    const ro = new ResizeObserver(() => {
+      sky.style.setProperty("--sky-w", `${sky.clientWidth}px`);
+      sky.style.setProperty("--sky-h", `${sky.clientHeight}px`);
+    });
+    ro.observe(sky);
+    // Pause every sky animation while the section is off screen (see .sky-paused in index.css).
+    const io = new IntersectionObserver(([entry]) => sky.classList.toggle("sky-paused", !entry.isIntersecting));
+    io.observe(sky);
+    return () => {
+      ro.disconnect();
+      io.disconnect();
+    };
+  }, []);
+
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+    <div ref={skyRef} aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       {layer === "back" && (
         <>
           {/* Overcast while it rains */}
@@ -505,8 +535,9 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
           stage.resize(width, canvas.clientHeight);
           stage.update(poses(), 0);
         })
-        .catch(() => {
+        .catch((error) => {
           // No WebGL or the models failed to load: the balls still play on their own.
+          console.warn("About section animals unavailable:", error);
         });
     };
 
