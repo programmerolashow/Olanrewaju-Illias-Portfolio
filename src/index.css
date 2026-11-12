@@ -338,6 +338,216 @@
     }
   }
 
+  /* SkillPlayground: animal walk cycle and kick, birds, balloons, clouds. */
+  .critter .critter-leg {
+    transform-box: fill-box;
+    transform-origin: top center;
+  }
+
+  .critter-walking svg {
+    animation: critter-bob 0.42s ease-in-out infinite;
+  }
+
+  .critter-walking .critter-leg-a {
+    animation: critter-step 0.42s ease-in-out infinite;
+  }
+
+  .critter-walking .critter-leg-b {
+    animation: critter-step 0.42s ease-in-out infinite reverse;
+  }
+
+  .critter-kick .critter-leg-a {
+    animation: critter-kick 0.35s ease-out;
+  }
+
+  @keyframes critter-bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }
+
+  @keyframes critter-step {
+    0%,
+    100% {
+      transform: rotate(-18deg);
+    }
+    50% {
+      transform: rotate(18deg);
+    }
+  }
+
+  @keyframes critter-kick {
+    0%,
+    100% {
+      transform: rotate(0);
+    }
+    40% {
+      transform: rotate(-55deg);
+    }
+  }
+
+  .bird-fly {
+    left: -3rem;
+    animation-name: bird-fly;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  @keyframes bird-fly {
+    0% {
+      left: -3rem;
+      transform: translateY(0);
+    }
+    25% {
+      transform: translateY(-14px);
+    }
+    50% {
+      transform: translateY(6px);
+    }
+    75% {
+      transform: translateY(-10px);
+    }
+    100% {
+      left: calc(100% + 1rem);
+      transform: translateY(0);
+    }
+  }
+
+  /* Wings hinge at the shoulder (bottom of each wing shape): a few quick beats, then a glide with wings held up. */
+  .bird-wing {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: bird-beat 1.5s ease-in-out infinite;
+    animation-delay: var(--beat-delay, 0s);
+  }
+
+  .bird-wing-far {
+    animation-name: bird-beat-far;
+  }
+
+  @keyframes bird-beat {
+    0%,
+    24%,
+    48% {
+      transform: scaleY(1);
+    }
+    12%,
+    36% {
+      transform: scaleY(-0.75);
+    }
+    60%,
+    100% {
+      transform: scaleY(0.35);
+    }
+  }
+
+  @keyframes bird-beat-far {
+    0%,
+    24%,
+    48% {
+      transform: scaleY(1);
+    }
+    12%,
+    36% {
+      transform: scaleY(-0.5);
+    }
+    60%,
+    100% {
+      transform: scaleY(0.3);
+    }
+  }
+
+  /* The sun's corona: soft rays that turn slowly. */
+  .sun-rays {
+    background:
+      radial-gradient(circle, rgba(253, 230, 138, 0.55) 30%, transparent 62%),
+      repeating-conic-gradient(from 0deg, rgba(253, 224, 71, 0.35) 0deg 6deg, transparent 6deg 18deg);
+    -webkit-mask-image: radial-gradient(circle, #000 35%, transparent 70%);
+    mask-image: radial-gradient(circle, #000 35%, transparent 70%);
+    animation: sun-turn 60s linear infinite;
+  }
+
+  .star-twinkle {
+    animation: star-twinkle 3s ease-in-out infinite;
+  }
+
+  @keyframes star-twinkle {
+    0%,
+    100% {
+      opacity: 0.9;
+    }
+    50% {
+      opacity: 0.25;
+    }
+  }
+
+  @keyframes sun-turn {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Falls from under the clouds (top of the sky layer) to the grass (the balloon is ~78px tall, grass 26px). */
+  .balloon-fall {
+    top: 0;
+    opacity: 0;
+    animation-name: balloon-fall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  @keyframes balloon-fall {
+    0% {
+      top: 0;
+      opacity: 0;
+    }
+    3% {
+      opacity: 1;
+    }
+    35% {
+      top: calc(100% - 104px);
+      opacity: 1;
+    }
+    38%,
+    100% {
+      top: calc(100% - 104px);
+      opacity: 0;
+    }
+  }
+
+  .cloud-move {
+    left: -12rem;
+    animation-name: cloud-move;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  @keyframes cloud-move {
+    from {
+      left: -12rem;
+    }
+    to {
+      left: 100%;
+    }
+  }
+
+  .balloon-sway {
+    animation: balloon-sway 3.2s ease-in-out infinite alternate;
+  }
+
+  @keyframes balloon-sway {
+    from {
+      transform: translateX(-8px) rotate(-6deg);
+    }
+    to {
+      transform: translateX(8px) rotate(6deg);
+    }
+  }
+
   .marquee-mask {
     -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
     mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
@@ -352,6 +562,13 @@
   .animate-marquee,
   .animate-marquee-reverse,
   .color-wave-letter,
+  .cloud-move,
+  .bird-fly,
+  .bird-wing,
+  .sun-rays,
+  .star-twinkle,
+  .balloon-fall,
+  .balloon-sway,
   .group:hover .feature-art-flow,
   .group:hover .feature-art-pulse,
   .group:hover .feature-art-float {
