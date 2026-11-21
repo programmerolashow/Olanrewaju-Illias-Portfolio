@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from "@/components/icons";
 import TypewriterText from "@/components/TypewriterText";
 
 interface PageHeaderProps {

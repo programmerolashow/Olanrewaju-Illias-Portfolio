@@ -29,6 +29,9 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
+        // Qorelly's brand serif, for marketing headlines only (never the admin dashboard). Regular weight only: it
+        // ships no bold, so a bold would be faked by the browser.
+        ciscela: ['Ciscela', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",

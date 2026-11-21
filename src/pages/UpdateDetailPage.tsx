@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, CalendarDays, ExternalLink, Loader2, MapPin } from "lucide-react";
+import { ArrowLeft, CalendarDays, ExternalLink, Loader2, MapPin } from "@/components/icons";
 import PageHeader from "@/components/PageHeader";
 import { StatusBadge } from "@/components/UpdateCard";
 import MotionImage from "@/components/MotionImage";

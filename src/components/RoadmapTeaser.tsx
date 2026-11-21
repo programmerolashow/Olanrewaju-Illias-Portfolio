@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Map as MapIcon } from "lucide-react";
+import { ArrowRight, Map as MapIcon } from "@/components/icons";
 
 /** Home-page banner pointing beginners to the 12-month roadmap (/roadmap). */
 const RoadmapTeaser = () => (

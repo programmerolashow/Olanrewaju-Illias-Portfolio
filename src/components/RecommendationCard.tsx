@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Linkedin, Quote, Star } from "lucide-react";
+import { Linkedin, Quote, Star } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { initials, recommenderLine, relationshipLabels, type Recommendation } from "@/lib/feedback";
 

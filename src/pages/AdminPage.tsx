@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ArrowRight, Check, Eye, FileUp, GraduationCap, ImagePlus, Linkedin, Loader2, LogOut, Mail, Pencil, Pin, Plus, Send, Star, Trash2, Undo2, Video, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Eye, FileUp, GraduationCap, ImagePlus, Linkedin, Loader2, LogOut, Mail, Pencil, Pin, Plus, Send, Star, Trash2, Undo2, Video, X } from "@/components/icons";
 import { StatusBadge } from "@/components/UpdateCard";
 import { cn } from "@/lib/utils";
 import { bannerVideo, coverUrl, displayDate, type Update, type UpdateImage, type UpdateInput, type UpdateVideo } from "@/lib/updates";

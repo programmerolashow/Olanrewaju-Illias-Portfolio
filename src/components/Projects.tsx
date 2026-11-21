@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ExternalLink, Github, Folder, Search, X } from "lucide-react";
+import { ArrowRight, ExternalLink, Github, Folder, Search, X } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import MotionImage from "@/components/MotionImage";
 import GitHubStrip from "@/components/GitHubStrip";

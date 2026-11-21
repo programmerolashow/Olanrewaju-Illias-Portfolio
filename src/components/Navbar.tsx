@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sun, Moon, ChevronDown, ArrowRight, Send, Search } from "lucide-react";
+import { Menu, X, Sun, Moon, ChevronDown, ArrowRight, Send, Search } from "@/components/icons";
 import { useTheme } from "./ThemeProvider";
 import { openCommandMenu } from "@/lib/command-menu";
 import { cn } from "@/lib/utils";
@@ -123,7 +123,7 @@ const Dropdown = ({ group, open, active, pathname, section, onOpen, onClose, onH
                               : "bg-primary/10 text-primary group-hover/item:bg-primary group-hover/item:text-primary-foreground",
                           )}
                         >
-                          <item.icon className="h-[1.1rem] w-[1.1rem]" aria-hidden />
+                          <item.icon active={current} className="h-[1.1rem] w-[1.1rem]" aria-hidden />
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
@@ -385,7 +385,7 @@ const Navbar = () => {
               <Link
                 to="/"
                 className={cn(
-                  "mb-3 flex items-center justify-between rounded-xl border border-border px-4 py-3 text-sm font-semibold transition-colors",
+                  "mb-3 flex items-center justify-between rounded-full border border-border px-4 py-3 text-sm font-semibold transition-colors",
                   homeActive ? "border-primary/40 bg-primary/10 text-primary" : "text-foreground hover:bg-secondary/60",
                 )}
               >
@@ -420,7 +420,7 @@ const Navbar = () => {
                             )}
                           >
                             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                              <item.icon className="h-4 w-4" aria-hidden />
+                              <item.icon active={current} className="h-4 w-4" aria-hidden />
                             </span>
                             <span className="min-w-0">
                               <span className={cn("block text-sm font-semibold", current ? "text-primary" : "text-foreground")}>

@@ -1,6 +1,6 @@
 import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { ArrowDown, ArrowRight, Briefcase, FileDown, Github, Gitlab, GraduationCap, Linkedin, Mail, MapPin, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowRight, Briefcase, FileDown, Github, Gitlab, GraduationCap, Linkedin, Mail, MapPin, Sparkles } from "@/components/icons";
 import HeroPortrait from "./HeroPortrait";
 import { site } from "@/config/site";
 
@@ -86,7 +86,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="mb-3 text-[2.1rem] font-bold leading-[1.1] tracking-tight text-foreground sm:text-5xl md:text-6xl xl:text-7xl"
+              className="mb-3 font-ciscela text-[2.1rem] font-normal leading-[1.05] tracking-[-0.02em] text-foreground sm:text-5xl md:text-6xl xl:text-7xl"
             >
               Olanrewaju Illias
             </motion.h1>

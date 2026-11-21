@@ -20,7 +20,7 @@ import {
   Smartphone,
   Target,
   type LucideIcon,
-} from "lucide-react";
+} from "@/components/icons";
 import { cn } from "@/lib/utils";
 import TypewriterText from "@/components/TypewriterText";
 import SkillIcon from "@/components/SkillIcon";
@@ -679,7 +679,7 @@ const Skills = () => {
                       transition={{ type: "spring", stiffness: 380, damping: 32 }}
                     />
                   )}
-                  <category.icon className={cn("relative h-4 w-4 shrink-0", selected && "text-primary")} />
+                  <category.icon active={selected} className={cn("relative h-4 w-4 shrink-0", selected && "text-primary")} />
                   <span className="relative whitespace-nowrap">{category.label}</span>
                   <span className="relative ml-auto hidden font-mono text-xs text-muted-foreground lg:inline">
                     {category.skills.length}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Compass, X } from "lucide-react";
+import { Compass, X } from "@/components/icons";
 import { zipperDone } from "@/lib/zipper";
 import { getVisitorName, isReturningVisit, rememberVisitorName } from "@/lib/visitor";
 import { useTheme } from "@/components/ThemeProvider";

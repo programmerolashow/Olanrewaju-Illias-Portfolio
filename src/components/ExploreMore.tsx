@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "@/components/icons";
 import { pageLinks } from "@/data/navigation";
 import TypewriterText from "@/components/TypewriterText";
 

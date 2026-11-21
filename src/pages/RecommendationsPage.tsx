@@ -1,4 +1,4 @@
-import { Loader2, PenLine } from "lucide-react";
+import { Loader2, PenLine } from "@/components/icons";
 import PageHeader from "@/components/PageHeader";
 import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";

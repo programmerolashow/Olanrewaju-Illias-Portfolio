@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { BadgeCheck, ExternalLink, Maximize2 } from "lucide-react";
+import { BadgeCheck, ExternalLink, Maximize2 } from "@/components/icons";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { certifications, type Certification } from "@/data/certifications";
 import TypewriterText from "@/components/TypewriterText";

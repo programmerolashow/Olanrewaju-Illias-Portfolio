@@ -12,7 +12,7 @@ import {
   RotateCcw,
   Sparkles,
   Target,
-} from "lucide-react";
+} from "@/components/icons";
 import PageHeader from "@/components/PageHeader";
 import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";

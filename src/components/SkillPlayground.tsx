@@ -526,11 +526,15 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
       raf = requestAnimationFrame(step);
     };
 
-    // three.js and the models load only when the floor first comes into view.
+    // three.js and the models load only when the floor first comes into view. A failed attempt (a model request that
+    // dropped, a WebGL context that wasn't ready) is retried once before falling back to the flat balls.
     let loading = false;
+    let attempts = 0;
+    let retry = 0;
     const loadStage = () => {
       if (loading) return;
       loading = true;
+      attempts += 1;
       import("@/components/AnimalStage")
         .then(({ createAnimalStage }) =>
           createAnimalStage(
@@ -552,6 +556,11 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
           setBalls3d(true);
         })
         .catch((error) => {
+          if (!disposed && attempts < 2) {
+            loading = false;
+            retry = window.setTimeout(loadStage, 1500);
+            return;
+          }
           // No WebGL or the models failed to load: the balls still play on their own.
           console.warn("About section animals unavailable:", error);
         });
@@ -569,6 +578,7 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
 
     return () => {
       disposed = true;
+      clearTimeout(retry);
       cancelAnimationFrame(raf);
       io.disconnect();
       ro.disconnect();

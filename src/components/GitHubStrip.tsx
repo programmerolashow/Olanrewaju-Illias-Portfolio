@@ -2,7 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowUpRight, GitFork, Github, Lock, Star } from "lucide-react";
+import { ArrowUpRight, GitFork, Github, Lock, Star } from "@/components/icons";
 
 const OWNER = "programmerolashow";
 

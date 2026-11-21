@@ -1,6 +1,5 @@
 import {
   motion,
-  useMotionTemplate,
   useMotionValue,
   useMotionValueEvent,
   useSpring,
@@ -8,7 +7,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { useRef, useState } from "react";
-import { ArrowUpFromDot, Atom, Bot, Braces, Hand, Server, User, type LucideIcon } from "lucide-react";
+import { ArrowUpFromDot, Atom, Bot, Braces, Hand, Server, User, type LucideIcon } from "@/components/icons";
 import { heroViews } from "@/data/heroViews";
 import { cn } from "@/lib/utils";
 
@@ -133,10 +132,6 @@ const HeroPortrait = ({ pointerX, pointerY, reduce }: HeroPortraitProps) => {
   // Rotation applied to the photo itself
   const figureRotateY = useTransform(yawS, residualYaw);
   const figureRotateX = useTransform(pitchS, (p) => -residualPitch(p));
-  // Shadow and glow follow the rotation so the turn reads as depth, not a flat skew
-  const glowX = useTransform(figureRotateY, (r) => `${-r * 0.8}px`);
-  const figureFilter = useMotionTemplate`drop-shadow(${glowX} 0 28px hsl(var(--primary) / 0.38))`;
-  const groundScale = useTransform(figureRotateY, (r) => 1 - Math.abs(r) / 120);
 
   // Cross-fade weights for each photo
   const frontOpacity = useTransform([yawS, pitchS], ([y, p]: number[]) => (1 - sideWeight(y)) * (1 - topWeight(p)));
@@ -245,7 +240,6 @@ const HeroPortrait = ({ pointerX, pointerY, reduce }: HeroPortraitProps) => {
                 "conic-gradient(from 0deg, hsl(var(--primary)), transparent 30%, hsl(var(--accent)), transparent 70%, hsl(var(--primary)))",
             }}
           />
-          <div className="absolute inset-[12%] rounded-full bg-primary/20 blur-[4rem]" />
         </motion.div>
 
         {/* Arch panel the portrait stands in */}
@@ -276,7 +270,6 @@ const HeroPortrait = ({ pointerX, pointerY, reduce }: HeroPortraitProps) => {
             style={{
               rotateY: figureRotateY,
               rotateX: figureRotateX,
-              filter: figureFilter,
               transformOrigin: "50% 60%",
             }}
             className="relative h-full w-full"
@@ -318,12 +311,6 @@ const HeroPortrait = ({ pointerX, pointerY, reduce }: HeroPortraitProps) => {
         {/* Floating tech chips (closest layers) */}
         {!reduce && chips.map((chip) => <Chip key={chip.label} chip={chip} pointerX={pointerX} pointerY={pointerY} />)}
       </div>
-
-      {/* Ground shadow */}
-      <motion.div
-        style={{ scaleX: groundScale }}
-        className="pointer-events-none absolute -bottom-1 left-[17%] h-5 w-2/3 rounded-[100%] bg-black/40 blur-xl dark:bg-black/70"
-      />
 
       {/* Controls */}
       <motion.div

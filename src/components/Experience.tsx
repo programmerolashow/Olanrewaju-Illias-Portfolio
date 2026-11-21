@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Briefcase, Calendar, MapPin, Building2, CheckCircle2 } from "lucide-react";
+import { Briefcase, Calendar, MapPin, Building2, CheckCircle2 } from "@/components/icons";
 import TypewriterText from "@/components/TypewriterText";
 import SkillIcon from "@/components/SkillIcon";
 
@@ -236,7 +236,7 @@ const Experience = () => {
                   className="relative flex flex-col md:flex-row items-center"
                 >
                   {/* Timeline Dot */}
-                  <div className="absolute left-4 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-background border-2 border-primary shadow-[0_0_15px_rgba(56,189,248,0.5)] items-center justify-center z-10 hidden md:flex">
+                  <div className="absolute left-4 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-background border-2 border-primary items-center justify-center z-10 hidden md:flex">
                     <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
                   </div>
 
@@ -246,7 +246,7 @@ const Experience = () => {
                       isEven ? "md:mr-auto" : "md:ml-auto"
                     }`}
                   >
-                    <div className="glass-card rounded-2xl p-5 sm:p-6 md:p-8 hover:border-primary/50 transition-all duration-300 shadow-xl group">
+                    <div className="glass-card rounded-2xl p-5 sm:p-6 md:p-8 hover:border-primary/50 transition-all duration-300 group">
                       {/* Header Badge */}
                       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-primary/10 text-primary border border-primary/20">

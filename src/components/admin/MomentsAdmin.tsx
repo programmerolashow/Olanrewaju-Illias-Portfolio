@@ -1,7 +1,7 @@
 // /admin → Moments: add, edit, reorder, hide and delete the photos and videos on the Moments page.
 import { useRef, useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowDown, ArrowLeft, ArrowUp, EyeOff, ImagePlus, Loader2, Pencil, Play, Plus, Trash2, Video } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, EyeOff, ImagePlus, Loader2, Pencil, Play, Plus, Trash2, Video } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import type { GalleryItemSize } from "@/data/gallery";
 import type { Moment, MomentInput } from "@/lib/moments";
@@ -309,7 +309,7 @@ const MomentsAdmin = () => {
               )}
               {m.type === "video" && (
                 <span className="absolute inset-0 flex items-center justify-center bg-black/25 text-white">
-                  <Play className="h-5 w-5 fill-current" aria-label="Video" />
+                  <Play className="h-5 w-5" aria-label="Video" />
                 </span>
               )}
             </div>
