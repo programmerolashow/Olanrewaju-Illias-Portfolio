@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, type HtmlTagDescriptor, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
@@ -53,6 +53,43 @@ const structuredData = () => {
   return JSON.stringify({ "@context": "https://schema.org", "@graph": graph }).replace(/</g, "\\u003c");
 };
 
+/** Tags every page's <head> gets: search-engine data, the Updates feed link and (when set) Umami analytics. */
+const headTags = (): HtmlTagDescriptor[] => [
+  { tag: "script", attrs: { type: "application/ld+json" }, children: structuredData(), injectTo: "head" },
+  // Lets feed readers find the Updates feed from any page (api/feed.js).
+  {
+    tag: "link",
+    attrs: { rel: "alternate", type: "application/rss+xml", title: `${site.name}: Updates`, href: `${site.url}/api/feed` },
+    injectTo: "head",
+  },
+  ...(site.umamiWebsiteId
+    ? [
+        {
+          tag: "script",
+          attrs: { defer: true, src: "https://cloud.umami.is/script.js", "data-website-id": site.umamiWebsiteId },
+          injectTo: "head" as const,
+        },
+      ]
+    : []),
+];
+
+/**
+ * The new design's page (public/v2.html) with the same head as the classic home: link-preview tags (canonical /,
+ * since it's the same content), plus headTags(). Used for the build (dist/v2.html) and by the dev server.
+ */
+const fillV2 = (html: string) => {
+  const tags = headTags()
+    .map(({ tag, attrs = {}, children }) => {
+      const a = Object.entries(attrs)
+        .filter(([, v]) => v !== false && v !== undefined)
+        .map(([k, v]) => (v === true ? ` ${k}` : ` ${k}="${escapeAttr(String(v))}"`))
+        .join("");
+      return tag === "link" ? `<${tag}${a}>` : `<${tag}${a}>${typeof children === "string" ? children : ""}</${tag}>`;
+    })
+    .join("\n");
+  return replaceSeo(html, defaultSeo()).replace("</head>", `${tags}\n</head>`);
+};
+
 /**
  * Fills index.html from src/config/site.ts (tokens + the home page's link-preview tags), adds the Umami script
  * when a website ID is set, writes sitemap.xml and robots.txt, and writes a copy of index.html for every fixed
@@ -68,24 +105,7 @@ const sitePlugin = (): Plugin => ({
       const filled = replaceSeo(html, defaultSeo()).replace(/%SITE_NAME%/g, escapeAttr(site.name));
       return {
         html: filled,
-        tags: [
-          { tag: "script", attrs: { type: "application/ld+json" }, children: structuredData(), injectTo: "head" },
-          // Lets feed readers find the Updates feed from any page (api/feed.js).
-          {
-            tag: "link",
-            attrs: { rel: "alternate", type: "application/rss+xml", title: `${site.name}: Updates`, href: `${site.url}/api/feed` },
-            injectTo: "head",
-          },
-          ...(site.umamiWebsiteId
-            ? [
-                {
-                  tag: "script",
-                  attrs: { defer: true, src: "https://cloud.umami.is/script.js", "data-website-id": site.umamiWebsiteId },
-                  injectTo: "head" as const,
-                },
-              ]
-            : []),
-        ],
+        tags: headTags(),
       };
     },
   },
@@ -108,6 +128,9 @@ const sitePlugin = (): Plugin => ({
   },
   writeBundle(options) {
     const outDir = options.dir ?? path.resolve(__dirname, "dist");
+    // The new design (copied from public/ as-is) gets the same head as the classic home.
+    const v2File = path.join(outDir, "v2.html");
+    if (existsSync(v2File)) writeFileSync(v2File, fillV2(readFileSync(v2File, "utf8")));
     const template = readFileSync(path.join(outDir, "index.html"), "utf8");
     const base = defaultSeo();
     // Written as /services.html, /projects/bankspace.html, …; vercel.json's cleanUrls serves them at /services etc.
@@ -155,18 +178,26 @@ const sitePlugin = (): Plugin => ({
 /**
  * The new home page design is a static page, public/v2.html. Cloudflare (html_handling), Vercel (cleanUrls) and
  * Netlify serve it at /v2; Vite's dev and preview servers don't, and their SPA fallback hands /v2 to the React app
- * (its 404 page). This maps /v2 and /v2/ to /v2.html locally, keeping the query string.
+ * (its 404 page). Locally, /v2 and /v2/ are served from v2.html: in dev with the head filled in (fillV2), in preview
+ * from dist/ where the build already filled it.
  */
 const v2Page = (): Plugin => {
-  const rewrite = (req: { url?: string }, _res: unknown, next: () => void) => {
-    const match = req.url?.match(/^\/v2\/?(\?.*)?$/);
-    if (match) req.url = `/v2.html${match[1] ?? ""}`;
-    next();
-  };
+  const match = (url?: string) => url?.match(/^\/v2(?:\/|\.html)?(\?.*)?$/);
   return {
     name: "v2-page",
-    configureServer: (server) => void server.middlewares.use(rewrite),
-    configurePreviewServer: (server) => void server.middlewares.use(rewrite),
+    configureServer: (server) =>
+      void server.middlewares.use((req, res, next) => {
+        if (!match(req.url)) return next();
+        const page = fillV2(readFileSync(path.resolve(__dirname, "public", "v2.html"), "utf8"));
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.end(page);
+      }),
+    configurePreviewServer: (server) =>
+      void server.middlewares.use((req, _res, next) => {
+        const m = match(req.url);
+        if (m) req.url = `/v2.html${m[1] ?? ""}`;
+        next();
+      }),
   };
 };
 
