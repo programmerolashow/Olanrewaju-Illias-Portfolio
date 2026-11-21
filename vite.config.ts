@@ -152,6 +152,24 @@ const sitePlugin = (): Plugin => ({
   },
 });
 
+/**
+ * The new home page design is a static page, public/v2.html. Cloudflare (html_handling), Vercel (cleanUrls) and
+ * Netlify serve it at /v2; Vite's dev and preview servers don't, and their SPA fallback hands /v2 to the React app
+ * (its 404 page). This maps /v2 and /v2/ to /v2.html locally, keeping the query string.
+ */
+const v2Page = (): Plugin => {
+  const rewrite = (req: { url?: string }, _res: unknown, next: () => void) => {
+    const match = req.url?.match(/^\/v2\/?(\?.*)?$/);
+    if (match) req.url = `/v2.html${match[1] ?? ""}`;
+    next();
+  };
+  return {
+    name: "v2-page",
+    configureServer: (server) => void server.middlewares.use(rewrite),
+    configurePreviewServer: (server) => void server.middlewares.use(rewrite),
+  };
+};
+
 // https://vitejs.dev/config/
 export default defineConfig(() => ({
   server: {
@@ -167,7 +185,7 @@ export default defineConfig(() => ({
   define: {
     __HAS_CV__: JSON.stringify(existsSync(path.resolve(__dirname, "public", site.cvPath.replace(/^\//, "")))),
   },
-  plugins: [react(), sitePlugin(), apiDevServer(__dirname)],
+  plugins: [v2Page(), react(), sitePlugin(), apiDevServer(__dirname)],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

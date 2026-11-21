@@ -8,6 +8,7 @@ import CommandMenu from "@/components/CommandMenu";
 import ZipperIntro from "@/components/ZipperIntro";
 import SiteTour from "@/components/SiteTour";
 import WelcomeBack from "@/components/WelcomeBack";
+import { useHomeDesignRedirect } from "@/lib/uiVersion";
 
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -50,6 +51,9 @@ const SiteLayout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.key]);
 
+  // Someone who chose the new design and follows an in-app link to "/" goes to /v2.
+  useHomeDesignRedirect(location.pathname, location.hash);
+
   const handleExitComplete = () => {
     window.scrollTo({ top: 0, behavior: "instant" });
     const { hash } = latestLocation.current;
@@ -84,6 +88,8 @@ const SiteLayout = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            // Room for the design-switch strip in the navbar (DesignSwitchBanner); 0 when it isn't showing.
+            style={{ paddingTop: "var(--design-strip-h, 0px)" }}
           >
             <Suspense fallback={<div className="min-h-screen" />}>{outlet}</Suspense>
           </motion.main>

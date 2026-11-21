@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Github, Linkedin, Instagram, Gitlab} from "@/components/icons";
 import { navGroups } from "@/data/navigation";
+import { setUiVersion, useWantedUiVersion } from "@/lib/uiVersion";
 
 const socialLinks = [
   { icon: Github, href: "https://github.com/programmerolashow", label: "GitHub" },
@@ -13,6 +14,7 @@ const socialLinks = [
 const footerLinks = [...navGroups.flatMap((group) => group.items), { label: "Contact", to: "/#contact" }];
 
 const Footer = () => {
+  const wantedDesign = useWantedUiVersion();
   return (
     <footer className="py-8 md:py-12 border-t border-border">
       <div className="container mx-auto px-4 sm:px-6">
@@ -54,6 +56,15 @@ const Footer = () => {
 
           <p className="text-muted-foreground text-sm flex items-center gap-1">
             Olanrewaju Illias
+            <span aria-hidden>·</span>
+            {/* Design switch (src/lib/uiVersion.ts): the home page's new design lives at /v2. */}
+            <button
+              type="button"
+              onClick={() => setUiVersion("v2")}
+              className="rounded-full underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {wantedDesign === "v2" ? "Back to the new design" : "Try the new design"}
+            </button>
           </p>
         </div>
       </div>
