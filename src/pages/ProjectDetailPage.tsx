@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check, ChevronRight, Copy, ExternalLink, Github } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ChevronRight, Copy, ExternalLink, Github } from "@/components/icons";
 import PageHeader from "@/components/PageHeader";
 import ScrollSection from "@/components/ScrollSection";
 import MotionImage from "@/components/MotionImage";

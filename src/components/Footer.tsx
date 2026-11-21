@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Github, Linkedin, Instagram, Gitlab} from "lucide-react";
+import { Github, Linkedin, Instagram, Gitlab} from "@/components/icons";
 import { navGroups } from "@/data/navigation";
 
 const socialLinks = [

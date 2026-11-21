@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { ArrowUpRight, Search } from "lucide-react";
+import { ArrowUpRight, Search } from "@/components/icons";
 import { site } from "@/config/site";
 import TypewriterText from "@/components/TypewriterText";
 

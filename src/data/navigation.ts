@@ -12,7 +12,7 @@ import {
   UserRound,
   Workflow,
   type LucideIcon,
-} from "lucide-react";
+} from "@/components/icons";
 
 export interface NavItem {
   label: string;

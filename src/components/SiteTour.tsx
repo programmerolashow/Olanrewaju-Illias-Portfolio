@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Compass, X } from "lucide-react";
+import { Compass, X } from "@/components/icons";
 import { zipperDone } from "@/lib/zipper";
 import { getVisitorName, hasVisitedBefore } from "@/lib/visitor";
 import { useTheme } from "@/components/ThemeProvider";

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "@/components/icons";
 import MotionImage from "@/components/MotionImage";
 import { cn } from "@/lib/utils";
 import type { UpdateImage } from "@/lib/updates";

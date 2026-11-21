@@ -3,7 +3,7 @@
 // Smaller screens: a compact like/share pill fixed to the corner, so it never covers what you're reading.
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring, useTransform, useVelocity } from "framer-motion";
-import { Heart, Share2 } from "lucide-react";
+import { Heart, Share2 } from "@/components/icons";
 import { useToast } from "@/hooks/use-toast";
 import { useLikes } from "@/lib/likes";
 import { cn } from "@/lib/utils";
@@ -102,7 +102,7 @@ const Burst = () => (
           animate={{ x: `calc(-50% + ${Math.cos(angle) * 46}px)`, y: `calc(-50% + ${Math.sin(angle) * 46}px)`, scale: 1, opacity: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
-          <Heart className="h-3 w-3 fill-current" />
+          <Heart active className="h-3 w-3" />
         </motion.span>
       );
     })}
@@ -239,7 +239,7 @@ export const EngagePanda = ({ updateId, title }: { updateId: string; title: stri
             liked ? "bg-rose-500 ring-rose-500/30" : "bg-gradient-to-br from-rose-400 to-rose-600 ring-rose-500/40",
           )}
         >
-          <Heart className={cn("h-7 w-7", liked && "fill-current")} aria-hidden />
+          <Heart active={liked} className="h-7 w-7" aria-hidden />
           <AnimatePresence>{bursts > 0 && liked && <Burst key={bursts} />}</AnimatePresence>
         </motion.button>
         <span className="mt-1.5 text-xs font-semibold text-muted-foreground" aria-live="polite">
@@ -285,7 +285,7 @@ export const EngageBar = ({ updateId, title, className }: { updateId: string; ti
           liked ? "bg-rose-500 text-white" : "text-rose-500 hover:bg-rose-500/10",
         )}
       >
-        <Heart className={cn("h-4 w-4", liked && "fill-current")} aria-hidden />
+        <Heart active={liked} className="h-4 w-4" aria-hidden />
         {count}
         <AnimatePresence>{!reduce && bursts > 0 && liked && <Burst key={bursts} />}</AnimatePresence>
       </motion.button>

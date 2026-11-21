@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarClock, Download, FileText, FolderGit2, GraduationCap, Home, Megaphone, Moon, Rss, Send, Sun } from "lucide-react";
+import { CalendarClock, Download, FileText, FolderGit2, GraduationCap, Home, Megaphone, Moon, Rss, Send, Sun } from "@/components/icons";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command";
 import { DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { navGroups } from "@/data/navigation";

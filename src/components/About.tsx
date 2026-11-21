@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { Bot, Code2, Palette, Server, Database, ShieldCheck, GitPullRequest, HeartHandshake, ExternalLink, ArrowRight, type LucideIcon } from "lucide-react";
+import { Bot, Code2, Palette, Server, Database, ShieldCheck, GitPullRequest, HeartHandshake, ExternalLink, ArrowRight, type LucideIcon } from "@/components/icons";
 import FeatureArt, { type FeatureArtName } from "./FeatureArt";
 import TypewriterText from "@/components/TypewriterText";
 import SkillIcon from "@/components/SkillIcon";
@@ -219,7 +219,7 @@ const About = () => {
             {/* Card 1: GSoC 2026 & Joplin */}
             <motion.div
               whileHover={{ y: -6 }}
-              className="glass-card rounded-2xl p-5 sm:p-6 md:p-8 relative overflow-hidden border border-border/80 hover:border-primary/50 transition-all duration-300 shadow-xl group flex flex-col justify-between"
+              className="glass-card rounded-2xl p-5 sm:p-6 md:p-8 relative overflow-hidden border border-border/80 hover:border-primary/50 transition-all duration-300 group flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between gap-4 mb-4">
@@ -277,7 +277,7 @@ const About = () => {
             {/* Card 2: Tech Community Builder & Advocate */}
             <motion.div
               whileHover={{ y: -6 }}
-              className="glass-card rounded-2xl p-5 sm:p-6 md:p-8 relative overflow-hidden border border-border/80 hover:border-accent/50 transition-all duration-300 shadow-xl group flex flex-col justify-between"
+              className="glass-card rounded-2xl p-5 sm:p-6 md:p-8 relative overflow-hidden border border-border/80 hover:border-accent/50 transition-all duration-300 group flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center gap-3 mb-4">

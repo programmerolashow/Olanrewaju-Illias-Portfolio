@@ -92,7 +92,7 @@ import {
   Webhook,
   Workflow,
   type LucideIcon,
-} from "lucide-react";
+} from "@/components/icons";
 import { cn } from "@/lib/utils";
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CalendarDays, MapPin, Megaphone, Play } from "lucide-react";
+import { CalendarDays, MapPin, Megaphone, Play } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import MotionImage from "@/components/MotionImage";
 import { coverUrl, displayDate, eventStatus, statusLabel, type Update } from "@/lib/updates";
@@ -56,7 +56,7 @@ const UpdateCard = ({ update, index = 0 }: { update: Update; index?: number }) =
         <StatusBadge update={update} className="absolute left-3 top-3" />
         {media.length > 0 && (
           <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white">
-            {videoCount > 0 && <Play className="h-3 w-3 fill-current" aria-hidden />}
+            {videoCount > 0 && <Play className="h-3 w-3" aria-hidden />}
             {media.join(" · ")}
           </span>
         )}

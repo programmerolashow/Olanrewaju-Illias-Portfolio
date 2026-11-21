@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, PenLine } from "lucide-react";
+import { ArrowRight, PenLine } from "@/components/icons";
 import RecommendationCard from "@/components/RecommendationCard";
 import { useRecommendations } from "@/lib/feedback";
 import TypewriterText from "@/components/TypewriterText";

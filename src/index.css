@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+/* Ciscela: Qorelly's brand serif (public/fonts), regular weight only. Used for display headlines. */
+@font-face {
+  font-family: 'Ciscela';
+  src: url('/fonts/Ciscela-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -132,7 +141,6 @@
   }
 
   .glow-effect {
-    box-shadow: var(--glow-primary);
   }
 
   /* Blinking cursor for TypewriterText headings. */
@@ -165,7 +173,6 @@
 
   .project-card:hover {
     @apply border-primary/50;
-    box-shadow: var(--glow-primary);
     transform: translateY(-4px);
   }
 
@@ -178,7 +185,8 @@
   }
 
   .section-heading {
-    @apply text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl xl:text-6xl;
+    /* Marketing headline: Ciscela at display size, regular weight (Qorelly design rule). */
+    @apply font-ciscela text-3xl font-normal tracking-[-0.02em] sm:text-4xl md:text-5xl xl:text-6xl;
   }
 
   /* Shared vertical rhythm for page sections: compact on phones, generous on large screens */
@@ -229,16 +237,10 @@
     background-color: color-mix(in srgb, rgb(var(--chip-rgb)) 12%, #ffffff);
     border-color: rgba(var(--chip-rgb), 0.45);
     color: var(--chip-text-light, color-mix(in srgb, rgb(var(--chip-rgb)) 58%, #0f172a));
-    box-shadow:
-      0 1px 2px rgba(15, 23, 42, 0.06),
-      0 6px 16px -6px rgba(var(--chip-rgb), 0.35);
   }
 
   .skill-chip:hover {
     border-color: rgba(var(--chip-rgb), 0.8);
-    box-shadow:
-      0 1px 2px rgba(15, 23, 42, 0.06),
-      0 10px 24px -8px rgba(var(--chip-rgb), 0.55);
   }
 
   .dark .skill-chip {
@@ -246,13 +248,11 @@
     background-color: rgba(var(--chip-rgb), 0.22);
     border-color: rgba(var(--chip-rgb), 0.7);
     color: var(--chip-text-dark);
-    box-shadow: 0 6px 22px rgba(var(--chip-rgb), 0.4);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
 
   .dark .skill-chip:hover {
-    box-shadow: 0 8px 28px rgba(var(--chip-rgb), 0.6);
   }
 
   /* About card illustrations: fade out towards the card's text (bottom-left) */

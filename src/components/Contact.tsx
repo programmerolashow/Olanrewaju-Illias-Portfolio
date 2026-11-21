@@ -31,7 +31,7 @@ import {
   Tag,
   User,
   type LucideIcon,
-} from "lucide-react";
+} from "@/components/icons";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { site } from "@/config/site";

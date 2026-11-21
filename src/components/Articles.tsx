@@ -18,7 +18,7 @@ import {
   Search,
   ShieldCheck,
   type LucideIcon,
-} from "lucide-react";
+} from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { site } from "@/config/site";
 import {
@@ -281,7 +281,7 @@ const ArticlesFull = () => {
                       transition={{ type: "spring", stiffness: 380, damping: 32 }}
                     />
                   )}
-                  <filter.icon className={cn("relative h-4 w-4", selected && "text-primary")} aria-hidden />
+                  <filter.icon active={selected} className={cn("relative h-4 w-4", selected && "text-primary")} aria-hidden />
                   <span className="relative whitespace-nowrap">{filter.label}</span>
                   <span className="relative font-mono text-xs text-muted-foreground">{filter.count}</span>
                 </button>

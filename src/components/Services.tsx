@@ -25,7 +25,7 @@ import {
   ShieldCheck,
   Wrench,
   type LucideIcon,
-} from "lucide-react";
+} from "@/components/icons";
 import { cn } from "@/lib/utils";
 import TypewriterText from "@/components/TypewriterText";
 

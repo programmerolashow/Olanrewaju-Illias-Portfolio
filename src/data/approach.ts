@@ -1,4 +1,4 @@
-import { Bot, Gauge, Scale, ShieldCheck, type LucideIcon } from "lucide-react";
+import { Bot, Gauge, Scale, ShieldCheck, type LucideIcon } from "@/components/icons";
 
 /**
  * Content for the "How I Work" page, in Olanrewaju's own words. These describe how he works, not

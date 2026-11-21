@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, MessageCircle, Send } from "lucide-react";
+import { Loader2, MessageCircle, Send } from "@/components/icons";
 import { GuestField, Honeypot, SubmittedNote, guestInputClass } from "@/components/GuestForm";
 import { initials, shortDate, submitGuest, useComments } from "@/lib/feedback";
 

@@ -11,7 +11,7 @@ import {
   type PanInfo,
 } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Calendar, ChevronLeft, ChevronRight, Expand, MapPin, Play, X } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Expand, MapPin, Play, X } from "@/components/icons";
 import type { GalleryItem, GalleryItemSize } from "@/data/gallery";
 import { useMoments } from "@/lib/moments";
 import { cn } from "@/lib/utils";
@@ -172,7 +172,7 @@ const GalleryCard = ({ item, index, onOpen }: GalleryCardProps) => {
             {item.category}
           </span>
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full sm:h-9 sm:w-9 border border-white/20 bg-black/35 text-white backdrop-blur-md transition-all duration-500 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary">
-            {isVideo ? <Play className="h-4 w-4 fill-current" /> : <Expand className="h-4 w-4" />}
+            {isVideo ? <Play className="h-4 w-4" /> : <Expand className="h-4 w-4" />}
           </span>
         </div>
 

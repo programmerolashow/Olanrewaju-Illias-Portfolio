@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2, Send } from "lucide-react";
+import { Loader2, Send } from "@/components/icons";
 import { GuestField, Honeypot, SubmittedNote, guestInputClass } from "@/components/GuestForm";
 import { relationshipLabels, submitGuest, type Relationship } from "@/lib/feedback";
 

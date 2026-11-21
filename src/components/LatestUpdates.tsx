@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@/components/icons";
 import UpdateCard from "@/components/UpdateCard";
 import { useUpdates } from "@/lib/updates";
 import TypewriterText from "@/components/TypewriterText";
