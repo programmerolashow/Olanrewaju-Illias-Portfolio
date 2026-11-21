@@ -2,6 +2,7 @@ import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { createHash } from "crypto";
 import { person, site, staticRoutes } from "./src/config/site";
 import { pageMeta, pageRoutes } from "./src/config/pages";
 import { projects } from "./src/data/projects";
@@ -116,11 +117,16 @@ const sitePlugin = (): Plugin => ({
       writeFileSync(file, replaceSeo(template, { ...base, url: `${site.url}${route}`, ...meta }));
     };
 
-    // A screenshot of the page itself (npm run og:screens), when there is one.
-    const screen = (name: string) => {
-      const file = `/og/screens/${name}.jpg`;
-      return existsSync(path.join(__dirname, "public", file)) ? `${site.url}${file}` : undefined;
+    // Preview image URL with a content hash, so WhatsApp, LinkedIn, X and Facebook fetch a fresh copy whenever the
+    // image changes (they cache images by URL).
+    const versioned = (file: string) => {
+      const full = path.join(__dirname, "public", file);
+      if (!existsSync(full)) return undefined;
+      const hash = createHash("sha1").update(readFileSync(full)).digest("hex").slice(0, 8);
+      return `${site.url}${file}?v=${hash}`;
     };
+    // A screenshot of the page itself (npm run og:screens), when there is one.
+    const screen = (name: string) => versioned(`/og/screens/${name}.jpg`);
 
     for (const [key, route] of Object.entries(pageRoutes) as [keyof typeof pageMeta, string][]) {
       const { title, description } = pageMeta[key];
@@ -134,8 +140,7 @@ const sitePlugin = (): Plugin => ({
     }
     for (const p of projects) {
       // Page screenshot first, then the generated card (npm run og:cards), then og-image.jpg.
-      const card = `/og/projects/${p.slug}.jpg`;
-      const image = screen(p.slug) ?? (existsSync(path.join(__dirname, "public", card)) ? `${site.url}${card}` : undefined);
+      const image = screen(p.slug) ?? versioned(`/og/projects/${p.slug}.jpg`);
       if (!image) this.warn(`No preview image for project "${p.slug}"; using og-image.jpg. Run npm run og:screens.`);
       write(`/projects/${p.slug}`, {
         title: `${p.title} | ${site.name}`,
