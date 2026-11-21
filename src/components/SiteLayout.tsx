@@ -7,6 +7,7 @@ import AmbientBackground from "@/components/AmbientBackground";
 import CommandMenu from "@/components/CommandMenu";
 import ZipperIntro from "@/components/ZipperIntro";
 import SiteTour from "@/components/SiteTour";
+import WelcomeBack from "@/components/WelcomeBack";
 
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -74,6 +75,7 @@ const SiteLayout = () => {
         <CommandMenu />
         <ZipperIntro />
         <SiteTour />
+        <WelcomeBack />
         <AnimatePresence mode="wait" initial={false} onExitComplete={handleExitComplete}>
           <motion.main
             id="content"

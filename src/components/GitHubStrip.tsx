@@ -24,16 +24,16 @@ const pinned: PinnedRepo[] = [
     slug: "zoomtrans",
   },
   {
-    repo: "BankSpace",
-    title: "BankSpace",
-    description: "Fintech web app for banking workflows, financial visibility and account management.",
-    slug: "bankspace",
+    repo: "ChekueIT",
+    title: "ChekueIT",
+    description: "Security verification for documents, QR codes and links: issuer-registry fingerprints, AI forensics, phishing and threat-intelligence checks, and a developer API.",
+    slug: "chekueit",
   },
   {
-    repo: "EMAIL-Application",
-    title: "E-MassCom",
-    description: "AI-powered email client with summaries, reply drafting and action-item extraction.",
-    slug: "e-masscom",
+    repo: "BetaLife",
+    title: "BetaLife",
+    description: "Multiplayer 3D open-world university life simulation set at UNILORIN and across Ilorin, built from real coordinates and OpenStreetMap roads.",
+    slug: "betalife",
   },
 ];
 

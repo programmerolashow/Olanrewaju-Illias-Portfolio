@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { rememberVisitorName } from "@/lib/visitor";
 
 /** Mirrors the check constraint on recommendations.relationship (db/migrations/002). */
 export const relationshipLabels = {
@@ -92,4 +93,6 @@ export const submitGuest = async (path: "/api/recommendations" | "/api/comments"
   });
   const json = (await res.json().catch(() => ({}))) as { error?: string };
   if (!res.ok) throw new Error(json.error ?? "Something went wrong. Please try again.");
+  // Used to greet them by name next time (src/lib/visitor.ts).
+  rememberVisitorName(body.name);
 };

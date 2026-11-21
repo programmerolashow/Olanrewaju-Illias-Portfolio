@@ -21,6 +21,8 @@ const SCENE_COLOURS = [
 
 const BALL_R = 18;
 const GRASS_H = 26;
+/** Where the balls rest: just below the top of the grass (px above the bottom of the floor). */
+const BALL_FLOOR = GRASS_H - 3;
 const GRAVITY = 900;
 
 /* ---------------------------------------------------------------- sky ---------------------------------------------------------------- */
@@ -371,6 +373,8 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ballRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [count, setCount] = useState(balls.length);
+  // True once the 3D stage draws the balls; the flat HTML balls are then hidden (they stay as the no-WebGL fallback).
+  const [balls3d, setBalls3d] = useState(false);
 
   // Fewer balls on narrow screens so they don't pile up.
   useEffect(() => {
@@ -512,7 +516,7 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
       }
 
       draw();
-      stage?.update(poses(), dt);
+      stage?.update(poses(), dt, state);
       if (visible) raf = requestAnimationFrame(step);
     };
 
@@ -528,12 +532,24 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
       if (loading) return;
       loading = true;
       import("@/components/AnimalStage")
-        .then(({ createAnimalStage }) => createAnimalStage(canvas, CRITTERS.map((c) => c.kind)))
+        .then(({ createAnimalStage }) =>
+          createAnimalStage(
+            canvas,
+            CRITTERS.map((c) => c.kind),
+            state.map((_, i) => ({
+              colour: SCENE_COLOURS[i % SCENE_COLOURS.length],
+              icon: ballRefs.current[i]?.querySelector("svg") ?? null,
+            })),
+            BALL_R,
+            BALL_FLOOR,
+          ),
+        )
         .then((s) => {
           if (disposed) return s.dispose();
           stage = s;
           stage.resize(width, canvas.clientHeight);
-          stage.update(poses(), 0);
+          stage.update(poses(), 0, state);
+          setBalls3d(true);
         })
         .catch((error) => {
           // No WebGL or the models failed to load: the balls still play on their own.
@@ -557,6 +573,7 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
       io.disconnect();
       ro.disconnect();
       stage?.dispose();
+      setBalls3d(false);
     };
   }, [count, reduce]);
 
@@ -577,12 +594,12 @@ export const SkillFloor = ({ balls, className }: { balls: string[]; className?: 
         style={{ height: GRASS_H }}
       />
 
-      {/* 3D animals (behind the balls, so a kicked ball flies in front of them). Taller than the floor so a
-          pouncing animal isn't clipped. */}
-      <canvas ref={canvasRef} aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[150%] w-full" />
+      {/* 3D animals and balls (the balls in front, so a kicked ball flies in front of the animals). Taller than
+          the floor so a pouncing animal or a high kick (up to ~360px) isn't clipped. */}
+      <canvas ref={canvasRef} aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[400px] w-full" />
 
-      {/* Balls */}
-      <div aria-hidden className="absolute inset-x-0" style={{ bottom: GRASS_H - 3 }}>
+      {/* Flat balls: shown until (or unless) the 3D stage draws them; their icons are copied onto the 3D balls. */}
+      <div aria-hidden className={cn("absolute inset-x-0", balls3d && "invisible")} style={{ bottom: BALL_FLOOR }}>
         {shown.map((skill, i) => {
           const colour = SCENE_COLOURS[i % SCENE_COLOURS.length];
           return (

@@ -35,14 +35,59 @@ type Animal = {
   heading: number;
 };
 
+/** A skill ball: its colour and the skill's icon (an inline <svg> to copy onto the ball). */
+export type BallSpec = { colour: string; icon: SVGElement | null };
+
+/** Where the floor's physics puts each ball: x in px, y = height above the floor in px, rot = roll angle (radians, clockwise). */
+export type BallPose = { x: number; y: number; rot: number };
+
 export type AnimalStage = {
-  update: (poses: AnimalPose[], dt: number) => void;
+  update: (poses: AnimalPose[], dt: number, balls?: BallPose[]) => void;
   kick: (index: number) => void;
   resize: (width: number, height: number) => void;
   dispose: () => void;
 };
 
-export const createAnimalStage = async (canvas: HTMLCanvasElement, kinds: AnimalKind[]): Promise<AnimalStage> => {
+/**
+ * The ball's surface: its colour with the skill icon printed in white on the side facing the viewer (and again on
+ * the back). SphereGeometry's u = 0.25 faces the camera; the icon is sized so it looks about 20px across on the ball.
+ */
+const ballTexture = (spec: BallSpec) => {
+  const W = 512;
+  const H = 256;
+  const c = document.createElement("canvas");
+  c.width = W;
+  c.height = H;
+  const ctx = c.getContext("2d")!;
+  ctx.fillStyle = spec.colour;
+  ctx.fillRect(0, 0, W, H);
+  const texture = new THREE.CanvasTexture(c);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  if (spec.icon) {
+    const svg = spec.icon.cloneNode(true) as SVGElement;
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    svg.setAttribute("width", "96");
+    svg.setAttribute("height", "96");
+    svg.removeAttribute("class");
+    svg.setAttribute("style", "color:#ffffff");
+    const img = new Image();
+    img.onload = () => {
+      for (const u of [0.25, 0.75]) ctx.drawImage(img, W * u - 48, H / 2 - 48, 96, 96);
+      texture.needsUpdate = true;
+    };
+    img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg.outerHTML)}`;
+  }
+  return texture;
+};
+
+export const createAnimalStage = async (
+  canvas: HTMLCanvasElement,
+  kinds: AnimalKind[],
+  ballSpecs: BallSpec[] = [],
+  ballRadius = 18,
+  /** Height (px above the canvas bottom) of the surface the balls rest on. */
+  ballFloor = 0,
+): Promise<AnimalStage> => {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -99,6 +144,17 @@ export const createAnimalStage = async (canvas: HTMLCanvasElement, kinds: Animal
     return { root, holder, mixer, actions, current: "Idle", heading: Math.PI / 2 };
   });
 
+  // Skill balls: lit spheres in front of the animals (z), each with a contact shadow like the animals' that shrinks
+  // and fades as the ball flies up. Each shadow has its own material so its opacity can change on its own.
+  const ballGeo = new THREE.SphereGeometry(ballRadius, 32, 24);
+  const balls = ballSpecs.map((spec) => {
+    const mesh = new THREE.Mesh(ballGeo, new THREE.MeshStandardMaterial({ map: ballTexture(spec), roughness: 0.38, metalness: 0.05 }));
+    const shadow = new THREE.Mesh(shadowGeo, shadowMat.clone());
+    scene.add(mesh, shadow);
+    return { mesh, shadow };
+  });
+  const BALL_Z = 80;
+
   const play = (a: Animal, name: string, fade = 0.25) => {
     if (a.current === name || !a.actions[name]) return;
     const next = a.actions[name];
@@ -135,7 +191,18 @@ export const createAnimalStage = async (canvas: HTMLCanvasElement, kinds: Animal
       a.mixer.addEventListener("finished", done);
     },
 
-    update(poses, dt) {
+    update(poses, dt, ballPoses = []) {
+      ballPoses.forEach((b, i) => {
+        const ball = balls[i];
+        if (!ball) return;
+        ball.mesh.position.set(b.x, ballFloor + b.y + ballRadius, BALL_Z);
+        // CSS rotate() turns clockwise; three.js turns counter-clockwise about z.
+        ball.mesh.rotation.z = -b.rot;
+        const lift = Math.min(1, b.y / 260);
+        ball.shadow.position.set(b.x, ballFloor + 1, BALL_Z - 40);
+        ball.shadow.scale.set(ballRadius * (0.95 - lift * 0.45), 3.2, 1);
+        (ball.shadow.material as THREE.MeshBasicMaterial).opacity = 0.26 * (1 - lift * 0.7);
+      });
       poses.forEach((pose, i) => {
         const a = animals[i];
         if (!a) return;
@@ -163,10 +230,14 @@ export const createAnimalStage = async (canvas: HTMLCanvasElement, kinds: Animal
       animals.forEach((a) => a.mixer.stopAllAction());
       shadowGeo.dispose();
       shadowMat.dispose();
+      ballGeo.dispose();
       scene.traverse((o) => {
         if (o instanceof THREE.Mesh) {
           o.geometry.dispose();
-          (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m.dispose());
+          (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => {
+            (m as THREE.MeshStandardMaterial).map?.dispose();
+            m.dispose();
+          });
         }
       });
       renderer.dispose();

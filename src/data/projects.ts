@@ -197,6 +197,151 @@ export const projects: Project[] = [
     },
   },
   {
+    slug: "chekueit",
+    title: "ChekueIT",
+    description:
+      "ChekueIT is a security verification platform for checking documents, QR codes and links against phishing, tampering and impersonation. It fingerprints documents against issuer registries, decodes QR codes before anyone opens them, traces links through redirects and threat-intelligence feeds, and exposes the same checks through a developer API that organisations can build into their own applications.",
+    tags: ["React 19", "TypeScript", "Node.js", "Express", "Firebase", "Gemini", "Threat Intelligence"],
+    category: "Security / Verification Platform",
+    live: "https://chekueit.olanrewajuillias.workers.dev/",
+    // Private repo, so no github link. status and metrics stay unset until confirmed.
+    featured: true,
+    image: "/projects/chekueit.webp",
+    imageFocus: "left top",
+    caseStudy: {
+      problem:
+        "Forged certificates, edited receipts, QR codes that lead somewhere other than they claim, and phishing links sent by SMS, email or WhatsApp are hard to spot by eye. ChekueIT gives individuals and organisations one place to check a document, a QR code or a link before trusting it, with an evidence-based risk score and a report explaining every finding.",
+      features: [
+        { name: "Document verification: SHA-256 fingerprint matched against issuer registries, with duplicate-submission checks", status: "Implemented" },
+        { name: "AI document forensics: field extraction, inconsistencies and visual editing indicators across up to 3 pages", status: "Implemented" },
+        { name: "Embedded QR codes in documents decoded and checked like links (up to 5)", status: "Implemented" },
+        { name: "QR scanner: live camera, photo, PDF (pages 1–5) or pasted payload, decoded on the device", status: "Implemented" },
+        { name: "Payload detection: links, payment URIs, Wi-Fi credentials, contact cards and plain text", status: "Implemented" },
+        { name: "Purpose mismatch: flags QR codes and links whose destination doesn't match what they claim", status: "Implemented" },
+        { name: "Link checker: server-side redirect tracing, TLS certificate and domain-age checks, look-alike and risky-TLD heuristics", status: "Implemented" },
+        { name: "Login and payment trap detection: password, card, BVN, NIN and OTP fields, and forms posting elsewhere", status: "Implemented" },
+        { name: "Threat feeds: URLhaus and OpenPhish, with Google Safe Browsing and VirusTotal when configured", status: "Implemented" },
+        { name: "Dashboard with KPIs, risk distribution and 7-day trend charts", status: "Implemented" },
+        { name: "Batch verification of up to 10 documents or URLs with a live queue monitor", status: "Implemented" },
+        { name: "History with search, filters, CSV export and bulk PDF export as a ZIP", status: "Implemented" },
+        { name: "Detailed reports: shareable links, PDF, JSON and print", status: "Implemented" },
+        { name: "Organisations: authoritative document hash registry with revoke and restore", status: "Implemented" },
+        { name: "Developer API with hashed API keys, so organisations can run verifications from their own applications", status: "Implemented" },
+        { name: "Provider health monitoring for every intelligence source", status: "Implemented" },
+        { name: "Admin audit log with filters and CSV export", status: "Implemented" },
+        { name: "Real-time high-risk alerts, in-app feedback, and light and dark themes", status: "Implemented" },
+      ],
+      architecture: [
+        "React 19 + Vite UI (on-device QR decoding, PDF rendering, SHA-256 hashing)",
+        "Express API (helmet, rate limiting)",
+        "Forensic engines: Gemini multimodal analysis, redirect tracing, TLS and RDAP checks, threat feeds",
+        "Firebase Auth + Cloud Firestore",
+      ],
+      decisions: [
+        {
+          decision: "A document is only marked Verified when its fingerprint matches an issuer's registry",
+          alternatives: "Trusting AI or visual analysis to declare a document genuine",
+          why: "A convincing forgery can look perfect. Verified requires an active match in an organisation's authoritative hash registry and a low risk score; everything else is classed as Unverified, Suspicious or High Risk, so appearance alone never earns a pass.",
+          tradeOff: "Genuine documents from issuers who haven't registered their hashes can never reach Verified, only Unverified.",
+        },
+        {
+          decision: "Links are visited from the server, with SSRF protection",
+          why: "Following redirects server-side means nothing opens on the user's device. Each hop is checked against private and internal network ranges, redirects are capped at 5 and only the first 64 KB of a page is inspected.",
+          tradeOff: "Some sites behave differently for a server than for a phone, so a few cloaked pages may look cleaner than they are.",
+        },
+        {
+          decision: "QR codes are decoded on the user's device",
+          why: "Camera frames, photos and PDFs are decoded in the browser, and only the decoded payload is sent for analysis, so the original image never leaves the device.",
+        },
+        {
+          decision: "API keys are stored only as SHA-256 hashes",
+          why: "The full key is shown once when it's issued. If the database were exposed, the stored hashes couldn't be used to call the API.",
+          tradeOff: "A lost key can't be recovered, only revoked and replaced.",
+        },
+        {
+          decision: "Optional threat-intelligence providers degrade gracefully",
+          why: "Each provider reports its own health. When one is unavailable or not configured, verdicts still run and the report says which sources were skipped, rather than failing the whole check.",
+        },
+      ],
+      code: [
+        {
+          title: "Developer API: verify a link from your own application",
+          language: "bash",
+          code: `curl -X POST https://chekueit.olanrewajuillias.workers.dev/api/v1/verify \\
+  -H "x-api-key: chk_live_..." \\
+  -H "Content-Type: application/json" \\
+  -d '{ "url": "https://example.com/login" }'`,
+          note: "Illustrative request. Keys are issued from the API & integrations page; Authorization: Bearer chk_... is also accepted.",
+        },
+      ],
+    },
+  },
+  {
+    slug: "betalife",
+    title: "BetaLife",
+    description:
+      "BetaLife is a multiplayer 3D open-world university and city life simulation set at the University of Ilorin (UNILORIN) and across metropolitan Ilorin, Kwara State. Players create a character, attend lectures, run side hustles, drive Keke and Okada, furnish a hostel and meet friends in a georeferenced world built from real coordinates and OpenStreetMap roads. Your Campus. Your World. Your Life.",
+    tags: ["React 19", "TypeScript", "Three.js", "Node.js", "WebSockets", "OpenStreetMap", "Gemini"],
+    category: "Game / 3D Multiplayer Simulation",
+    // Private repo, so no github link. No live link yet. status and metrics stay unset until confirmed.
+    featured: true,
+    image: "/projects/betalife.webp",
+    imageFocus: "center top",
+    video: "/projects/betalife.mp4",
+    caseStudy: {
+      problem:
+        "Most games are set in places that look nothing like Nigeria. BetaLife puts players in a world they recognise: UNILORIN's permanent site, Tanke, Oke-Odo, Post Office, Challenge and Oja-Oba, laid out from real latitude and longitude, with laterite soil, savanna hills, the Oyun and Asa rivers, Keke Napep in the rain and jollof at Mama Caro's. It turns everyday student life in Ilorin into a shared, playable world.",
+      features: [
+        { name: "Georeferenced 3D world: real Ilorin coordinates projected onto continuous terrain with district streaming", status: "Implemented" },
+        { name: "24 locations across UNILORIN, student communities and metropolitan Ilorin, plus a Greater Kwara expansion roadmap", status: "Implemented" },
+        { name: "Live OpenStreetMap road sync on the 2D GPS map and the 3D road network", status: "Implemented" },
+        { name: "Community map corrections: players flag streets and submit coordinate and name fixes", status: "Implemented" },
+        { name: "Procedural 3D landmarks with lore: Post Office Durbar statue, Challenge clocktower, Oja-Oba mosque, Fate roundabout, UNILORIN gate", status: "Implemented" },
+        { name: "24-hour day/night cycle and sunny, cloudy and rainy weather that affects movement and vehicle handling", status: "Implemented" },
+        { name: "Rain-only NPCs: umbrella vendors and Rain-Express Keke operators at the main gate, Tanke and Post Office", status: "Implemented" },
+        { name: "Rigged 17-bone characters with 9 animations and 5 emotes", status: "Implemented" },
+        { name: "Character creator: skin tones, hairstyles including braids and hijab, agbada, senator native and more", status: "Implemented" },
+        { name: "AI NPC conversations with Gemini, aware of weather and location, with offline fallback lines", status: "Implemented" },
+        { name: "5 drivable vehicles from bicycle to Korope bus, with AI traffic on campus and city corridors", status: "Implemented" },
+        { name: "Naira economy: buka food, outfits, accessories and vehicles", status: "Implemented" },
+        { name: "Mini-games: lecture quiz, library memory, penalty shootout, SUB arcade and side hustles", status: "Implemented" },
+        { name: "7 guided GPS missions, from the Tanke–UNILORIN morning commute to the Stadium Cup", status: "Implemented" },
+        { name: "Hostel builder: 4 accommodation tiers, grid furniture placement and hangout invites", status: "Implemented" },
+        { name: "Real-time multiplayer: shared movement, driving and animations, campus chat and private messages", status: "Implemented" },
+        { name: "BetaPhone: friends, gifting with daily caps, and a live Campus Feed with likes and comments", status: "Implemented" },
+        { name: "Procedural campus radio: 5 stations synthesised live with Web Audio", status: "Implemented" },
+        { name: "Study streaks and campus events with RSVP rewards", status: "Implemented" },
+      ],
+      architecture: [
+        "React 19 + Vite UI with a Three.js world (procedural characters, vehicles and landmarks)",
+        "Express API (OpenStreetMap sync, map corrections, NPC chat)",
+        "ws WebSocket server (player sync, chat, feed, friends, gifts)",
+        "Gemini for NPC dialogue · OpenStreetMap Overpass for roads",
+      ],
+      decisions: [
+        {
+          decision: "Build the world from real coordinates",
+          alternatives: "A hand-drawn map loosely inspired by Ilorin",
+          why: "Projecting real latitude and longitude onto the terrain means districts, landmarks and roads sit where players expect them, and live OpenStreetMap roads can be overlaid directly on the 3D world.",
+          tradeOff: "Real geography is messy: roads and landmarks need validation, which is why players can submit map corrections.",
+        },
+        {
+          decision: "Procedural characters, vehicles, landmarks and music",
+          why: "Building meshes, skeletons, monuments and radio loops in code keeps the download small and makes Nigerian-specific content possible without a library of purchased 3D models and audio.",
+          tradeOff: "Procedural assets take more engineering effort to look good than ready-made models.",
+        },
+        {
+          decision: "AI NPC dialogue with an offline fallback",
+          why: "NPCs answer free-form questions with Gemini, using the player's location and weather, but fall back to local campus-flavoured lines if the AI is unavailable, so conversations never break the game.",
+        },
+        {
+          decision: "Daily caps on friend gifting",
+          why: "Gifts are limited to 3 per day and ₦2,500 per day, which keeps the in-game economy from being drained or abused through transfers between accounts.",
+        },
+      ],
+    },
+  },
+  {
     slug: "bankspace",
     title: "BankSpace",
     description:
@@ -285,7 +430,7 @@ export const projects: Project[] = [
     category: "AI / Full-Stack Web Application",
     github: "https://github.com/programmerolashow/EMAIL-Application",
     live: "https://email-application-egc9.vercel.app/",
-    featured: true,
+    featured: false,
     image: "/projects/e-masscom.webp",
     imageFocus: "70% top",
     // Features and decisions are taken from the EMAIL-Application repo.
@@ -356,7 +501,7 @@ export const projects: Project[] = [
     category: "Social / Full-Stack Web Application",
     github: "https://github.com/programmerolashow/student-konnect-hub",
     live: "https://student-konnect-hub.vercel.app/",
-    featured: true,
+    featured: false,
     image: "/projects/student-konnect-hub.webp",
     imageFocus: "65% center",
     // Features are taken from the student-konnect-hub repo and its Supabase migrations.
