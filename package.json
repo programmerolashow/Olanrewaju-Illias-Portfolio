@@ -13,6 +13,7 @@
     "cf:deploy": "wrangler deploy",
     "db:migrate": "node scripts/migrate.mjs",
     "og:cards": "node --input-type=module -e \"const {projects}=await import('./src/data/projects.ts');const {site}=await import('./src/config/site.ts');console.log(JSON.stringify({host:new URL(site.url).host,projects}))\" | python scripts/og-cards.py",
+    "og:screens": "node scripts/og-screens.mjs",
     "storage:cors": "node scripts/storage-cors.mjs"
   },
   "dependencies": {

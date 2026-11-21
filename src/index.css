@@ -5,7 +5,9 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  /* .theme-light forces light colours inside a dark page (e.g. the site tour card, which uses the opposite theme). */
+  :root,
+  .theme-light {
     /* Light Mode Variables */
     --background: 210 20% 98%;
     --foreground: 222 47% 11%;

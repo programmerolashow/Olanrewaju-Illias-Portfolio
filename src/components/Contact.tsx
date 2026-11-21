@@ -36,6 +36,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { site } from "@/config/site";
 import TypewriterText from "@/components/TypewriterText";
+import { rememberVisitorName } from "@/lib/visitor";
 
 // Served by api/contact.js on Vercel, or proxied to backend/server.js in development.
 // Set VITE_CONTACT_ENDPOINT only if the backend lives on a different domain (e.g. https://api.example.com/api/contact).
@@ -406,6 +407,7 @@ const Contact = () => {
         throw new Error(data?.error || "Something went wrong. Please try again.");
       }
 
+      rememberVisitorName(values.name);
       setSentTo(values.email);
       setStatus("success");
       reset();

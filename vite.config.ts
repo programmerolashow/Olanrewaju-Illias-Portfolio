@@ -116,19 +116,32 @@ const sitePlugin = (): Plugin => ({
       writeFileSync(file, replaceSeo(template, { ...base, url: `${site.url}${route}`, ...meta }));
     };
 
+    // A screenshot of the page itself (npm run og:screens), when there is one.
+    const screen = (name: string) => {
+      const file = `/og/screens/${name}.jpg`;
+      return existsSync(path.join(__dirname, "public", file)) ? `${site.url}${file}` : undefined;
+    };
+
     for (const [key, route] of Object.entries(pageRoutes) as [keyof typeof pageMeta, string][]) {
       const { title, description } = pageMeta[key];
-      write(route, { title: `${title} | ${site.name}`, description });
+      const image = screen(key);
+      if (!image) this.warn(`No page screenshot for "${route}"; using og-image.jpg. Run npm run og:screens.`);
+      write(route, {
+        title: `${title} | ${site.name}`,
+        description,
+        ...(image ? { image, imageAlt: `${title} page, ${site.name}` } : {}),
+      });
     }
     for (const p of projects) {
+      // Page screenshot first, then the generated card (npm run og:cards), then og-image.jpg.
       const card = `/og/projects/${p.slug}.jpg`;
-      const hasCard = existsSync(path.join(__dirname, "public", card));
-      if (!hasCard) this.warn(`No preview card for project "${p.slug}"; using og-image.jpg. Run npm run og:cards.`);
+      const image = screen(p.slug) ?? (existsSync(path.join(__dirname, "public", card)) ? `${site.url}${card}` : undefined);
+      if (!image) this.warn(`No preview image for project "${p.slug}"; using og-image.jpg. Run npm run og:screens.`);
       write(`/projects/${p.slug}`, {
         title: `${p.title} | ${site.name}`,
         description: excerpt(p.description),
         type: "article",
-        ...(hasCard ? { image: `${site.url}${card}`, imageAlt: `${p.title}: ${p.tags.slice(0, 4).join(", ")}` } : {}),
+        ...(image ? { image, imageAlt: `${p.title}: ${p.tags.slice(0, 4).join(", ")}` } : {}),
       });
     }
   },
