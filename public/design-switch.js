@@ -1,6 +1,6 @@
 /**
  * Design switch: the classic design (V1, the React app) and the new design (V2: static pages, public/v2.html at /v2
- * and public/v2/*.html at /v2/services, /v2/moments, /v2/updates).
+ * and public/v2/*.html at /v2/services, /v2/moments, /v2/updates, /v2/recommendations).
  * A port of Qorelly's switch (apps/mp/src/lib/uiVersion.ts, lib/designRollout.ts and the DesignSwitchBanner
  * strip). Loaded as a plain blocking script in the <head> of BOTH pages, so the home page redirects before its
  * first paint and both designs share one schedule, one saved choice and one banner. The React side reads it
@@ -13,7 +13,7 @@
  *   4. Everyone else → DEFAULT_VERSION. A default, never saved, so it cannot pin anyone.
  *
  * Paired pages exist in both designs (PAIRED below): / ↔ /v2, /services ↔ /v2/services, /moments ↔ /v2/moments,
- * /updates ↔ /v2/updates; each redirects to its twin before first paint. Other classic pages (/projects/…,
+ * /updates ↔ /v2/updates, /recommendations ↔ /v2/recommendations; each redirects to its twin before first paint. Other classic pages (/projects/…,
  * /articles, …) have no V2 version yet and stay classic for everyone. V2 pages never link into the classic design;
  * only the explicit "Back to classic design" switch leads there.
  *
@@ -44,7 +44,7 @@
   var CHANGE_EVENT = "oi:ui-version";
   var V2_PATH = "/v2";
   /** Classic paths that also exist in V2, at V2_PATH + path ("/" is the home page, at V2_PATH itself). */
-  var PAIRED = ["/", "/services", "/moments", "/updates"];
+  var PAIRED = ["/", "/services", "/moments", "/updates", "/recommendations"];
   var DAY = 864e5;
 
   var at = function (iso) {

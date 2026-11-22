@@ -94,6 +94,7 @@ const v2Pages = {
   services: { file: "v2/services.html", meta: "services" },
   moments: { file: "v2/moments.html", meta: "moments" },
   updates: { file: "v2/updates.html", meta: "updates" },
+  recommendations: { file: "v2/recommendations.html", meta: "recommendations" },
 } as const satisfies Record<string, { file: string; meta: keyof typeof pageMeta | undefined }>;
 type V2Page = keyof typeof v2Pages;
 

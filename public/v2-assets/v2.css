@@ -649,3 +649,26 @@ section.block.near { padding-top: 96px; }
 .sub-form .btn[disabled] { opacity: 0.6; cursor: progress; }
 .sub-msg { grid-column: 1 / -1; font-size: 13px; color: rgb(var(--g600)); }
 .sub-msg.bad { color: #ef4444; }
+
+/* Recommendations (/v2/recommendations) */
+.recs { display: grid; gap: 16px; }
+@media (min-width: 720px) { .recs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .recs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.rec { display: grid; grid-template-rows: auto 1fr auto; gap: 18px; padding: 22px; border-radius: var(--r-card); background: rgb(var(--g100)); min-width: 0; }
+.rec-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.rec-top .chips { justify-content: flex-end; }
+.rec-top .chip { height: 24px; font-size: 11.5px; background: rgb(var(--surface)); }
+.rec-top .chip.feat { background: rgb(var(--accent) / 0.14); color: rgb(var(--accent)); }
+.rec-mark { font: 400 48px/0.6 var(--font-serif); color: rgb(var(--accent)); }
+.rec blockquote { font: 400 19px/1.4 var(--font-serif); letter-spacing: -0.01em; white-space: pre-line; overflow-wrap: anywhere; text-wrap: pretty; }
+.rec figcaption { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.rec .av { width: 40px; height: 40px; flex: none; border-radius: 999px; display: grid; place-items: center; font: 600 14px/1 var(--font-body); color: #fff; background: linear-gradient(160deg, #8b7bff, #4a32c9); }
+.rec .n { font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.rec .n svg.i { width: 14px; height: 14px; }
+.rec a.n:hover { color: rgb(var(--accent)); }
+.rec .r { font-size: 12px; color: rgb(var(--g500)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.field select { font: 400 15px/1.5 var(--font-body); color: rgb(var(--stage-fg)); background: rgb(255 255 255 / 0.06); border: 1px solid rgb(255 255 255 / 0.12); border-radius: 14px; padding: 12px 14px; outline: none; }
+.field select:focus { border-color: rgb(var(--accent)); }
+.field select option { color: #171717; }
+.field.bad select { border-color: #f87171; }
+.cta .rec-review { color: rgb(var(--stage-fg) / 0.55); }
