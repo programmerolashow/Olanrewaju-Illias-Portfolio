@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- Admin for the new design, at /v2/admin (the classic one is /admin; the design switch pairs them). Same
+     /api/admin/* endpoints and cookie session. Kept out of search engines here and in robots.txt. -->
+<meta name="robots" content="noindex, nofollow">
+<!--v2:head-->
+</head>
+<body>
+
+<!--v2:sprite-->
+<!--v2:header-->
+
+<main id="top">
+  <section class="p-hero">
+    <div class="wrap">
+      <div class="p-stage">
+        <div class="p-stage-in">
+          <div>
+            <p class="eyebrow rise">Admin</p>
+            <h1 class="p-title rise d1">Run the <em>site.</em></h1>
+            <p class="p-lead rise d2">Updates, articles, moments, recommendations and comments, in one place. Changes go live on both designs.</p>
+          </div>
+          <div class="p-stats rise d3" id="adm-stats" hidden>
+            <div class="p-stat"><div class="n" data-stat="updates">–</div><div class="l">Updates</div></div>
+            <div class="p-stat"><div class="n" data-stat="subscribers">–</div><div class="l">Email subscribers</div></div>
+            <div class="p-stat"><div class="n" data-stat="pending-recs">–</div><div class="l">Recommendations to review</div></div>
+            <div class="p-stat"><div class="n" data-stat="pending-comments">–</div><div class="l">Comments to review</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block near" id="admin">
+    <div class="wrap">
+      <div class="adm" id="adm" aria-live="polite"><p class="state">Checking your session…</p></div>
+    </div>
+  </section>
+</main>
+
+<!--v2:footer-->
+<script src="/v2-assets/admin.js" defer></script>
+</body>
+</html>

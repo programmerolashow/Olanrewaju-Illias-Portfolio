@@ -133,6 +133,8 @@ const v2Routes = (): Map<string, V2Route> => {
   ]);
   // One event or post: hosts serve /v2/updates/<id> from this through api/share/update.js (design=v2).
   routes.set("update", { out: "v2/update.html", html: fromPublic("v2/update.html"), seo: () => pageSeo("updates") });
+  // Admin: kept out of search engines (robots meta in the page and robots.txt).
+  routes.set("admin", { out: "v2/admin.html", html: fromPublic("v2/admin.html"), seo: () => ({ ...defaultSeo(), title: `Admin | ${site.name}`, url: `${site.url}/admin` }) });
   for (const key of ["services", "moments", "updates", "recommendations", "articles"] as const) {
     routes.set(key, { out: `v2/${key}.html`, html: fromPublic(`v2/${key}.html`), seo: () => pageSeo(key) });
   }
@@ -205,7 +207,7 @@ const sitePlugin = (): Plugin => ({
     this.emitFile({
       type: "asset",
       fileName: "robots.txt",
-      source: `User-agent: *\nAllow: /\nDisallow: /admin\n\nSitemap: ${site.url}/sitemap.xml\n`,
+      source: `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /v2/admin\n\nSitemap: ${site.url}/sitemap.xml\n`,
     });
   },
   writeBundle(options) {
