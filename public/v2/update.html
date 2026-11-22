@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- One event or post, at /v2/updates/<id>. Hosts send that URL through api/share/update.js (design=v2), which puts
+     the post's own title, description and photo into this page's link-preview tags; the page then loads the post
+     from /api/updates in the browser. Shared head: v2/partials/head.html. -->
+<!--v2:head-->
+</head>
+<body>
+
+<!--v2:sprite-->
+<!--v2:header-->
+
+<main id="top">
+  <section class="p-hero">
+    <div class="wrap">
+      <div class="p-stage">
+        <div class="p-stage-in">
+          <div>
+            <a class="crumb rise" href="/v2/updates"><svg class="i back" aria-hidden="true"><use href="#i-arrow-right"/></svg>All updates</a>
+            <p class="eyebrow rise" id="u-kind">Update</p>
+            <h1 class="p-title u-title rise d1" id="u-title">Loading…</h1>
+            <div class="hero-meta rise d2" id="u-meta"></div>
+            <div class="hero-cta rise d2" id="u-actions"></div>
+          </div>
+          <div class="p-stats rise d3" id="u-stats" hidden>
+            <div class="p-stat"><div class="n" data-stat="likes">–</div><div class="l">Likes</div></div>
+            <div class="p-stat"><div class="n" data-stat="comments">–</div><div class="l">Comments</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block near" id="update">
+    <div class="wrap u-page">
+      <div class="u-article" id="u-article"><p class="state">Loading this update…</p></div>
+
+      <div class="panel u-comments" id="u-comments" hidden>
+        <div class="panel-head"><h3>Comments</h3><span class="small" id="c-count"></span></div>
+        <div class="sheet pad">
+          <div id="c-list"><p class="small">No comments yet. Be the first.</p></div>
+          <form class="c-new" id="c-form" novalidate>
+            <div class="hp" aria-hidden="true"><label for="c-website">Website</label><input id="c-website" name="website" tabindex="-1" autocomplete="off"></div>
+            <div class="f2">
+              <label class="lf"><span>Your name</span><input name="name" maxlength="80" autocomplete="name" required></label>
+              <label class="lf"><span>Email (optional, never shown)</span><input name="email" type="email" maxlength="200" autocomplete="email"></label>
+            </div>
+            <label class="lf"><span>Comment</span><textarea name="body" rows="4" maxlength="2000" required></textarea></label>
+            <p class="sub-msg bad" id="c-error" role="alert" hidden></p>
+            <p class="sub-msg" id="c-done" role="status" hidden>Thanks! Your comment will appear once it’s approved.</p>
+            <button class="btn btn-dark" type="submit" id="c-send">Post comment</button>
+          </form>
+        </div>
+      </div>
+
+      <nav class="pn" id="u-pn" aria-label="More updates" hidden></nav>
+    </div>
+  </section>
+
+<!--v2:contact-->
+</main>
+
+<!--v2:footer-->
+</body>
+</html>

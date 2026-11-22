@@ -73,7 +73,7 @@ const toReq = async (request, env, url, extraQuery = {}) => {
     query: { ...Object.fromEntries(url.searchParams), ...extraQuery },
     body,
     // api/share/update.js reads the built index.html through this: a Worker can't fetch its own workers.dev URL.
-    fetchIndex: () => env.ASSETS.fetch(new URL("/", url)),
+    fetchIndex: (pagePath = "/") => env.ASSETS.fetch(new URL(pagePath, url)),
   };
 };
 
@@ -113,13 +113,14 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname.replace(/\/+$/, "");
 
-    // /updates/:id gets that post's own link-preview tags. /updates itself is the app page, so hand it to the assets.
-    const share = path.match(/^\/updates\/([^/]+)$/);
+    // /updates/:id and /v2/updates/:id get that post's own link-preview tags. /updates itself is the app page, so hand
+    // it to the assets.
+    const share = path.match(/^\/(v2\/)?updates\/([^/]+)$/);
     if (!share && !path.startsWith("/api/")) return env.ASSETS.fetch(request);
     const handler = share ? shareUpdate : ROUTES[path];
     if (!handler) return Response.json({ error: "Not found." }, { status: 404 });
 
-    const req = await toReq(request, env, url, share ? { id: decodeURIComponent(share[1]) } : {});
+    const req = await toReq(request, env, url, share ? { id: decodeURIComponent(share[2]), ...(share[1] ? { design: "v2" } : {}) } : {});
     const { res, toResponse } = createRes();
     try {
       await handler(req, res);

@@ -110,13 +110,13 @@ export default async (request, context) => {
   const path = url.pathname.replace(/\/+$/, "");
 
   // /updates/:id gets that post's own link-preview tags, like vercel.json's rewrite to api/share/update.
-  const share = path.match(/^\/updates\/([^/]+)$/);
+  const share = path.match(/^\/(v2\/)?updates\/([^/]+)$/);
   const handler = share ? shareUpdate : ROUTES[path];
   if (!handler) {
     return Response.json({ error: "Not found." }, { status: 404 });
   }
 
-  const req = await toReq(request, context, url, share ? { id: decodeURIComponent(share[1]) } : {});
+  const req = await toReq(request, context, url, share ? { id: decodeURIComponent(share[2]), ...(share[1] ? { design: "v2" } : {}) } : {});
   const { res, toResponse } = createRes();
   try {
     await handler(req, res);
@@ -128,5 +128,5 @@ export default async (request, context) => {
 };
 
 export const config = {
-  path: ["/api/*", "/updates/*"],
+  path: ["/api/*", "/updates/*", "/v2/updates/*"],
 };

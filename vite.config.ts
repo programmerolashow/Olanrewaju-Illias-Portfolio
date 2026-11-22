@@ -7,7 +7,7 @@ import { person, site, staticRoutes } from "./src/config/site";
 import { pageMeta, pageRoutes } from "./src/config/pages";
 import { projects } from "./src/data/projects";
 import { gallery } from "./src/data/gallery";
-import { approachPage, projectPage, projectsPage } from "./v2/pages";
+import { approachPage, projectPage, projectsPage, roadmapPage } from "./v2/pages";
 import { excerpt, replaceSeo, type SeoMeta } from "./api/_lib/seo.js";
 import { apiDevServer } from "./scripts/vite-api-dev";
 
@@ -129,7 +129,10 @@ const v2Routes = (): Map<string, V2Route> => {
     ["", { out: "v2.html", html: fromPublic("v2.html"), seo: defaultSeo }],
     ["projects", { out: "v2/projects.html", html: projectsPage, seo: () => pageSeo("projects") }],
     ["approach", { out: "v2/approach.html", html: approachPage, seo: () => pageSeo("approach") }],
+    ["roadmap", { out: "v2/roadmap.html", html: roadmapPage, seo: () => pageSeo("roadmap") }],
   ]);
+  // One event or post: hosts serve /v2/updates/<id> from this through api/share/update.js (design=v2).
+  routes.set("update", { out: "v2/update.html", html: fromPublic("v2/update.html"), seo: () => pageSeo("updates") });
   for (const key of ["services", "moments", "updates", "recommendations", "articles"] as const) {
     routes.set(key, { out: `v2/${key}.html`, html: fromPublic(`v2/${key}.html`), seo: () => pageSeo(key) });
   }
@@ -259,7 +262,8 @@ const v2PagesServer = (): Plugin => {
   const match = (url?: string) => {
     const m = url?.match(/^\/v2(?:\/([a-z0-9/-]*?))?(?:\.html)?\/?(\?.*)?$/);
     if (!m) return null;
-    const route = m[1] ?? "";
+    // /v2/updates/<id> is the update page (on the hosts it goes through api/share/update.js first).
+    const route = /^updates\/[^/]+$/.test(m[1] ?? "") ? "update" : (m[1] ?? "");
     const page = v2Routes().get(route);
     return page ? { route, page, query: m[2] ?? "" } : null;
   };
