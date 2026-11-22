@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarClock, Download, FileText, FolderGit2, GraduationCap, Home, Megaphone, Moon, Rss, Send, Sun } from "@/components/icons";
+import { CalendarClock, Download, FileText, FolderGit2, GraduationCap, Home, Megaphone, Moon, Palette, Rss, Send, Sun } from "@/components/icons";
+import { setUiVersion, useWantedUiVersion } from "@/lib/uiVersion";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command";
 import { DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { navGroups } from "@/data/navigation";
@@ -47,6 +48,7 @@ const CommandMenu = () => {
   const [opened, setOpened] = useState(false);
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const wantedDesign = useWantedUiVersion();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -135,6 +137,11 @@ const CommandMenu = () => {
           <CommandItem value="action toggle theme dark light mode" onSelect={() => run(toggleTheme)}>
             {theme === "dark" ? <Sun aria-hidden /> : <Moon aria-hidden />}
             Switch to {theme === "dark" ? "light" : "dark"} mode
+          </CommandItem>
+          {/* Design switch (src/lib/uiVersion.ts): the home page's new design lives at /v2. */}
+          <CommandItem value="action new design look v2 classic switch" onSelect={() => run(() => setUiVersion("v2"))}>
+            <Palette aria-hidden />
+            {wantedDesign === "v2" ? "Back to the new design" : "Try the new design"}
           </CommandItem>
         </CommandGroup>
       </CommandList>

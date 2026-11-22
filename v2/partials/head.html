@@ -1,0 +1,17 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- Title, description, canonical (/ — same content as the classic home) and link-preview tags, plus the JSON-LD,
+     RSS link and analytics, are written in at build time and by the dev server (v2Page() in vite.config.ts), from
+     src/config/site.ts like the classic design. Do not hand-write them here. -->
+<!--seo:start--><title>Olanrewaju Illias | Full-Stack Product Engineer</title><!--seo:end-->
+<link rel="icon" href="/icon.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/Ciscela-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Design switch (classic ↔ new): runs before first paint and sends people who chose classic back to /. -->
+<script src="/design-switch.js"></script>
+<!-- Theme before first paint; same key as the classic design so the choice carries across. -->
+<script>try { var t = localStorage.getItem('portfolio-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="/v2-assets/v2.css">

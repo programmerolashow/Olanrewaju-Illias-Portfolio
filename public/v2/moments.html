@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- Shared head (v2/partials/head.html). Title, description and link-preview tags come from pageMeta.moments in
+     src/config/pages.ts at build time (fillV2 in vite.config.ts); do not hand-write them here. -->
+<!--v2:head-->
+</head>
+<body>
+
+<!--v2:sprite-->
+<!--v2:header-->
+
+<main id="top">
+  <section class="p-hero">
+    <div class="wrap">
+      <div class="p-stage">
+        <div class="p-stage-in">
+          <div>
+            <p class="eyebrow rise">Moments</p>
+            <h1 class="p-title rise d1">On stage, in rooms &amp; <em>occasions.</em></h1>
+            <p class="p-lead rise d2">Snapshots from events, talks, community meetups and the people I build with.</p>
+          </div>
+          <div class="p-stats rise d3">
+            <div class="p-stat"><div class="n" data-stat="count">–</div><div class="l">Moments</div></div>
+            <div class="p-stat"><div class="n" data-stat="categories">–</div><div class="l">Categories</div></div>
+            <div class="p-stat"><div class="n" data-stat="places">–</div><div class="l">Places</div></div>
+            <div class="p-stat"><div class="n" data-stat="photos">–</div><div class="l">Photos</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block near" id="gallery">
+    <div class="wrap">
+      <div class="filter-bar">
+        <div class="seg" role="group" aria-label="Filter moments" id="moment-filters"></div>
+        <p class="small">Open any card for the full photo and story.</p>
+      </div>
+      <div class="moments" id="moments" aria-live="polite"><p class="state">Loading moments…</p></div>
+    </div>
+  </section>
+
+<!--v2:contact-->
+</main>
+
+<!--v2:footer-->
+<dialog class="v2-dialog lightbox" id="moment-dialog" aria-labelledby="moment-title"><div class="dlg-head"><h2 id="moment-title"></h2><button class="btn icon-btn btn-quiet" type="button" data-close aria-label="Close"><svg class="i" aria-hidden="true"><use href="/v2-assets/icons.svg#i-close"/></svg></button></div><div class="dlg-body"><div class="lb-media" id="moment-media"></div><div class="lb-meta" id="moment-meta"></div><p id="moment-caption"></p><div class="lb-nav"><button class="btn btn-line btn-sm" type="button" id="moment-prev"><svg class="i" aria-hidden="true" style="transform:scaleX(-1)"><use href="#i-arrow-right"/></svg>Previous</button><button class="btn btn-line btn-sm" type="button" id="moment-next">Next<svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg></button></div></div></dialog>
+<!-- Shown when /api/moments can't be reached: the list in src/data/gallery.ts, as the classic page falls back. -->
+<script type="application/json" id="moments-fallback"><!--v2-data:moments-fallback--></script>
+</body>
+</html>

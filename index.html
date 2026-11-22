@@ -6,6 +6,9 @@
     <link rel="icon" href="/icon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preload" href="/fonts/Ciscela-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- Design switch (classic ↔ new, public/design-switch.js): a plain blocking script, so a visitor who chose the
+         new design is sent to /v2 before this page paints. Deliberately not type="module" (modules are deferred). -->
+    <script src="/design-switch.js"></script>
     <meta name="author" content="%SITE_NAME%" />
     <!-- Title, description and link-preview tags are generated per page at build time (vite.config.ts) and
          per event/post at request time (api/share/update.js). Do not hand-write them here. -->

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- Shared head (v2/partials/head.html). Title, description and link-preview tags come from pageMeta.updates in
+     src/config/pages.ts at build time (fillV2 in vite.config.ts); do not hand-write them here. -->
+<!--v2:head-->
+</head>
+<body>
+
+<!--v2:sprite-->
+<!--v2:header-->
+
+<main id="top">
+  <section class="p-hero">
+    <div class="wrap">
+      <div class="p-stage">
+        <div class="p-stage-in">
+          <div>
+            <p class="eyebrow rise">Updates</p>
+            <h1 class="p-title rise d1">What I’m building <em>now.</em></h1>
+            <p class="p-lead rise d2">Events I’m attending, speaking at or organising, and posts about what I’m working on.</p>
+          </div>
+          <div class="p-stats rise d3">
+            <div class="p-stat"><div class="n" data-stat="latest">–</div><div class="l">Last update</div></div>
+            <div class="p-stat"><div class="n" data-stat="count">–</div><div class="l">Updates</div></div>
+            <div class="p-stat"><div class="n" data-stat="events">–</div><div class="l">Events</div></div>
+            <div class="p-stat"><div class="n" data-stat="posts">–</div><div class="l">Posts</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block near" id="feed">
+    <div class="wrap">
+      <p class="note" id="sub-note" role="status" hidden></p>
+      <div class="sheet sub-card">
+        <div><h3>Get new updates by email</h3><p class="small" style="margin-top:4px">One email when I post a new event or update. No spam; unsubscribe any time.</p></div>
+        <form class="sub-form" id="sub-form" novalidate>
+          <div class="hp" aria-hidden="true"><label for="sub-website">Website</label><input id="sub-website" name="website" tabindex="-1" autocomplete="off"></div>
+          <label class="hp" for="sub-email">Email address</label>
+          <input id="sub-email" name="email" type="email" autocomplete="email" maxlength="200" placeholder="you@example.com" required>
+          <button class="btn btn-dark" type="submit" id="sub-send">Subscribe</button>
+        </form>
+        <p class="sub-msg" id="sub-msg" role="status" hidden></p>
+      </div>
+      <div class="filter-bar">
+        <div class="seg" role="group" aria-label="Filter updates" id="update-filters">
+          <button class="seg-btn on" type="button" data-kind="all" aria-pressed="true">All<span class="ct" data-ct="all"></span></button>
+          <button class="seg-btn" type="button" data-kind="event" aria-pressed="false">Events<span class="ct" data-ct="event"></span></button>
+          <button class="seg-btn" type="button" data-kind="post" aria-pressed="false">Posts<span class="ct" data-ct="post"></span></button>
+        </div>
+        <a class="btn btn-line btn-sm" href="/api/feed"><svg class="i" aria-hidden="true"><use href="/v2-assets/icons.svg#i-rss"/></svg>RSS feed</a>
+      </div>
+      <div class="u-list" id="updates-list" aria-live="polite"><p class="state">Loading updates…</p></div>
+    </div>
+  </section>
+
+<!--v2:contact-->
+</main>
+
+<!--v2:footer-->
+
+</body>
+</html>
