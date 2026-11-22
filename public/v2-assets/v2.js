@@ -23,8 +23,8 @@
   };
   var SPRITE = "/v2-assets/icons.svg";
   var SCHOLAR = "https://scholar.google.com/citations?user=4lVtohYAAAAJ&hl=en";
-  /** An update's place on the V2 Updates page (each row has id="u-<id>"). */
-  var updateHref = function (u) { return "/v2/updates#u-" + encodeURIComponent(u.id); };
+  /** An update's own V2 page (served through api/share/update.js for its link preview). */
+  var updateHref = function (u) { return "/v2/updates/" + encodeURIComponent(u.id); };
   var ic = function (id, cls) { return '<svg class="' + (cls || "i") + '" aria-hidden="true"><use href="' + SPRITE + "#i-" + id + '"/></svg>'; };
   var reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var data = {};
@@ -681,7 +681,7 @@
         (gallery.length ? '<div class="u-gallery">' + gallery.join("") + "</div>" : "") +
         (u.location ? '<div class="up-meta"><span>' + ic("map-point") + esc(u.location) + "</span></div>" : "") +
         '<div class="u-acts">' + (u.linkUrl ? '<a class="btn btn-dark btn-sm" href="' + esc(u.linkUrl) + '" target="_blank" rel="noopener">Open link ' + ic("arrow-right-up", "i nudge") + "</a>" : "") +
-        '<button class="btn btn-line btn-sm" type="button" data-share="' + esc(u.id) + '"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>Copy link</button></div></div></details>';
+        '<a class="btn btn-dark btn-sm" href="' + updateHref(u) + '">Open ' + ic("arrow-right-up", "i nudge") + '</a><button class="btn btn-line btn-sm" type="button" data-share="' + esc(u.id) + '"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>Copy link</button></div></div></details>';
     };
     var renderUpdates = function (kind) {
       var shown = allUpdates.filter(function (u) { return kind === "all" || u.kind === kind; });
@@ -698,7 +698,7 @@
     updatesList.addEventListener("click", function (e) {
       var b = e.target.closest("[data-share]");
       if (!b) return;
-      var url = location.origin + "/v2/updates#u-" + encodeURIComponent(b.getAttribute("data-share"));
+      var url = location.origin + "/v2/updates/" + encodeURIComponent(b.getAttribute("data-share"));
       (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(url) : Promise.reject())
         .then(function () { toast("Link copied"); }, function () { toast(url); });
     });
@@ -962,6 +962,130 @@
     moreBtn.addEventListener("click", function () { showAllArts = !showAllArts; renderArts(); });
     // Planned topics still show when the articles API can't be reached.
     loadArticles().then(buildArts, function () { buildArts([]); });
+  }
+
+  /* ── Roadmap (/v2/roadmap): the progress tracker. Same storage key as the classic page (RoadmapPage.tsx), so
+        ticked months carry across both designs. ──────────────────────────────────────────────────────────── */
+  var tracker = $("[data-tracker]");
+  if (tracker) {
+    var TR_KEY = "roadmap-progress-v1";
+    var boxes = $$('input[type="checkbox"]', tracker);
+    var readDone = function () {
+      try { var v = JSON.parse(localStorage.getItem(TR_KEY) || "[]"); return Array.isArray(v) ? v.filter(function (x) { return typeof x === "number"; }) : []; }
+      catch (e) { return []; }
+    };
+    var paint = function (done) {
+      boxes.forEach(function (b) { b.checked = done.indexOf(Number(b.value)) >= 0; b.closest("li").classList.toggle("done", b.checked); });
+      var count = boxes.filter(function (b) { return b.checked; }).length, pc = Math.round((count / boxes.length) * 100);
+      $("[data-tr-pc]", tracker).textContent = pc;
+      $("[data-tr-count]", tracker).textContent = count;
+      $(".tr-bar span", tracker).style.width = pc + "%";
+      $(".tr-bar", tracker).setAttribute("aria-valuenow", String(pc));
+      $("[data-tr-reset]", tracker).disabled = count === 0;
+    };
+    var save = function (done) { try { localStorage.setItem(TR_KEY, JSON.stringify(done)); } catch (e) { /* not remembered */ } paint(done); };
+    boxes.forEach(function (b) {
+      b.addEventListener("change", function () {
+        save(boxes.filter(function (x) { return x.checked; }).map(function (x) { return Number(x.value); }));
+      });
+    });
+    $("[data-tr-reset]", tracker).addEventListener("click", function () { save([]); });
+    paint(readDone());
+  }
+
+  /* ── One update (/v2/updates/<id>): the post, likes and comments (UpdateDetailPage.tsx, src/lib/likes.ts,
+        UpdateComments.tsx; same APIs and limits) ─────────────────────────────────────────────────────────── */
+  var uArticle = $("#u-article");
+  if (uArticle) {
+    var uid = decodeURIComponent(location.pathname.replace(/\/+$/, "").split("/").pop() || "");
+    var visitor = function () {
+      var key = "portfolio-visitor-id", id = null;
+      try {
+        id = localStorage.getItem(key);
+        if (!id || !/^[A-Za-z0-9_-]{16,64}$/.test(id)) { id = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()).replace(/-/g, ""); localStorage.setItem(key, id); }
+      } catch (e) { id = id || "anon" + Date.now() + "xxxxxxxx"; }
+      return id;
+    };
+    var missing = function () {
+      $("#u-title").textContent = "This update isn’t available";
+      uArticle.innerHTML = '<p class="state">It may have been removed or unpublished. <a href="/v2/updates" style="text-decoration:underline">See all updates</a>.</p>';
+    };
+    loadUpdates().then(function (list) {
+      var idx = -1;
+      list.forEach(function (x, i) { if (x.id === uid) idx = i; });
+      if (idx < 0) return missing();
+      var u = list[idx], today = todayInLagos(), status = eventStatus(u, today);
+      document.title = u.title + " | " + document.title.split(" | ").pop();
+      $("#u-kind").textContent = u.kind === "event" ? (status ? statusLabel[status] : "Event") : "Post";
+      $("#u-title").textContent = u.title;
+      $("#u-meta").innerHTML = "<span>" + ic("calendar-date") + esc(displayDate(u)) + "</span>" + (u.location ? "<span>" + ic("map-point") + esc(u.location) + "</span>" : "");
+      $("#u-actions").innerHTML =
+        '<button class="btn btn-accent" type="button" id="u-like" aria-pressed="false">' + ic("hand-heart") + '<span>Like</span></button>' +
+        (u.linkUrl ? '<a class="btn btn-line" href="' + esc(u.linkUrl) + '" target="_blank" rel="noopener">Open link ' + ic("arrow-right-up", "i nudge") + "</a>" : "") +
+        '<button class="btn btn-line" type="button" id="u-share"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>Copy link</button>';
+      var media = (u.images || []).map(function (im) { return '<img src="' + esc(im.url) + '" alt="' + esc(im.alt || "") + '" loading="lazy">'; })
+        .concat((u.videos || []).map(function (v) { return '<video src="' + esc(v.url) + '"' + (v.posterUrl ? ' poster="' + esc(v.posterUrl) + '"' : "") + ' controls playsinline preload="metadata"></video>'; }));
+      uArticle.innerHTML = (media.length ? '<div class="u-media' + (media.length === 1 ? " one" : "") + '">' + media.join("") + "</div>" : "") +
+        (u.body ? '<p class="u-text">' + esc(u.body) + "</p>" : "");
+      $("#u-share").addEventListener("click", function () {
+        var url = location.origin + "/v2/updates/" + encodeURIComponent(u.id);
+        (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { toast("Link copied"); }, function () { toast(url); });
+      });
+      // Previous / next in the same order as the Updates page.
+      var prev = list[idx - 1], next = list[idx + 1], pn = $("#u-pn");
+      if (prev || next) {
+        pn.innerHTML = (prev ? '<a class="pn-l sheet" href="' + updateHref(prev) + '"><span class="k">Newer</span><span class="t">' + esc(prev.title) + "</span></a>" : "<span></span>") +
+          (next ? '<a class="pn-r sheet" href="' + updateHref(next) + '"><span class="k">Older</span><span class="t">' + esc(next.title) + "</span></a>" : "");
+        pn.hidden = false;
+      }
+      $("#u-stats").hidden = false;
+
+      // Likes
+      var likeBtn = $("#u-like"), liked = false, busy = false;
+      var showLikes = function (s) {
+        liked = !!s.liked; setStat("likes", s.count);
+        likeBtn.setAttribute("aria-pressed", String(liked));
+        $("span", likeBtn).textContent = liked ? "Liked" : "Like";
+      };
+      getJSON("/api/likes?updateId=" + encodeURIComponent(u.id) + "&visitorId=" + encodeURIComponent(visitor())).then(showLikes).catch(function () { setStat("likes", "–"); });
+      likeBtn.addEventListener("click", function () {
+        if (busy) return; busy = true;
+        fetch("/api/likes", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ updateId: u.id, visitorId: visitor(), liked: !liked }) })
+          .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || "Couldn’t save that."); return j; }); })
+          .then(showLikes).catch(function (err) { toast(err.message); }).then(function () { busy = false; });
+      });
+
+      // Comments
+      var cWrap = $("#u-comments"), cList = $("#c-list");
+      cWrap.hidden = false;
+      var shortDate = function (iso) { return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "Africa/Lagos" }); };
+      getJSON("/api/comments?updateId=" + encodeURIComponent(u.id)).then(function (j) {
+        var cs = j.comments || [];
+        setStat("comments", cs.length);
+        $("#c-count").textContent = cs.length || "";
+        if (cs.length) cList.innerHTML = '<ul class="c-list">' + cs.map(function (c) {
+          return '<li><span class="av" aria-hidden="true">' + esc((String(c.name).trim()[0] || "").toUpperCase()) + '</span><div><p class="c-by"><b>' + esc(c.name) + "</b> · " + esc(shortDate(c.createdAt)) + '</p><p class="c-body">' + esc(c.body) + "</p></div></li>";
+        }).join("") + "</ul>";
+      }).catch(function () { setStat("comments", "–"); cList.innerHTML = '<p class="small">Comments couldn’t be loaded right now.</p>'; });
+      var cForm = $("#c-form"), cStarted = Date.now();
+      cForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var name = cForm.elements.name.value.trim(), body = cForm.elements.body.value.trim(), email = cForm.elements.email.value.trim();
+        var err = $("#c-error");
+        err.hidden = true; $("#c-done").hidden = true;
+        var problem = name.length < 2 ? "Add your name." : body.length < 2 ? "Write a comment." : email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) ? "Enter a valid email, or leave it empty." : "";
+        if (problem) { err.textContent = problem; err.hidden = false; return; }
+        $("#c-send").disabled = true;
+        fetch("/api/comments", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ updateId: u.id, name: name, body: body, email: email, website: $("#c-website").value, startedAt: cStarted }) })
+          .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || "Something went wrong. Please try again."); }); })
+          .then(function () { cForm.elements.body.value = ""; $("#c-done").hidden = false; cStarted = Date.now(); })
+          .catch(function (x) { err.textContent = x.message; err.hidden = false; })
+          .then(function () { $("#c-send").disabled = false; });
+      });
+    }).catch(function () {
+      $("#u-title").textContent = "Update";
+      uArticle.innerHTML = '<p class="state">This update couldn’t be loaded right now. Please try again later.</p>';
+    });
   }
 
   /* ── Project pages: copy a code sample ─────────────────────────────────────────────────────────────────── */

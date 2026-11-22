@@ -1,11 +1,12 @@
 /**
  * V2 pages generated at build time from the same data the classic (React) pages use, so the two designs can't
- * drift: /v2/projects and every /v2/projects/<slug> (src/data/projects.ts), /v2/approach (src/data/approach.ts). vite.config.ts turns each into a file
+ * drift: /v2/projects and every /v2/projects/<slug> (src/data/projects.ts), /v2/approach (src/data/approach.ts), /v2/roadmap (src/data/roadmap.ts). vite.config.ts turns each into a file
  * in dist/ (and serves it in dev) through fillV2, which adds the shared partials and the link-preview tags.
  * Hand-written V2 pages (public/v2.html, public/v2/*.html) use the same shell markers.
  */
 import { projects, type CaseStudy, type CodeSample, type Project, type SubProduct } from "../src/data/projects";
 import { aiPractices, clients, collaboration, debugging, decisions, intro, principles, workflow, type PillarIcon } from "../src/data/approach";
+import * as R from "../src/data/roadmap";
 
 export const esc = (value: unknown) =>
   String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -341,5 +342,100 @@ export const approachPage = () => {
     ) +
     block("clients", "06 · Clients", "How I work with clients", `${numbered(clients.steps)}\n${outro(clients.outro)}`, esc(clients.intro)) +
     block("principles", "07 · Principles", "My engineering principles", `      <ol class="principles">${principles.map((p, i) => `<li><span class="no">${String(i + 1).padStart(2, "0")}</span>${esc(p)}</li>`).join("")}</ol>`);
+  return shell(main);
+};
+
+/* ── Roadmap (/v2/roadmap): src/data/roadmap.ts, the classic RoadmapPage's ten sections and tracker ──────── */
+
+const two = (i: number) => String(i).padStart(2, "0");
+
+export const roadmapPage = () => {
+  const n = (i: number) => `${two(i)} · `;
+  const monthsHTML = R.quarters
+    .map((q) => {
+      const months = q.months
+        .map((m) => {
+          const learn = m.learn.map((l) => `<li>${esc(l)}</li>`).join("");
+          const options = m.buildOptions ? `<ul>${m.buildOptions.map((o) => `<li>${esc(o)}</li>`).join("")}</ul>` : "";
+          const note = m.buildNote ? `<p>${esc(m.buildNote)}</p>` : "";
+          return (
+            `<details class="svc" id="month-${m.month}"><summary><span class="no">M${two(m.month)}</span><span class="nm">${esc(m.title)}</span><span class="circle">${il("arrow-right")}</span></summary>` +
+            `<div class="svc-body"><div><p class="k-label">${esc(m.learnLabel ?? "Learn")}</p><ul>${learn}</ul></div>` +
+            `<div class="rm-boxes"><div class="rm-box"><p class="k-label">Build</p><p>${esc(m.build)}</p>${options}${note}</div>` +
+            `<div class="rm-box ms"><p class="k-label">Milestone</p><p>${esc(m.milestone)}</p></div></div></div></details>`
+          );
+        })
+        .join("");
+      return `      <div class="quarter"><div class="q-head"><span class="chip">${esc(q.range)}</span><h3>${esc(q.title)}</h3></div><div class="svc-list">${months}</div></div>`;
+    })
+    .join("\n");
+
+  const cycle = R.learningCycle
+    .map((c, i) => `<div class="step"><div class="step-top"><span class="ico">${ic(["notebook", "code2", "magnifier", "rocket2"][i] ?? "flag")}</span><span class="no">${two(i + 1)}</span></div><h3>${esc(c.title)}</h3><p>${esc(c.detail)}</p></div>`)
+    .join("");
+  const alloc = R.weeklyAllocation
+    .map((a) => `<div class="alloc-row"><span>${esc(a.label)}</span><span class="bar"><span style="width:${a.percent}%"></span></span><span class="pc">${a.percent}%</span></div>`)
+    .join("");
+  const split = R.weeklyTime.split.map((s) => `<div class="alloc-row two"><span>${esc(s.label)}</span><span class="pc">${esc(s.hours)}</span></div>`).join("");
+  const plan = R.projectPlan.map((p) => `<div class="post rm-row"><span class="tr">${esc(p.period)}</span><span class="ti">${esc(p.project)}</span><span class="dt">${esc(p.teaches)}</span></div>`).join("");
+  const growing = R.growingPortfolio.map((g) => `<div class="factor sheet"><span class="chip" style="justify-self:start">${esc(g.level)} · ${esc(g.when)}</span><h3>${esc(g.project)}</h3></div>`).join("");
+  const resources = R.resources
+    .map((r) => `<div class="factor sheet"><h3>${esc(r.name)}</h3><p>${esc(r.detail)}</p><a class="btn btn-line btn-sm" style="justify-self:start;margin-top:6px" href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.cta)} ${ic("arrow-right-up", "i nudge")}</a></div>`)
+    .join("");
+  const soft = R.softSkills.map((s) => `<div class="factor sheet"><h3>${esc(s.skill)}</h3><p>${esc(s.practice)}</p></div>`).join("");
+  const mistakes = R.mistakes.map((m, i) => `<li class="sheet"><span class="no">${two(i + 1)}</span><span><b>${esc(m.title)}</b> ${esc(m.detail)}</span></li>`).join("");
+  const trackerItems = R.allMonths
+    .map((m) => `<li><label><input type="checkbox" value="${m.month}"><span><b>Month ${m.month}:</b> <span class="ms-t">${esc(m.milestone)}</span></span></label></li>`)
+    .join("");
+  const after = R.afterTwelve.map((a) => `<li>${esc(a)}</li>`).join("");
+  const directions = R.directions.map((d) => `<div class="factor sheet"><h3>${esc(d.title)}</h3><p>${esc(d.detail)}</p></div>`).join("");
+  const advice = R.finalAdvice.paragraphs.map((p) => `<p>${esc(p)}</p>`).join("");
+
+  const main =
+    pageHero({
+      eyebrow: "Learning roadmap",
+      title: "The 12-month <em>roadmap.</em>",
+      lead: `${esc(R.roadmapIntro.subtitle)}: a beginner-friendly, month-by-month path to becoming a full-stack software engineer. What to learn, what to build, and how to grow.`,
+      stats: [
+        { value: R.allMonths.length, label: "Months" },
+        { value: R.projectPlan.length, label: "Projects to build" },
+        { value: `${R.weeklyTime.hoursPerWeek} h`, label: "A week, suggested" },
+        { value: R.resources.length, label: "Free resources" },
+      ],
+      actions: `<a class="btn btn-accent" href="#months">Start with month 1 ${il("arrow-up", "i nudge")}</a><a class="btn btn-line" href="#tracker">Track your progress</a>`,
+    }) +
+    `  <section class="block near"><div class="wrap ap-intro">${R.roadmapIntro.paragraphs.map((p, i) => `<p class="${i === 0 ? "statement" : "lead"}">${esc(p)}</p>`).join("")}<p class="ap-outro">${esc(R.roadmapIntro.advice)}</p></div></section>\n` +
+    block(
+      "philosophy",
+      `${n(1)}Philosophy`,
+      "The learning philosophy",
+      `      <div class="process"><div class="steps">${cycle}</div></div>\n      <div class="panel" style="margin-top:16px"><div class="panel-head"><h3>A suggested week</h3></div><div class="sheet pad alloc">${alloc}<p class="small">${esc(R.allocationNote)}</p></div></div>`,
+    ) +
+    block("months", `${n(2)}Months`, "Your first 12 months", monthsHTML, "The roadmap is divided into 12 stages. Each month introduces a new set of concepts while giving you something practical to build.") +
+    block(
+      "weekly",
+      `${n(3)}Time`,
+      "How to organise your week",
+      `      <div class="duo"><div class="panel"><div class="sheet pad wk"><div class="num"><div class="n">${R.weeklyTime.hoursPerWeek}<sup>h</sup></div><div class="k">A week</div><p class="d">${esc(R.weeklyTime.routine)}</p></div></div></div><div class="panel"><div class="sheet pad alloc">${split}<p class="small">${esc(R.weeklyTime.splitNote)}</p></div></div></div>\n${outro(R.weeklyTime.lessTime)}`,
+      esc(R.weeklyTime.intro),
+    ) +
+    block("projects", `${n(4)}Projects`, "Projects to build through the year", `      <div class="posts">${plan}</div>\n      <h3 class="sub-head">A growing portfolio</h3>\n      <div class="factors">${growing}</div>`, esc(R.projectsIntro)) +
+    block("resources", `${n(5)}Resources`, "Learning resources worth using", `      <div class="factors">${resources}</div>`, esc(R.resourcesIntro)) +
+    block("soft-skills", `${n(6)}Beyond code`, "Skills beyond programming", `      <div class="factors">${soft}</div>`, esc(R.softSkillsIntro)) +
+    block("avoid", `${n(7)}Avoid`, "What to avoid in your first year", `      <ol class="numlist">${mistakes}</ol>`, esc(R.mistakesIntro)) +
+    block(
+      "tracker",
+      `${n(8)}Tracker`,
+      "Your first-year progress tracker",
+      `      <div class="panel tracker" data-tracker><div class="sheet pad">
+        <div class="tr-head"><div><p class="k-label">12-month learning progress</p><p class="tr-pc"><span data-tr-pc>0</span><sup>%</sup></p><p class="small" aria-live="polite"><span data-tr-count>0</span> of ${R.allMonths.length} milestones completed. Saved in this browser only.</p></div><button class="btn btn-line btn-sm" type="button" data-tr-reset disabled>Reset progress</button></div>
+        <div class="tr-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Roadmap progress"><span></span></div>
+        <ul class="tr-list">${trackerItems}</ul>
+      </div></div>`,
+      esc(R.trackerIntro),
+    ) +
+    block("after", `${n(9)}After 12 months`, "Where you should be after 12 months", `      <div class="panel"><div class="sheet pad"><ul class="ticks cols">${after}</ul></div></div>\n${outro(R.afterTwelveOutro)}`, esc(R.afterTwelveIntro)) +
+    block("next", `${n(10)}Next`, "What comes after the first year?", `      <div class="factors">${directions}</div>`, esc(R.directionsIntro)) +
+    `  <section class="block near" id="advice"><div class="wrap"><div class="cta" style="margin-top:0"><div class="cta-in rm-advice"><div><p class="eyebrow">Final advice</p><h2>${esc(R.finalAdvice.title)}</h2>${advice}<p class="rm-closing">${esc(R.finalAdvice.closing)}</p></div></div></div></div></section>\n`;
   return shell(main);
 };

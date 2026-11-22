@@ -2,31 +2,34 @@
 // title, description and cover photo in the link-preview tags, so sharing it on LinkedIn, X, Facebook,
 // Instagram DMs or WhatsApp shows the post rather than the generic site card. Visitors get the same HTML
 // and the app takes over as usual.
+// GET /v2/updates/:id (rewritten here with design=v2) — the same for the new design: its static update page
+// (public/v2/update.html, served at /v2/update), which loads the post itself in the browser.
 import { sql } from "../_lib/db.js";
 import { excerpt, replaceSeo } from "../_lib/seo.js";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-let cachedTemplate = null;
+/** Page each design's update URL is built on. "/" rather than "/index.html": with cleanUrls on, Vercel redirects *.html paths. */
+const TEMPLATE_PATH = { v1: "/", v2: "/v2/update" };
+const cachedTemplates = {};
 
-/** The deployed home page HTML (index.html, with its hashed script/style tags). Fetched once per function instance. */
-const loadTemplate = async (origin, fetchIndex) => {
-  if (cachedTemplate) return cachedTemplate;
+/** The deployed page HTML for `design` (with its hashed script/style tags). Fetched once per function instance. */
+const loadTemplate = async (origin, fetchIndex, design) => {
+  if (cachedTemplates[design]) return cachedTemplates[design];
   // Cloudflare: worker/index.mjs reads it from the Worker's static assets (a Worker can't fetch its own URL).
   if (fetchIndex) {
-    const res = await fetchIndex();
-    if (!res.ok) throw new Error(`index.html fetch failed (${res.status})`);
-    cachedTemplate = await res.text();
-    return cachedTemplate;
+    const res = await fetchIndex(TEMPLATE_PATH[design]);
+    if (!res.ok) throw new Error(`${TEMPLATE_PATH[design]} fetch failed (${res.status})`);
+    cachedTemplates[design] = await res.text();
+    return cachedTemplates[design];
   }
   const headers = {};
   // Lets preview deployments with Vercel Authentication fetch their own page (Settings → Deployment Protection).
   if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) headers["x-vercel-protection-bypass"] = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
-  // "/" rather than "/index.html": with cleanUrls on, Vercel redirects *.html paths to their extensionless form.
-  const res = await fetch(`${origin}/`, { headers });
-  if (!res.ok) throw new Error(`index.html fetch failed (${res.status})`);
-  cachedTemplate = await res.text();
-  return cachedTemplate;
+  const res = await fetch(`${origin}${TEMPLATE_PATH[design]}`, { headers });
+  if (!res.ok) throw new Error(`${TEMPLATE_PATH[design]} fetch failed (${res.status})`);
+  cachedTemplates[design] = await res.text();
+  return cachedTemplates[design];
 };
 
 const attr = (html, pattern) => html.match(pattern)?.[1] ?? "";
@@ -49,14 +52,15 @@ export default async function handler(req, res) {
   const id = typeof req.query.id === "string" ? req.query.id : "";
   const proto = req.headers["x-forwarded-proto"] ?? "https";
   const origin = `${proto}://${req.headers.host}`;
+  const design = req.query.design === "v2" ? "v2" : "v1";
 
   let template;
   try {
-    template = await loadTemplate(origin, req.fetchIndex);
+    template = await loadTemplate(origin, req.fetchIndex, design);
   } catch (error) {
-    console.error("share/update: could not load index.html", error);
-    // Without the template the app can't boot from here, so send people to the Updates page.
-    res.setHeader("Location", "/updates");
+    console.error(`share/update: could not load the ${design} page`, error);
+    // Without the template the page can't load from here, so send people to that design's Updates page.
+    res.setHeader("Location", design === "v2" ? "/v2/updates" : "/updates");
     return res.status(302).end();
   }
 

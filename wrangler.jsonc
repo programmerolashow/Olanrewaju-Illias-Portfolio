@@ -20,7 +20,7 @@
     // Client-side routes without their own HTML file (e.g. /admin) load the app.
     "not_found_handling": "single-page-application",
     // Only these paths reach the Worker; everything else is served straight from dist/.
-    "run_worker_first": ["/api/*", "/updates/*"]
+    "run_worker_first": ["/api/*", "/updates/*", "/v2/updates/*"]
   },
   "observability": { "enabled": true }
 }
