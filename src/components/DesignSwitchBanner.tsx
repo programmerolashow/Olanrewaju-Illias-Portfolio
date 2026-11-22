@@ -5,7 +5,7 @@ import { getDesignSwitch } from "@/lib/uiVersion";
  * The classic → new design strip (Qorelly's "Try the new design" banner), at the top of the fixed navbar.
  * public/design-switch.js renders it, so the classic and new designs show the same banner.
  *
- * It folds away while the page is scrolled (`collapsed`) so the fixed bar stays slim. Its height is published as
+ * It stays in the fixed bar while the page scrolls, and folds away only while the mobile menu is open (`collapsed`). Its height is published as
  * --design-strip-h for SiteLayout, which pads the page by that much so the strip never covers the page header.
  */
 const DesignSwitchBanner = ({ collapsed }: { collapsed: boolean }) => {

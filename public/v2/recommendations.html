@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- Shared head (v2/partials/head.html). Title, description and link-preview tags come from pageMeta.recommendations
+     in src/config/pages.ts at build time (fillV2 in vite.config.ts); do not hand-write them here. -->
+<!--v2:head-->
+</head>
+<body>
+
+<!--v2:sprite-->
+<!--v2:header-->
+
+<main id="top">
+  <section class="p-hero">
+    <div class="wrap">
+      <div class="p-stage">
+        <div class="p-stage-in">
+          <div>
+            <p class="eyebrow rise">Recommendations</p>
+            <h1 class="p-title rise d1">Kind <em>words.</em></h1>
+            <p class="p-lead rise d2">What colleagues, managers, classmates, course-mates and collaborators say about working with me. Every one is reviewed before it’s published.</p>
+            <div class="hero-cta rise d2"><a class="btn btn-accent" href="#write"><svg class="i" aria-hidden="true"><use href="/v2-assets/icons.svg#i-pen"/></svg>Leave a recommendation</a></div>
+          </div>
+          <div class="p-stats rise d3">
+            <div class="p-stat"><div class="n" data-stat="count">–</div><div class="l">Recommendations</div></div>
+            <div class="p-stat"><div class="n" data-stat="featured">–</div><div class="l">Featured</div></div>
+            <div class="p-stat"><div class="n" data-stat="relationships">–</div><div class="l">Kinds of relationship</div></div>
+            <div class="p-stat"><div class="n" data-stat="linkedin">–</div><div class="l">With a LinkedIn profile</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block near" id="words">
+    <div class="wrap">
+      <div class="filter-bar">
+        <div class="seg" role="group" aria-label="Filter recommendations" id="rec-filters"></div>
+        <p class="small">Names with a LinkedIn link open the person’s profile.</p>
+      </div>
+      <div class="recs" id="recs" aria-live="polite"><p class="state">Loading recommendations…</p></div>
+    </div>
+  </section>
+
+  <section class="block near" id="write">
+    <div class="wrap">
+      <div class="cta" style="margin-top:0">
+        <div class="cta-in">
+          <div>
+            <p class="eyebrow">Worked with me?</p>
+            <h2>Leave a <em>recommendation.</em></h2>
+            <p id="write-lead">A few honest sentences about a project, a class or a team we shared helps recruiters see how I work.</p>
+          </div>
+          <p class="small rec-review">Recommendations are reviewed before they’re published. Your email is never shown.</p>
+        </div>
+        <form class="c-form" id="rec-form" novalidate>
+          <div class="c-form-head"><h3>Your recommendation</h3><p class="small">Fields marked optional can be left empty.</p></div>
+          <div class="hp" aria-hidden="true"><label for="rec-website">Website</label><input id="rec-website" name="website" tabindex="-1" autocomplete="off"></div>
+          <div class="f-grid">
+            <label class="field"><span>Your name</span><input name="name" autocomplete="name" maxlength="100" required></label>
+            <label class="field"><span>How do you know Illias?</span><select name="relationship" required><option value="" disabled selected>Choose one</option></select></label>
+            <label class="field"><span>Your role (optional)</span><input name="role" maxlength="120" placeholder="e.g. Product Lead" autocomplete="organization-title"></label>
+            <label class="field"><span>Company, school or community (optional)</span><input name="company" maxlength="120" placeholder="e.g. Qorelly, UNILORIN, GDG Ilorin" autocomplete="organization"></label>
+          </div>
+          <label class="field"><span>Your recommendation: what did you work on together, and what stood out? 40 to 2,000 characters.</span><textarea name="body" rows="6" maxlength="2000" required></textarea><span class="count"><span id="rec-count">0</span> / 2000</span></label>
+          <div class="f-grid">
+            <label class="field"><span>LinkedIn profile (optional, shown with your name)</span><input name="linkedinUrl" type="url" maxlength="300" placeholder="https://linkedin.com/in/…"></label>
+            <label class="field"><span>Email (optional, private: only to confirm it’s you)</span><input name="email" type="email" maxlength="200" autocomplete="email"></label>
+          </div>
+          <p class="f-err" id="rec-error" role="alert" hidden></p>
+          <button class="btn btn-accent" type="submit" id="rec-send">Submit recommendation <svg class="i" aria-hidden="true"><use href="/v2-assets/icons.svg#i-plane"/></svg></button>
+        </form>
+        <div class="c-form c-done" id="rec-done" hidden><svg class="i done-i" aria-hidden="true"><use href="/v2-assets/icons.svg#i-check-circle"/></svg><h3>Thank you, truly.</h3><p>Your recommendation has been received and will appear here once Illias has reviewed it.</p><button class="btn btn-line btn-sm" type="button" id="rec-again">Write another</button></div>
+      </div>
+    </div>
+  </section>
+
+<!--v2:contact-->
+</main>
+
+<!--v2:footer-->
+</body>
+</html>

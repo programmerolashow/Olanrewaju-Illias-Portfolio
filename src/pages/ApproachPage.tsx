@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Check } from "@/components/icons";
+import { ArrowRight, Bot, Check, Gauge, Scale, ShieldCheck, type LucideIcon } from "@/components/icons";
 import PageHeader from "@/components/PageHeader";
 import ScrollSection from "@/components/ScrollSection";
 import ExploreMore from "@/components/ExploreMore";
-import { aiPractices, clients, collaboration, debugging, decisions, intro, principles, workflow } from "@/data/approach";
+import { aiPractices, clients, collaboration, debugging, decisions, intro, principles, workflow, type PillarIcon } from "@/data/approach";
+
+const pillarIcons: Record<PillarIcon, LucideIcon> = { bot: Bot, scale: Scale, shield: ShieldCheck, gauge: Gauge };
 import { usePageMeta } from "@/hooks/use-page-meta";
 import { pageMeta } from "@/config/pages";
 
@@ -129,7 +131,9 @@ const ApproachPage = () => {
 
         <Block id="ai" eyebrow="05 · AI engineering" title="My Approach to AI Engineering">
           <div className="grid gap-4 md:grid-cols-2">
-            {aiPractices.map(({ icon: Icon, title, points }) => (
+            {aiPractices.map(({ icon, title, points }) => {
+              const Icon = pillarIcons[icon];
+              return (
               <div key={title} className="glass-card rounded-2xl p-5 sm:p-6">
                 <div className="mb-4 flex items-center gap-3">
                   <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -146,7 +150,8 @@ const ApproachPage = () => {
                   ))}
                 </ul>
               </div>
-            ))}
+              );
+            })}
           </div>
         </Block>
 

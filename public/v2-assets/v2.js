@@ -394,8 +394,8 @@
     return '<div class="face ' + FACES[slot % FACES.length] + '" aria-hidden="true">' + esc(letter) + '</div><div class="quote-body"><blockquote>' +
       esc(r.body) + '</blockquote><figcaption><div class="n">' + name + '</div><div class="r">' + esc(recommenderLine(r)) + "</div></figcaption></div>";
   }
-  getJSON("/api/recommendations").then(function (j) {
-    var all = j.recommendations || [];
+  var recsPromise = getJSON("/api/recommendations").then(function (j) { return j.recommendations || []; });
+  recsPromise.then(function (all) {
     var quotes = $("#quotes");
     if (!quotes) return;
     var slots = $$(".quote", quotes).length || 2;
@@ -406,6 +406,8 @@
     }
     var shown = all.slice(0, slots);
     quotes.innerHTML = shown.map(function (r, i) { return '<figure class="quote">' + quoteHTML(r, i) + "</figure>"; }).join("");
+    if ($("#words-count")) $("#words-count").textContent = all.length;
+    if ($("#words-all")) $("#words-all").hidden = false;
     if (reduceMotion || all.length <= slots) return;
     var paused = false;
     quotes.addEventListener("mouseenter", function () { paused = true; });
@@ -511,7 +513,7 @@
       add("Pages", "home", "Home", "page home", go("/v2#top"));
       (data.nav || []).forEach(function (n) { add("Pages", n.icon, n.label, "page " + n.description, go(n.to), n.description); });
       add("Pages", "plane", "Contact", "page contact email message", go("#contact"));
-      (data.projects || []).forEach(function (p) { add("Projects", "folder-git", p.title, "project " + p.tags.join(" "), go("/v2#work")); });
+      (data.projects || []).forEach(function (p) { add("Projects", "folder-git", p.title, "project " + p.tags.join(" "), go("/v2/projects/" + p.slug)); });
       live.articles.slice(0, 30).forEach(function (a) { add("Articles", "file-text", a.title, "article", ext(articleUrl(a))); });
       live.updates.slice(0, 30).forEach(function (u) { add("Updates", "megaphone", u.title, "update " + u.kind, go(updateHref(u))); });
       add("Actions", "file-download", "Download CV", "action download cv resume", ext("/ILLIAS_OLANREWAJU_CV.pdf"));
@@ -752,4 +754,218 @@
       });
     }
   }
+
+  /* ── Recommendations page (/v2/recommendations): all approved ones and the form (RecommendationsPage.tsx,
+        RecommendationForm.tsx; same limits as recommendationInput in api/_lib/validate.js) ─────────────────── */
+  var recsEl = $("#recs");
+  if (recsEl) {
+    var allRecs = [];
+    var initials = function (name) {
+      return String(name).trim().split(/\s+/).slice(0, 2).map(function (p) { return (p[0] || "").toUpperCase(); }).join("");
+    };
+    var recHTML = function (r) {
+      var name = r.linkedinUrl
+        ? '<a class="n" href="' + esc(r.linkedinUrl) + '" target="_blank" rel="noopener noreferrer nofollow">' + esc(r.name) +
+          '<svg class="i" aria-label="LinkedIn profile"><use href="#i-linkedin"/></svg></a>'
+        : '<span class="n">' + esc(r.name) + "</span>";
+      return '<figure class="rec"><div class="rec-top"><span class="rec-mark" aria-hidden="true">“</span><span class="chips">' +
+        (r.featured ? '<span class="chip feat">Featured</span>' : "") +
+        '<span class="chip">' + esc(relationshipLabels[r.relationship] || "") + "</span></span></div><blockquote>" + esc(r.body) +
+        '</blockquote><figcaption><span class="av" aria-hidden="true">' + esc(initials(r.name)) + '</span><span style="min-width:0;display:grid">' +
+        name + '<span class="r">' + esc(recommenderLine(r)) + "</span></span></figcaption></figure>";
+    };
+    var renderRecs = function (rel) {
+      var shown = allRecs.filter(function (r) { return rel === "all" || r.relationship === rel; });
+      recsEl.innerHTML = shown.length ? shown.map(recHTML).join("")
+        : '<p class="state">No recommendations yet. <a href="#write" style="text-decoration:underline">Be the first.</a></p>';
+    };
+    recsPromise.then(function (list) {
+      allRecs = list;
+      var rels = Object.keys(relationshipLabels).filter(function (k) { return list.some(function (r) { return r.relationship === k; }); });
+      setStat("count", list.length);
+      setStat("featured", list.filter(function (r) { return r.featured; }).length);
+      setStat("relationships", rels.length);
+      setStat("linkedin", list.filter(function (r) { return r.linkedinUrl; }).length);
+      var group = $("#rec-filters");
+      if (list.length) {
+        renderFilters(group, [{ value: "all", label: "All", count: list.length }].concat(rels.map(function (k) {
+          return { value: k, label: relationshipLabels[k], count: list.filter(function (r) { return r.relationship === k; }).length };
+        })), renderRecs);
+      } else {
+        group.hidden = true;
+        $("#write-lead").textContent = "Be the first. A few honest sentences about a project, a class or a team we shared helps recruiters see how I work.";
+      }
+      renderRecs("all");
+    }).catch(function () {
+      recsEl.innerHTML = '<p class="state">Recommendations couldn’t be loaded right now. You can still leave one below.</p>';
+      $("#rec-filters").hidden = true;
+    });
+
+    var recForm = $("#rec-form");
+    var recStarted = Date.now();
+    var rf = function (n) { return recForm.elements[n]; };
+    rf("relationship").insertAdjacentHTML("beforeend", Object.keys(relationshipLabels).map(function (k) {
+      return '<option value="' + k + '">' + esc(relationshipLabels[k]) + "</option>";
+    }).join(""));
+    var recErr = function (n, msg) {
+      var label = rf(n).closest(".field"), el = $(".err", label);
+      label.classList.toggle("bad", !!msg);
+      if (msg && !el) { el = document.createElement("span"); el.className = "err"; label.appendChild(el); }
+      if (el) { el.textContent = msg || ""; el.hidden = !msg; }
+      rf(n).setAttribute("aria-invalid", msg ? "true" : "false");
+    };
+    var FIELDS = ["name", "relationship", "role", "company", "body", "linkedinUrl", "email"];
+    var recValidate = function () {
+      var v = {};
+      FIELDS.forEach(function (n) { v[n] = rf(n).value.trim(); });
+      var e = {};
+      if (v.name.length < 2) e.name = "Add your name.";
+      if (!relationshipLabels[v.relationship]) e.relationship = "Choose how you know Illias.";
+      if (v.body.length < 40) e.body = "Write at least a couple of sentences (40+ characters).";
+      else if (v.body.length > 2000) e.body = "Keep it under 2,000 characters.";
+      if (v.linkedinUrl && !/^https:\/\/([a-z]{2,3}\.)?linkedin\.com\//i.test(v.linkedinUrl)) e.linkedinUrl = "Use your LinkedIn profile link (https://linkedin.com/in/…), or leave it empty.";
+      if (v.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.email)) e.email = "Enter a valid email, or leave it empty.";
+      return { values: v, errors: e };
+    };
+    var recCount = $("#rec-count");
+    rf("body").addEventListener("input", function () { recCount.textContent = rf("body").value.trim().length; });
+    FIELDS.forEach(function (n) {
+      rf(n).addEventListener(n === "relationship" ? "change" : "input", function () {
+        if (rf(n).getAttribute("aria-invalid") === "true") recErr(n, recValidate().errors[n]);
+      });
+    });
+    var recSend = $("#rec-send"), recFormErr = $("#rec-error");
+    recForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var res = recValidate(), bad = FIELDS.filter(function (n) { return res.errors[n]; });
+      FIELDS.forEach(function (n) { recErr(n, res.errors[n]); });
+      recFormErr.hidden = true;
+      if (bad.length) { rf(bad[0]).focus(); return; }
+      recSend.disabled = true;
+      var body = {};
+      FIELDS.forEach(function (n) { body[n] = res.values[n]; });
+      body.website = $("#rec-website").value;
+      body.startedAt = recStarted;
+      fetch("/api/recommendations", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || "Something went wrong. Please try again."); }); })
+        .then(function () {
+          // Remembered for the welcome-back greeting (src/lib/visitor.ts), as the classic form does.
+          try { var first = res.values.name.split(/\s+/)[0].slice(0, 40); if (first.length >= 2) localStorage.setItem("visitor-name", first); } catch (err) { /* storage blocked */ }
+          recForm.hidden = true; $("#rec-done").hidden = false;
+          recForm.reset(); recCount.textContent = "0";
+        })
+        .catch(function (err) { recFormErr.textContent = "Not sent: " + err.message; recFormErr.hidden = false; toast("Not sent"); })
+        .then(function () { recSend.disabled = false; });
+    });
+    $("#rec-again").addEventListener("click", function () {
+      recStarted = Date.now(); $("#rec-done").hidden = true; recForm.hidden = false; rf("name").focus();
+    });
+  }
+
+  /* ── Projects page (/v2/projects): filter the featured cards and the list by category group ───────────── */
+  var projFilter = $('[data-filter="projects"]');
+  if (projFilter) {
+    $$(".seg-btn", projFilter).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var g = b.getAttribute("data-value");
+        $$(".seg-btn", projFilter).forEach(function (o) { var on = o === b; o.classList.toggle("on", on); o.setAttribute("aria-pressed", String(on)); });
+        var any = false;
+        ["featured", "more"].forEach(function (list) {
+          var shown = 0;
+          $$('[data-list="' + list + '"] [data-group]').forEach(function (el) {
+            var show = g === "all" || el.getAttribute("data-group") === g;
+            el.hidden = !show; if (show) shown++;
+          });
+          $('[data-list="' + list + '"]').hidden = !shown;
+          $('[data-heading="' + list + '"]').hidden = !shown;
+          if (shown) any = true;
+        });
+        $("[data-empty]").hidden = any;
+      });
+    });
+  }
+
+  /* ── Articles page (/v2/articles): every topic once, published first (Articles.tsx useArticleList) ─────────
+        Search, track filter in the URL (?track=ai, so a filtered view can be shared), first 9 then "Show all". */
+  var artsEl = $("#articles");
+  if (artsEl) {
+    var TRACK_ICONS = { "full-stack": "layers", ai: "bot", database: "database", quality: "shield-check", product: "lightbulb", fintech: "bank", devops: "git-branch", "case-studies": "notebook" };
+    var INITIAL = 9, items = [], showAllArts = false;
+    var trackParam = new URLSearchParams(location.search).get("track");
+    var activeTrack = tracks.some(function (t) { return t.id === trackParam; }) ? trackParam : "all";
+    var search = $("#article-search"), moreBtn = $("#articles-more");
+    var fileKind = function (a) {
+      var name = String(a.fileName || a.fileUrl || "").toLowerCase();
+      if (/\.pdf$/.test(name)) return "PDF";
+      if (/\.docx$/.test(name)) return "Word";
+      return a.fileUrl ? "File" : null;
+    };
+    var cardHTML = function (it) {
+      var a = it.article, kind = a && fileKind(a);
+      var links = a ? [
+        a.fileUrl ? '<a class="btn btn-dark btn-sm" href="' + esc(a.fileUrl) + '" target="_blank" rel="noopener"' + (kind === "PDF" ? "" : " download") + ">" + ic(kind === "PDF" ? "file-text" : "file-download") + (kind === "PDF" ? "Read PDF" : "Download " + kind) + "</a>" : "",
+        a.scholarUrl ? '<a class="btn btn-line btn-sm" href="' + esc(a.scholarUrl) + '" target="_blank" rel="noopener">' + ic("academic") + "Google Scholar</a>" : "",
+        a.zenodoUrl ? '<a class="btn btn-line btn-sm" href="' + esc(a.zenodoUrl) + '" target="_blank" rel="noopener">' + ic("notebook") + "Zenodo</a>" : "",
+      ].join("") : "";
+      return '<article class="art-card' + (a ? "" : " planned") + '"><div class="art-top"><span class="art-tr">' + ic(TRACK_ICONS[it.track] || "file-text") + esc(trackLabel(it.track)) +
+        '</span><span class="chip' + (a ? " pub" : "") + '">' + (a ? "Published" : "Planned") + "</span></div><h3>" + esc(it.title) + "</h3>" +
+        (a && a.summary ? "<p>" + esc(a.summary) + "</p>" : "") + (a ? '<span class="art-date">' + esc(articleDate(a)) + "</span>" : "") +
+        (links ? '<div class="case-links">' + links + "</div>" : "") + "</article>";
+    };
+    var renderArts = function () {
+      var q = search.value.trim().toLowerCase();
+      var list = items.filter(function (it) {
+        return (activeTrack === "all" || it.track === activeTrack) &&
+          (!q || it.title.toLowerCase().indexOf(q) >= 0 || (it.article && String(it.article.summary || "").toLowerCase().indexOf(q) >= 0));
+      });
+      var visible = showAllArts ? list : list.slice(0, INITIAL);
+      artsEl.innerHTML = visible.length ? visible.map(cardHTML).join("")
+        : '<p class="state">No topics match “' + esc(search.value) + '”. Try another keyword or track.</p>';
+      $("#article-live").textContent = list.length + (list.length === 1 ? " topic" : " topics") + " shown";
+      moreBtn.hidden = list.length <= INITIAL;
+      moreBtn.textContent = showAllArts ? "Show fewer" : "Show all " + list.length + " topics";
+    };
+    var buildArts = function (articles) {
+      var filled = {};
+      var published = articles.map(function (a) {
+        var topic = a.topic || matchPlannedTopic(a.title);
+        if (topic) filled[topic] = true;
+        var track = tracks.some(function (t) { return t.id === a.track; }) ? a.track : tracks[0].id;
+        return { title: a.title, track: track, article: a };
+      });
+      var plannedItems = [];
+      tracks.forEach(function (t) {
+        (planned[t.id] || []).forEach(function (topic) { if (!filled[topic]) plannedItems.push({ title: topic, track: t.id, article: null }); });
+      });
+      items = published.concat(plannedItems);
+      setStat("topics", items.length); setStat("tracks", tracks.length);
+      setStat("published", published.length); setStat("planned", plannedItems.length);
+      var count = function (id) { return items.filter(function (it) { return it.track === id; }).length; };
+      var group = $("#article-filters");
+      renderFilters(group, [{ value: "all", label: "All topics", count: items.length }].concat(tracks.map(function (t) {
+        return { value: t.id, label: t.label, count: count(t.id) };
+      })), function (v) {
+        activeTrack = v; showAllArts = false;
+        var u = new URL(location.href);
+        if (v === "all") u.searchParams.delete("track"); else u.searchParams.set("track", v);
+        history.replaceState(null, "", u.pathname + u.search + u.hash);
+        renderArts();
+      });
+      // Select the track from the URL.
+      $$(".seg-btn", group).forEach(function (b) {
+        var on = b.getAttribute("data-value") === activeTrack;
+        b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on));
+      });
+      renderArts();
+    };
+    search.addEventListener("input", function () { showAllArts = false; renderArts(); });
+    moreBtn.addEventListener("click", function () { showAllArts = !showAllArts; renderArts(); });
+    // Planned topics still show when the articles API can't be reached.
+    loadArticles().then(buildArts, function () { buildArts([]); });
+  }
+
+  /* ── Project pages: copy a code sample ─────────────────────────────────────────────────────────────────── */
+  $$("[data-copy-code]").forEach(function (b) {
+    b.addEventListener("click", function () { copyText($("code", b.closest("figure")), "Code copied"); });
+  });
 })();

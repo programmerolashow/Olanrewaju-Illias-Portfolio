@@ -1,9 +1,9 @@
-import { Bot, Gauge, Scale, ShieldCheck, type LucideIcon } from "@/components/icons";
-
 /**
  * Content for the "How I Work" page, in Olanrewaju's own words. These describe how he works, not
  * delivered results: keep outcomes, numbers and client claims out of here and put verified ones on
  * project pages.
+ *
+ * Kept free of React and icon imports: the new design's How I Work page (v2/pages.ts) reads it at build time.
  */
 
 export const intro = {
@@ -117,15 +117,18 @@ export const collaboration = {
     "I aim to make my work understandable to other developers and to leave the codebase easier to maintain wherever practical.",
 };
 
+/** Icon for each AI pillar, by name: ApproachPage.tsx maps it to its icon component, v2/pages.ts to a Solar icon. */
+export type PillarIcon = "bot" | "scale" | "shield" | "gauge";
+
 export interface Pillar {
-  icon: LucideIcon;
+  icon: PillarIcon;
   title: string;
   points: string[];
 }
 
 export const aiPractices: Pillar[] = [
   {
-    icon: Bot,
+    icon: "bot",
     title: "Design",
     points: [
       "Start with a clearly defined problem that benefits from AI.",
@@ -138,7 +141,7 @@ export const aiPractices: Pillar[] = [
     ],
   },
   {
-    icon: Scale,
+    icon: "scale",
     title: "Evaluation",
     points: [
       "Define expected behaviour before testing.",
@@ -151,7 +154,7 @@ export const aiPractices: Pillar[] = [
     ],
   },
   {
-    icon: ShieldCheck,
+    icon: "shield",
     title: "Security",
     points: [
       "Treat user input and retrieved content as potentially untrusted.",
@@ -164,7 +167,7 @@ export const aiPractices: Pillar[] = [
     ],
   },
   {
-    icon: Gauge,
+    icon: "gauge",
     title: "Cost and Performance",
     points: [
       "Choose models according to task requirements.",

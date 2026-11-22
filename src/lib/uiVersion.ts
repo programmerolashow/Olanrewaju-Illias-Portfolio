@@ -54,7 +54,7 @@ export function useWantedUiVersion(): UiVersion {
 
 /**
  * In-app navigation (React Router, no page load) skips the <head> redirect, so classic pages that also exist in V2
- * (/, /services, /moments, /updates) check again: someone who chose the new design goes to that page in V2.
+ * (/, /services, /moments, /updates, /recommendations) check again: someone who chose the new design goes to that page in V2.
  */
 export function useHomeDesignRedirect(pathname: string, hash: string) {
   useEffect(() => {
