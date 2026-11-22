@@ -386,6 +386,18 @@
   var recommenderLine = function (r) { return [r.role, r.company].filter(Boolean).join(" · ") || relationshipLabels[r.relationship] || ""; };
   var FACES = ["face-a", "face-e"]; // V2's two card colours, kept per slot
   var ROTATE_MS = 3000;
+  /** Shrinks each card's quote (22px down to 12px) until all of it fits the fixed card height. */
+  function fitQuotes() {
+    $$(".quote blockquote").forEach(function (bq) {
+      var size = 22;
+      bq.style.fontSize = size + "px";
+      while (bq.scrollHeight > bq.clientHeight + 1 && size > 12) { size -= 1; bq.style.fontSize = size + "px"; }
+    });
+  }
+  var fitTimer;
+  addEventListener("resize", function () { clearTimeout(fitTimer); fitTimer = setTimeout(fitQuotes, 120); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitQuotes);
+  fitQuotes();
   function quoteHTML(r, slot) {
     var letter = (String(r.name).trim()[0] || "").toUpperCase();
     var name = r.linkedinUrl
@@ -406,6 +418,7 @@
     }
     var shown = all.slice(0, slots);
     quotes.innerHTML = shown.map(function (r, i) { return '<figure class="quote">' + quoteHTML(r, i) + "</figure>"; }).join("");
+    fitQuotes();
     if ($("#words-count")) $("#words-count").textContent = all.length;
     if ($("#words-all")) $("#words-all").hidden = false;
     if (reduceMotion || all.length <= slots) return;
@@ -423,7 +436,7 @@
       var card = $$(".quote", quotes)[slot];
       shown[slot] = next;
       card.classList.add("swap");
-      setTimeout(function () { card.innerHTML = quoteHTML(next, slot); card.classList.remove("swap"); }, 350);
+      setTimeout(function () { card.innerHTML = quoteHTML(next, slot); fitQuotes(); card.classList.remove("swap"); }, 350);
     }, ROTATE_MS);
   }).catch(function () { /* keep the static quotes */ });
 

@@ -281,7 +281,12 @@ section.block { padding-block: 120px 0; }
 .face-e { background: linear-gradient(160deg, #ffb37a, #e4572e); }
 .quote-body { display: grid; align-content: space-between; gap: 18px; padding: 14px 14px 14px 0; }
 @media (max-width: 520px) { .quote-body { padding: 4px 10px 12px; } }
-.quote blockquote { font: 400 22px/1.3 var(--font-serif); letter-spacing: -0.01em; text-wrap: pretty; }
+.quote blockquote { font: 400 22px/1.3 var(--font-serif); letter-spacing: -0.01em; text-wrap: pretty; overflow-wrap: anywhere; }
+/* Every card is the same height; long recommendations get smaller text so all of it fits (fitQuotes in v2.js). */
+.quote { height: 350px; }
+.quote-body { grid-template-rows: minmax(0, 1fr) auto; align-content: stretch; min-height: 0; }
+.quote blockquote { min-height: 0; overflow: hidden; }
+@media (max-width: 520px) { .quote { height: 480px; grid-template-rows: 120px minmax(0, 1fr); } .quote .face { min-height: 0; } }
 .quote .n { font-size: 14px; font-weight: 600; }
 .quote .r { font-size: 12px; color: rgb(var(--g500)); }
 
