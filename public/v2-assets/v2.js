@@ -885,6 +885,85 @@
     });
   }
 
+  /* ── Articles page (/v2/articles): every topic once, published first (Articles.tsx useArticleList) ─────────
+        Search, track filter in the URL (?track=ai, so a filtered view can be shared), first 9 then "Show all". */
+  var artsEl = $("#articles");
+  if (artsEl) {
+    var TRACK_ICONS = { "full-stack": "layers", ai: "bot", database: "database", quality: "shield-check", product: "lightbulb", fintech: "bank", devops: "git-branch", "case-studies": "notebook" };
+    var INITIAL = 9, items = [], showAllArts = false;
+    var trackParam = new URLSearchParams(location.search).get("track");
+    var activeTrack = tracks.some(function (t) { return t.id === trackParam; }) ? trackParam : "all";
+    var search = $("#article-search"), moreBtn = $("#articles-more");
+    var fileKind = function (a) {
+      var name = String(a.fileName || a.fileUrl || "").toLowerCase();
+      if (/\.pdf$/.test(name)) return "PDF";
+      if (/\.docx$/.test(name)) return "Word";
+      return a.fileUrl ? "File" : null;
+    };
+    var cardHTML = function (it) {
+      var a = it.article, kind = a && fileKind(a);
+      var links = a ? [
+        a.fileUrl ? '<a class="btn btn-dark btn-sm" href="' + esc(a.fileUrl) + '" target="_blank" rel="noopener"' + (kind === "PDF" ? "" : " download") + ">" + ic(kind === "PDF" ? "file-text" : "file-download") + (kind === "PDF" ? "Read PDF" : "Download " + kind) + "</a>" : "",
+        a.scholarUrl ? '<a class="btn btn-line btn-sm" href="' + esc(a.scholarUrl) + '" target="_blank" rel="noopener">' + ic("academic") + "Google Scholar</a>" : "",
+        a.zenodoUrl ? '<a class="btn btn-line btn-sm" href="' + esc(a.zenodoUrl) + '" target="_blank" rel="noopener">' + ic("notebook") + "Zenodo</a>" : "",
+      ].join("") : "";
+      return '<article class="art-card' + (a ? "" : " planned") + '"><div class="art-top"><span class="art-tr">' + ic(TRACK_ICONS[it.track] || "file-text") + esc(trackLabel(it.track)) +
+        '</span><span class="chip' + (a ? " pub" : "") + '">' + (a ? "Published" : "Planned") + "</span></div><h3>" + esc(it.title) + "</h3>" +
+        (a && a.summary ? "<p>" + esc(a.summary) + "</p>" : "") + (a ? '<span class="art-date">' + esc(articleDate(a)) + "</span>" : "") +
+        (links ? '<div class="case-links">' + links + "</div>" : "") + "</article>";
+    };
+    var renderArts = function () {
+      var q = search.value.trim().toLowerCase();
+      var list = items.filter(function (it) {
+        return (activeTrack === "all" || it.track === activeTrack) &&
+          (!q || it.title.toLowerCase().indexOf(q) >= 0 || (it.article && String(it.article.summary || "").toLowerCase().indexOf(q) >= 0));
+      });
+      var visible = showAllArts ? list : list.slice(0, INITIAL);
+      artsEl.innerHTML = visible.length ? visible.map(cardHTML).join("")
+        : '<p class="state">No topics match “' + esc(search.value) + '”. Try another keyword or track.</p>';
+      $("#article-live").textContent = list.length + (list.length === 1 ? " topic" : " topics") + " shown";
+      moreBtn.hidden = list.length <= INITIAL;
+      moreBtn.textContent = showAllArts ? "Show fewer" : "Show all " + list.length + " topics";
+    };
+    var buildArts = function (articles) {
+      var filled = {};
+      var published = articles.map(function (a) {
+        var topic = a.topic || matchPlannedTopic(a.title);
+        if (topic) filled[topic] = true;
+        var track = tracks.some(function (t) { return t.id === a.track; }) ? a.track : tracks[0].id;
+        return { title: a.title, track: track, article: a };
+      });
+      var plannedItems = [];
+      tracks.forEach(function (t) {
+        (planned[t.id] || []).forEach(function (topic) { if (!filled[topic]) plannedItems.push({ title: topic, track: t.id, article: null }); });
+      });
+      items = published.concat(plannedItems);
+      setStat("topics", items.length); setStat("tracks", tracks.length);
+      setStat("published", published.length); setStat("planned", plannedItems.length);
+      var count = function (id) { return items.filter(function (it) { return it.track === id; }).length; };
+      var group = $("#article-filters");
+      renderFilters(group, [{ value: "all", label: "All topics", count: items.length }].concat(tracks.map(function (t) {
+        return { value: t.id, label: t.label, count: count(t.id) };
+      })), function (v) {
+        activeTrack = v; showAllArts = false;
+        var u = new URL(location.href);
+        if (v === "all") u.searchParams.delete("track"); else u.searchParams.set("track", v);
+        history.replaceState(null, "", u.pathname + u.search + u.hash);
+        renderArts();
+      });
+      // Select the track from the URL.
+      $$(".seg-btn", group).forEach(function (b) {
+        var on = b.getAttribute("data-value") === activeTrack;
+        b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on));
+      });
+      renderArts();
+    };
+    search.addEventListener("input", function () { showAllArts = false; renderArts(); });
+    moreBtn.addEventListener("click", function () { showAllArts = !showAllArts; renderArts(); });
+    // Planned topics still show when the articles API can't be reached.
+    loadArticles().then(buildArts, function () { buildArts([]); });
+  }
+
   /* ── Project pages: copy a code sample ─────────────────────────────────────────────────────────────────── */
   $$("[data-copy-code]").forEach(function (b) {
     b.addEventListener("click", function () { copyText($("code", b.closest("figure")), "Code copied"); });

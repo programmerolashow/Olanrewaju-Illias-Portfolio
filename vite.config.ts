@@ -7,7 +7,7 @@ import { person, site, staticRoutes } from "./src/config/site";
 import { pageMeta, pageRoutes } from "./src/config/pages";
 import { projects } from "./src/data/projects";
 import { gallery } from "./src/data/gallery";
-import { projectPage, projectsPage } from "./v2/pages";
+import { approachPage, projectPage, projectsPage } from "./v2/pages";
 import { excerpt, replaceSeo, type SeoMeta } from "./api/_lib/seo.js";
 import { apiDevServer } from "./scripts/vite-api-dev";
 
@@ -128,8 +128,9 @@ const v2Routes = (): Map<string, V2Route> => {
   const routes = new Map<string, V2Route>([
     ["", { out: "v2.html", html: fromPublic("v2.html"), seo: defaultSeo }],
     ["projects", { out: "v2/projects.html", html: projectsPage, seo: () => pageSeo("projects") }],
+    ["approach", { out: "v2/approach.html", html: approachPage, seo: () => pageSeo("approach") }],
   ]);
-  for (const key of ["services", "moments", "updates", "recommendations"] as const) {
+  for (const key of ["services", "moments", "updates", "recommendations", "articles"] as const) {
     routes.set(key, { out: `v2/${key}.html`, html: fromPublic(`v2/${key}.html`), seo: () => pageSeo(key) });
   }
   for (const p of projects) {

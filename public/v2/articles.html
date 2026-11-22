@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- Shared head (v2/partials/head.html). Title, description and link-preview tags come from pageMeta.articles in
+     src/config/pages.ts at build time (fillV2 in vite.config.ts); do not hand-write them here. -->
+<!--v2:head-->
+</head>
+<body>
+
+<!--v2:sprite-->
+<!--v2:header-->
+
+<main id="top">
+  <section class="p-hero">
+    <div class="wrap">
+      <div class="p-stage">
+        <div class="p-stage-in">
+          <div>
+            <p class="eyebrow rise">Articles</p>
+            <h1 class="p-title rise d1">Lessons from <em>real projects.</em></h1>
+            <p class="p-lead rise d2">Technical articles from real projects, practical experiments and clearly labelled research. Published ones open where they’re published; planned topics are marked as planned.</p>
+            <div class="hero-cta rise d2"><a class="btn btn-accent" href="https://scholar.google.com/citations?user=4lVtohYAAAAJ&amp;hl=en" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="/v2-assets/icons.svg#i-academic"/></svg>Google Scholar</a></div>
+          </div>
+          <div class="p-stats rise d3">
+            <div class="p-stat"><div class="n" data-stat="topics">–</div><div class="l">Topics</div></div>
+            <div class="p-stat"><div class="n" data-stat="tracks">–</div><div class="l">Tracks</div></div>
+            <div class="p-stat"><div class="n" data-stat="published">–</div><div class="l">Published</div></div>
+            <div class="p-stat"><div class="n" data-stat="planned">–</div><div class="l">Planned</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block near" id="writing">
+    <div class="wrap">
+      <div class="art-search"><svg class="i" aria-hidden="true"><use href="/v2-assets/icons.svg#i-magnifier"/></svg><label class="hp" for="article-search">Search article topics</label><input id="article-search" type="search" placeholder="Search topics, e.g. Prisma, prompt injection, CI/CD" autocomplete="off"></div>
+      <div class="filter-bar">
+        <div class="seg" role="group" aria-label="Filter by track" id="article-filters"></div>
+      </div>
+      <p class="hp" aria-live="polite" id="article-live"></p>
+      <div class="arts" id="articles"><p class="state">Loading articles…</p></div>
+      <div class="sec-foot" style="justify-content:center"><button class="btn btn-line" type="button" id="articles-more" hidden></button></div>
+      <div class="panel art-note"><div class="sheet pad">
+        <p>Every article is based on real experience, practical experiments or clearly labelled research. Personal projects are kept distinct from professional work, confidential details stay private, and planned topics are never presented as finished work.</p>
+        <div class="case-links"><a class="btn btn-dark btn-sm" href="https://scholar.google.com/citations?user=4lVtohYAAAAJ&amp;hl=en" target="_blank" rel="noopener">All my papers on Google Scholar</a><a class="btn btn-line btn-sm" href="#contact">Want a topic written first? Let me know</a></div>
+      </div></div>
+    </div>
+  </section>
+
+<!--v2:contact-->
+</main>
+
+<!--v2:footer-->
+</body>
+</html>

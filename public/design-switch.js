@@ -44,7 +44,7 @@
   var CHANGE_EVENT = "oi:ui-version";
   var V2_PATH = "/v2";
   /** Classic paths that also exist in V2, at V2_PATH + path ("/" is the home page, at V2_PATH itself). */
-  var PAIRED = ["/", "/services", "/moments", "/updates", "/recommendations", "/projects"];
+  var PAIRED = ["/", "/services", "/moments", "/updates", "/recommendations", "/projects", "/articles", "/approach"];
   /** Classic paths under which every page also exists in V2 (one per project). */
   var PAIRED_PREFIXES = ["/projects/"];
   var DAY = 864e5;

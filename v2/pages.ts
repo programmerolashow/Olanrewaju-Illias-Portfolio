@@ -1,10 +1,11 @@
 /**
  * V2 pages generated at build time from the same data the classic (React) pages use, so the two designs can't
- * drift: /v2/projects and every /v2/projects/<slug> (src/data/projects.ts). vite.config.ts turns each into a file
+ * drift: /v2/projects and every /v2/projects/<slug> (src/data/projects.ts), /v2/approach (src/data/approach.ts). vite.config.ts turns each into a file
  * in dist/ (and serves it in dev) through fillV2, which adds the shared partials and the link-preview tags.
  * Hand-written V2 pages (public/v2.html, public/v2/*.html) use the same shell markers.
  */
 import { projects, type CaseStudy, type CodeSample, type Project, type SubProduct } from "../src/data/projects";
+import { aiPractices, clients, collaboration, debugging, decisions, intro, principles, workflow, type PillarIcon } from "../src/data/approach";
 
 export const esc = (value: unknown) =>
   String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -268,5 +269,77 @@ ${!body && !products.length ? `<p>Try the live demo or browse the source code to
     </div>
   </section>
 `;
+  return shell(main);
+};
+
+/* ── How I Work (/v2/approach): src/data/approach.ts, the classic ApproachPage's sections ────────────────── */
+
+const PILLAR_ICONS: Record<PillarIcon, string> = { bot: "bot", scale: "target", shield: "shield-check", gauge: "rocket2" };
+
+const block = (id: string, eyebrow: string, title: string, body: string, side = "") => `  <section class="block near" id="${id}">
+    <div class="wrap">
+      <div class="sec-head"><div><p class="eyebrow">${eyebrow}</p><h2 class="poster ap-h">${title}</h2></div>${side ? `<div class="sec-side"><p class="small">${side}</p></div>` : ""}</div>
+${body}
+    </div>
+  </section>
+`;
+const numbered = (items: string[]) => `      <ol class="numlist">${items.map((s, i) => `<li class="sheet"><span class="no">${String(i + 1).padStart(2, "0")}</span><span>${esc(s)}</span></li>`).join("")}</ol>`;
+const outro = (text: string) => `      <p class="ap-outro">${esc(text)}</p>`;
+
+export const approachPage = () => {
+  const main =
+    pageHero({
+      eyebrow: "How I Work",
+      title: "How I <em>work.</em>",
+      lead: esc(intro.subtitle),
+      stats: [
+        { value: workflow.length, label: "Workflow phases" },
+        { value: debugging.steps.length, label: "Debugging steps" },
+        { value: decisions.factors.length, label: "Decision factors" },
+        { value: principles.length, label: "Principles" },
+      ],
+      actions: `<a class="btn btn-accent" href="#workflow">Read the workflow ${il("arrow-up", "i nudge")}</a><a class="btn btn-line" href="#contact">Work with me</a>`,
+    }) +
+    `  <section class="block near" id="intro"><div class="wrap ap-intro">${intro.paragraphs.map((p, i) => `<p class="${i === 0 ? "statement" : "lead"}">${esc(p)}</p>`).join("")}</div></section>
+` +
+    block(
+      "workflow",
+      "01 · Workflow",
+      "My development workflow",
+      `      <div class="process"><div class="steps">${workflow
+        .map(
+          (ph, i) =>
+            `<div class="step"><div class="step-top"><span class="ico">${ic(["magnifier", "layers", "code2", "rocket2"][i] ?? "flag")}</span><span class="no">${String(i + 1).padStart(2, "0")}</span></div><h3>${esc(ph.title)}</h3><ul>${ph.steps.map((s) => `<li>${esc(s)}</li>`).join("")}</ul></div>`,
+        )
+        .join("")}</div></div>`,
+    ) +
+    block("debugging", "02 · Debugging", "How I debug", numbered(debugging.steps), esc(debugging.intro)) +
+    block(
+      "decisions",
+      "03 · Decisions",
+      "How I make technical decisions",
+      `      <div class="factors">${decisions.factors.map((f) => `<div class="factor sheet"><h3>${esc(f.label)}</h3><p>${esc(f.question)}</p></div>`).join("")}</div>\n${outro(decisions.outro)}`,
+      esc(decisions.intro),
+    ) +
+    block(
+      "collaboration",
+      "04 · Teamwork",
+      "How I work in a team",
+      `      <div class="panel"><div class="sheet pad"><ul class="ticks cols">${collaboration.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul></div></div>\n${outro(collaboration.outro)}`,
+      esc(collaboration.intro),
+    ) +
+    block(
+      "ai",
+      "05 · AI engineering",
+      "My approach to AI engineering",
+      `      <div class="duo pillars">${aiPractices
+        .map(
+          (p) =>
+            `<div class="panel"><div class="panel-head"><h3><span class="dd-ico">${ic(PILLAR_ICONS[p.icon])}</span>${esc(p.title)}</h3></div><div class="sheet pad"><ul class="ticks">${p.points.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div></div>`,
+        )
+        .join("")}</div>`,
+    ) +
+    block("clients", "06 · Clients", "How I work with clients", `${numbered(clients.steps)}\n${outro(clients.outro)}`, esc(clients.intro)) +
+    block("principles", "07 · Principles", "My engineering principles", `      <ol class="principles">${principles.map((p, i) => `<li><span class="no">${String(i + 1).padStart(2, "0")}</span>${esc(p)}</li>`).join("")}</ol>`);
   return shell(main);
 };
