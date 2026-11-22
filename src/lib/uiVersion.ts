@@ -14,8 +14,10 @@ interface OiDesign {
   current: () => UiVersion;
   /** The home page this person should get: ?ui=, retirement, their saved choice, then the default. */
   wanted: () => UiVersion;
-  /** Save the person's choice and take them to that home page. */
+  /** Save the person's choice and take them to this page in that design (or its home page). */
   set: (version: UiVersion) => void;
+  /** The same page in `version`, or null when the page exists in only one design. */
+  pathFor: (version: UiVersion, pathname: string) => string | null;
   phase: () => RolloutPhase;
   /** Render the switch strip into `container`; false when it shouldn't show. */
   mountBanner: (container: HTMLElement, onHide?: () => void) => boolean;
@@ -51,12 +53,15 @@ export function useWantedUiVersion(): UiVersion {
 }
 
 /**
- * In-app navigation to "/" (React Router, no page load) skips the <head> redirect, so the classic home page
- * checks again: someone who chose the new design goes to /v2.
+ * In-app navigation (React Router, no page load) skips the <head> redirect, so classic pages that also exist in V2
+ * (/, /services, /moments, /updates) check again: someone who chose the new design goes to that page in V2.
  */
 export function useHomeDesignRedirect(pathname: string, hash: string) {
   useEffect(() => {
-    if (pathname === "/" && design()?.wanted() === "v2") window.location.replace(`/v2${hash}`);
+    const d = design();
+    if (d?.wanted() !== "v2") return;
+    const target = d.pathFor("v2", pathname);
+    if (target) window.location.replace(`${target}${window.location.search}${hash}`);
   }, [pathname, hash]);
 }
 

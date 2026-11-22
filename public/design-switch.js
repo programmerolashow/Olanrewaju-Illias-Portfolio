@@ -1,17 +1,21 @@
 /**
- * Design switch: the classic design (V1, the React app) and the new design (V2, public/v2.html, served at /v2).
+ * Design switch: the classic design (V1, the React app) and the new design (V2: static pages, public/v2.html at /v2
+ * and public/v2/*.html at /v2/services, /v2/moments, /v2/updates).
  * A port of Qorelly's switch (apps/mp/src/lib/uiVersion.ts, lib/designRollout.ts and the DesignSwitchBanner
  * strip). Loaded as a plain blocking script in the <head> of BOTH pages, so the home page redirects before its
  * first paint and both designs share one schedule, one saved choice and one banner. The React side reads it
  * through src/lib/uiVersion.ts.
  *
- * Which home page a person sees, first match wins:
+ * Which design a person sees on a paired page, first match wins:
  *   1. `?ui=v2` / `?ui=v1` on any URL. Saved as their choice, and it wins even after classic retires (support).
  *   2. Classic retired (CLASSIC_RETIRES has passed) → V2.
  *   3. Their own saved choice: the banner, the footer link or the search menu. Sticks per device.
  *   4. Everyone else → DEFAULT_VERSION. A default, never saved, so it cannot pin anyone.
  *
- * Only the home page has two designs. Every other page (/projects/…, /articles, …) is classic for everyone.
+ * Paired pages exist in both designs (PAIRED below): / ↔ /v2, /services ↔ /v2/services, /moments ↔ /v2/moments,
+ * /updates ↔ /v2/updates; each redirects to its twin before first paint. Other classic pages (/projects/…,
+ * /articles, …) have no V2 version yet and stay classic for everyone. V2 pages never link into the classic design;
+ * only the explicit "Back to classic design" switch leads there.
  *
  * Rollout, in phases (dates are local midnight on the visitor's device):
  *   before     until TRIAL_STARTS: no banner, nobody moved.
@@ -39,6 +43,8 @@
   var SNOOZE_KEY = "oi_design_banner_snooze";
   var CHANGE_EVENT = "oi:ui-version";
   var V2_PATH = "/v2";
+  /** Classic paths that also exist in V2, at V2_PATH + path ("/" is the home page, at V2_PATH itself). */
+  var PAIRED = ["/", "/services", "/moments", "/updates"];
   var DAY = 864e5;
 
   var at = function (iso) {
@@ -94,13 +100,16 @@
     }
   }
 
-  var isV2Page = function () {
-    var p = window.location.pathname.replace(/\/+$/, "");
-    return p === V2_PATH || p === V2_PATH + ".html";
+  var clean = function (pathname) {
+    var p = pathname.replace(/\.html$/, "").replace(/\/+$/, "");
+    return p === "/index" ? "/" : p || "/";
   };
-  var isClassicHome = function () {
-    var p = window.location.pathname;
-    return p === "/" || p === "/index.html";
+  var isV2Path = function (pathname) {
+    var p = clean(pathname);
+    return p === V2_PATH || p.indexOf(V2_PATH + "/") === 0;
+  };
+  var isV2Page = function () {
+    return isV2Path(window.location.pathname);
   };
 
   /** The design this document is showing. */
@@ -116,24 +125,36 @@
     return read() || DEFAULT_VERSION;
   }
 
-  function homeFor(version) {
-    // Query kept so ?rollout= previews (and ?ui=) survive the hop.
-    return (version === "v2" ? V2_PATH : "/") + window.location.search + window.location.hash;
+  /**
+   * The same page in `version`, or null when `pathname` isn't a paired page (a classic-only page such as /projects,
+   * or a V2 path with no classic twin).
+   */
+  function pathFor(version, pathname) {
+    var p = clean(pathname);
+    var classic = isV2Path(p) ? p.slice(V2_PATH.length) || "/" : p;
+    if (PAIRED.indexOf(classic) < 0) return null;
+    if (version === "v1") return classic;
+    return classic === "/" ? V2_PATH : V2_PATH + classic;
   }
 
-  /** The person chose a design: saved, and they're taken to that home page. */
+  function targetFor(version) {
+    // Query kept so ?rollout= previews (and ?ui=, ?subscription=) survive the hop.
+    var path = pathFor(version, window.location.pathname) || (version === "v2" ? V2_PATH : "/");
+    return path + window.location.search + window.location.hash;
+  }
+
+  /** The person chose a design: saved, and they're taken to this page in that design (or to its home page). */
   function set(version) {
     write(version);
     window.dispatchEvent(new Event(CHANGE_EVENT));
-    if (version !== current() || !isClassicHome()) window.location.assign(homeFor(version));
+    if (version !== current()) window.location.assign(targetFor(version));
   }
 
   // ── Boot: before the first paint ────────────────────────────────────────────────────────────────────────
   var param = params.get("ui");
   if (param === "v1" || param === "v2") write(param);
   var want = wanted();
-  if (isClassicHome() && want === "v2") window.location.replace(homeFor("v2"));
-  else if (isV2Page() && want === "v1") window.location.replace(homeFor("v1"));
+  if (want !== current() && pathFor(want, window.location.pathname)) window.location.replace(targetFor(want));
 
   // ── Banner (Qorelly's PromoBanner "strip" layout on a GradientBackdrop) ─────────────────────────────────
   var PALETTES = {
@@ -318,6 +339,7 @@
     current: current,
     wanted: wanted,
     set: set,
+    pathFor: pathFor,
     phase: phase,
     mountBanner: mountBanner,
     CHANGE_EVENT: CHANGE_EVENT,

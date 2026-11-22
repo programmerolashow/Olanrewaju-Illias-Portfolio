@@ -51,7 +51,7 @@ const SiteLayout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.key]);
 
-  // Someone who chose the new design and follows an in-app link to "/" goes to /v2.
+  // Someone who chose the new design and follows an in-app link to a page that exists in V2 goes there.
   useHomeDesignRedirect(location.pathname, location.hash);
 
   const handleExitComplete = () => {

@@ -6,6 +6,7 @@ import { createHash } from "crypto";
 import { person, site, staticRoutes } from "./src/config/site";
 import { pageMeta, pageRoutes } from "./src/config/pages";
 import { projects } from "./src/data/projects";
+import { gallery } from "./src/data/gallery";
 import { excerpt, replaceSeo, type SeoMeta } from "./api/_lib/seo.js";
 import { apiDevServer } from "./scripts/vite-api-dev";
 
@@ -73,11 +74,61 @@ const headTags = (): HtmlTagDescriptor[] => [
     : []),
 ];
 
+/** Preview image URL with a content hash, so link-preview crawlers (they cache by URL) fetch a fresh copy when it changes. */
+const versioned = (file: string) => {
+  const full = path.join(__dirname, "public", file);
+  if (!existsSync(full)) return undefined;
+  const hash = createHash("sha1").update(readFileSync(full)).digest("hex").slice(0, 8);
+  return `${site.url}${file}?v=${hash}`;
+};
+/** A screenshot of the page itself (npm run og:screens), when there is one. */
+const screen = (name: string) => versioned(`/og/screens/${name}.jpg`);
+
 /**
- * The new design's page (public/v2.html) with the same head as the classic home: link-preview tags (canonical /,
- * since it's the same content), plus headTags(). Used for the build (dist/v2.html) and by the dev server.
+ * The new design (V2): static pages in public/ built from shared partials in v2/partials/. Each page has a classic
+ * twin (public/design-switch.js pairs them) and the same link preview and canonical URL as that twin, since the
+ * content is the same. Keys are the V2 route under /v2 ("" is the home page).
  */
-const fillV2 = (html: string) => {
+const v2Pages = {
+  "": { file: "v2.html", meta: undefined },
+  services: { file: "v2/services.html", meta: "services" },
+  moments: { file: "v2/moments.html", meta: "moments" },
+  updates: { file: "v2/updates.html", meta: "updates" },
+} as const satisfies Record<string, { file: string; meta: keyof typeof pageMeta | undefined }>;
+type V2Page = keyof typeof v2Pages;
+
+const v2Seo = (page: V2Page): SeoMeta => {
+  const key = v2Pages[page].meta;
+  if (!key) return defaultSeo();
+  const { title, description } = pageMeta[key];
+  const image = screen(key);
+  return {
+    ...defaultSeo(),
+    title: `${title} | ${site.name}`,
+    description,
+    url: `${site.url}${pageRoutes[key]}`,
+    ...(image ? { image, imageAlt: `${title} page, ${site.name}` } : {}),
+  };
+};
+
+/** Build-time data some V2 pages show when their API can't be reached (as the classic pages fall back). */
+const v2Data = (name: string) => {
+  if (name === "moments-fallback") return JSON.stringify(gallery).replace(/</g, "\\u003c");
+  throw new Error(`Unknown V2 data block "${name}"`);
+};
+
+/**
+ * Fills a V2 page: <!--v2:NAME--> becomes v2/partials/NAME.html, <!--v2-data:NAME--> a JSON block, {{home}} the
+ * home page's path for links into its sections ("" on the home page itself, so they stay same-page anchors), then
+ * the page's link-preview tags and headTags(). Used for the build (dist/) and by the dev server.
+ */
+const fillV2 = (html: string, page: V2Page) => {
+  const withPartials = html
+    .replace(/<!--v2:([a-z-]+)-->/g, (_, name: string) =>
+      readFileSync(path.resolve(__dirname, "v2", "partials", `${name}.html`), "utf8").trimEnd(),
+    )
+    .replace(/<!--v2-data:([a-z-]+)-->/g, (_, name: string) => v2Data(name))
+    .replace(/\{\{home\}\}/g, page === "" ? "" : "/v2");
   const tags = headTags()
     .map(({ tag, attrs = {}, children }) => {
       const a = Object.entries(attrs)
@@ -87,7 +138,7 @@ const fillV2 = (html: string) => {
       return tag === "link" ? `<${tag}${a}>` : `<${tag}${a}>${typeof children === "string" ? children : ""}</${tag}>`;
     })
     .join("\n");
-  return replaceSeo(html, defaultSeo()).replace("</head>", `${tags}\n</head>`);
+  return replaceSeo(withPartials, v2Seo(page)).replace("</head>", `${tags}\n</head>`);
 };
 
 /**
@@ -128,9 +179,12 @@ const sitePlugin = (): Plugin => ({
   },
   writeBundle(options) {
     const outDir = options.dir ?? path.resolve(__dirname, "dist");
-    // The new design (copied from public/ as-is) gets the same head as the classic home.
-    const v2File = path.join(outDir, "v2.html");
-    if (existsSync(v2File)) writeFileSync(v2File, fillV2(readFileSync(v2File, "utf8")));
+    // The new design's pages (copied from public/ as-is) get their partials and the same head as their classic twin.
+    for (const [page, { file }] of Object.entries(v2Pages) as [V2Page, (typeof v2Pages)[V2Page]][]) {
+      const out = path.join(outDir, file);
+      if (existsSync(out)) writeFileSync(out, fillV2(readFileSync(out, "utf8"), page));
+      else this.warn(`V2 page ${file} is missing from the build.`);
+    }
     const template = readFileSync(path.join(outDir, "index.html"), "utf8");
     const base = defaultSeo();
     // Written as /services.html, /projects/bankspace.html, …; vercel.json's cleanUrls serves them at /services etc.
@@ -140,16 +194,6 @@ const sitePlugin = (): Plugin => ({
       writeFileSync(file, replaceSeo(template, { ...base, url: `${site.url}${route}`, ...meta }));
     };
 
-    // Preview image URL with a content hash, so WhatsApp, LinkedIn, X and Facebook fetch a fresh copy whenever the
-    // image changes (they cache images by URL).
-    const versioned = (file: string) => {
-      const full = path.join(__dirname, "public", file);
-      if (!existsSync(full)) return undefined;
-      const hash = createHash("sha1").update(readFileSync(full)).digest("hex").slice(0, 8);
-      return `${site.url}${file}?v=${hash}`;
-    };
-    // A screenshot of the page itself (npm run og:screens), when there is one.
-    const screen = (name: string) => versioned(`/og/screens/${name}.jpg`);
 
     for (const [key, route] of Object.entries(pageRoutes) as [keyof typeof pageMeta, string][]) {
       const { title, description } = pageMeta[key];
@@ -176,26 +220,32 @@ const sitePlugin = (): Plugin => ({
 });
 
 /**
- * The new home page design is a static page, public/v2.html. Cloudflare (html_handling), Vercel (cleanUrls) and
- * Netlify serve it at /v2; Vite's dev and preview servers don't, and their SPA fallback hands /v2 to the React app
- * (its 404 page). Locally, /v2 and /v2/ are served from v2.html: in dev with the head filled in (fillV2), in preview
- * from dist/ where the build already filled it.
+ * The new design's pages are static files in public/ (see v2Pages). Cloudflare (html_handling), Vercel (cleanUrls)
+ * and Netlify serve them at /v2, /v2/services, …; Vite's dev and preview servers don't, and their SPA fallback hands
+ * those paths to the React app (its 404 page). Locally they're served from the .html files: in dev filled in on the
+ * fly (fillV2), in preview from dist/ where the build already filled them.
  */
-const v2Page = (): Plugin => {
-  const match = (url?: string) => url?.match(/^\/v2(?:\/|\.html)?(\?.*)?$/);
+const v2PagesServer = (): Plugin => {
+  const match = (url?: string): { page: V2Page; query: string } | null => {
+    const m = url?.match(/^\/v2(?:\/([a-z-]*?))?(?:\.html)?\/?(\?.*)?$/);
+    if (!m) return null;
+    const page = (m[1] ?? "") as V2Page;
+    return page in v2Pages ? { page, query: m[2] ?? "" } : null;
+  };
   return {
-    name: "v2-page",
+    name: "v2-pages",
     configureServer: (server) =>
       void server.middlewares.use((req, res, next) => {
-        if (!match(req.url)) return next();
-        const page = fillV2(readFileSync(path.resolve(__dirname, "public", "v2.html"), "utf8"));
+        const m = match(req.url);
+        if (!m) return next();
+        const html = readFileSync(path.resolve(__dirname, "public", v2Pages[m.page].file), "utf8");
         res.setHeader("Content-Type", "text/html; charset=utf-8");
-        res.end(page);
+        res.end(fillV2(html, m.page));
       }),
     configurePreviewServer: (server) =>
       void server.middlewares.use((req, _res, next) => {
         const m = match(req.url);
-        if (m) req.url = `/v2.html${m[1] ?? ""}`;
+        if (m) req.url = `/${v2Pages[m.page].file}${m.query}`;
         next();
       }),
   };
@@ -216,7 +266,7 @@ export default defineConfig(() => ({
   define: {
     __HAS_CV__: JSON.stringify(existsSync(path.resolve(__dirname, "public", site.cvPath.replace(/^\//, "")))),
   },
-  plugins: [v2Page(), react(), sitePlugin(), apiDevServer(__dirname)],
+  plugins: [v2PagesServer(), react(), sitePlugin(), apiDevServer(__dirname)],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

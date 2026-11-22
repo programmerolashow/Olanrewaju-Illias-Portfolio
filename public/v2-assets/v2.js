@@ -22,6 +22,9 @@
     });
   };
   var SPRITE = "/v2-assets/icons.svg";
+  var SCHOLAR = "https://scholar.google.com/citations?user=4lVtohYAAAAJ&hl=en";
+  /** An update's place on the V2 Updates page (each row has id="u-<id>"). */
+  var updateHref = function (u) { return "/v2/updates#u-" + encodeURIComponent(u.id); };
   var ic = function (id, cls) { return '<svg class="' + (cls || "i") + '" aria-hidden="true"><use href="' + SPRITE + "#i-" + id + '"/></svg>'; };
   var reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var data = {};
@@ -39,6 +42,60 @@
       return r.json();
     });
   }
+
+  /* ── Theme, design switch, copy email: on every V2 page ──────────────────────────────────────────────── */
+  var root = document.documentElement;
+  function isDarkTheme() {
+    var t = root.getAttribute("data-theme");
+    if (t) return t === "dark";
+    return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  var themeBtn = $("#theme-toggle");
+  if (themeBtn) themeBtn.addEventListener("click", function () {
+    var next = isDarkTheme() ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("portfolio-theme", next); } catch (e) { /* storage blocked */ }
+  });
+  // The strip at the top, and the footer link back to classic (gone once classic retires).
+  var classicBtn = $("#classic-design");
+  if (window.oiDesign) {
+    var strip = $("#design-strip");
+    if (strip) oiDesign.mountBanner(strip);
+    if (classicBtn && oiDesign.phase() === "retired") classicBtn.parentNode.removeChild(classicBtn);
+    else if (classicBtn) classicBtn.addEventListener("click", function () { oiDesign.set("v1"); });
+  }
+  function copyText(el, done) {
+    var p = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(el.textContent) : Promise.reject();
+    p.then(function () { toast(done); }).catch(function () {
+      var r = document.createRange(); r.selectNodeContents(el);
+      var s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Selected");
+    });
+  }
+  var copyEmail = $("#copy-email");
+  if (copyEmail) copyEmail.addEventListener("click", function () { copyText($("#email"), "Email copied"); });
+
+  /* Services accordion (home and /v2/services): one open at a time; /v2/services#ai opens that one. */
+  var svcs = $$(".svc");
+  svcs.forEach(function (d) {
+    d.addEventListener("toggle", function () { if (d.open) svcs.forEach(function (o) { if (o !== d) o.open = false; }); });
+  });
+  function openSvcFromHash() {
+    var target = location.hash && document.getElementById(location.hash.slice(1));
+    if (target && target.classList.contains("svc")) { target.open = true; target.scrollIntoView({ block: "start" }); }
+  }
+  openSvcFromHash();
+  addEventListener("hashchange", openSvcFromHash);
+
+  /* ── Nav: the page you're on (Services, Moments, Updates) is marked in the menus and the footer ──────── */
+  var here = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
+  $$(".dd-item, .foot-row nav a").forEach(function (a) {
+    var href = a.getAttribute("href") || "";
+    if (href.indexOf("#") >= 0 || href.replace(/\/+$/, "") !== here) return;
+    a.classList.add("on");
+    a.setAttribute("aria-current", "page");
+    var dd = a.closest(".dd");
+    if (dd) $(".dd-btn", dd).classList.add("on");
+  });
 
   /* ── Nav: dropdowns ─────────────────────────────────────────────────────────────────────────────────── */
   var dds = $$(".nav .dd");
@@ -99,13 +156,14 @@
   spyIds = spyIds.filter(function (id, i) { return spyIds.indexOf(id) === i && document.getElementById(id); });
   function markActive(id) {
     $$(".nav > a").forEach(function (a) { a.classList.toggle("on", a.getAttribute("href") === "#" + id); });
-    $$(".dd-item").forEach(function (a) {
+    $$(".dd-item[data-section]").forEach(function (a) {
       var on = a.getAttribute("data-section") === id;
       a.classList.toggle("on", on);
       if (on) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
     });
     dds.forEach(function (dd) { $(".dd-btn", dd).classList.toggle("on", !!$(".dd-item.on", dd)); });
   }
+  // Only the home page has these sections; elsewhere spyIds is empty and nothing is observed.
   if ("IntersectionObserver" in window) {
     var visible = {};
     var spy = new IntersectionObserver(function (entries) {
@@ -224,6 +282,8 @@
     var iso = (a.publishedOn || a.createdAt.slice(0, 10)) + "T12:00:00Z";
     return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
   }
+  /** Where an article is published (V2 has no on-site articles page): Zenodo, then Scholar, then the file. */
+  function articleUrl(a) { return a.zenodoUrl || a.scholarUrl || a.fileUrl || SCHOLAR; }
   function setLive(key, value) { $$('[data-live="' + key + '"]').forEach(function (el) { el.textContent = value; }); }
   var articlesPromise = null;
   function loadArticles() {
@@ -249,7 +309,7 @@
     var posts = $("#posts");
     if (posts) {
       posts.innerHTML = articles.slice(0, 6).map(function (a) {
-        return '<a class="post" href="/articles?track=' + encodeURIComponent(a.track) + '"><span class="tr">' + esc(trackLabel(a.track)) +
+        return '<a class="post" href="' + esc(articleUrl(a)) + '" target="_blank" rel="noopener"><span class="tr">' + esc(trackLabel(a.track)) +
           '</span><span class="ti">' + esc(a.title) + '</span><span class="dt">' + esc(articleDate(a)) +
           '</span><span class="circle"><svg class="i nudge"><use href="#i-arrow-up"/></svg></span></a>';
       }).join("");
@@ -312,12 +372,12 @@
         (cover ? '<img src="' + esc(cover) + '" alt="' + esc((u.images[0] && u.images[0].alt) || "") + '" loading="lazy">' : '<span class="ph">' + ic("megaphone") + "</span>") +
         (status ? '<span class="up-status ' + status + '">' + statusLabel[status] + "</span>" : "") +
         (media.length ? '<span class="up-media">' + (videos ? ic("play") : "") + esc(media.join(" · ")) + "</span>" : "") +
-        '</div><p class="kind-l">' + (u.kind === "event" ? "Event" : "Post") + '</p><h3><a href="/updates/' + encodeURIComponent(u.id) + '">' + esc(u.title) + "</a></h3>" +
+        '</div><p class="kind-l">' + (u.kind === "event" ? "Event" : "Post") + '</p><h3><a href="' + updateHref(u) + '">' + esc(u.title) + "</a></h3>" +
         (u.body ? "<p>" + esc(u.body) + "</p>" : "") +
         '<div class="up-meta"><span>' + ic("calendar-date") + esc(displayDate(u)) + "</span>" +
         (u.location ? "<span>" + ic("map-point") + esc(u.location) + "</span>" : "") + "</div></article>";
     }).join("");
-    $("#updates-all").hidden = list.length <= 3;
+    if ($("#updates-all")) $("#updates-all").hidden = list.length <= 3;
     section.hidden = false;
   }).catch(function () { /* section stays hidden, as in V1 */ });
 
@@ -346,8 +406,6 @@
     }
     var shown = all.slice(0, slots);
     quotes.innerHTML = shown.map(function (r, i) { return '<figure class="quote">' + quoteHTML(r, i) + "</figure>"; }).join("");
-    $("#words-count").textContent = all.length;
-    $("#words-all").hidden = false;
     if (reduceMotion || all.length <= slots) return;
     var paused = false;
     quotes.addEventListener("mouseenter", function () { paused = true; });
@@ -449,12 +507,13 @@
       var add = function (group, icon, label, value, run, desc) { out.push({ group: group, icon: icon, label: label, value: (value + " " + label).toLowerCase(), run: run, desc: desc }); };
       var go = function (to) { return function () { location.href = to; }; };
       var ext = function (to) { return function () { window.open(to, "_blank", "noopener,noreferrer"); }; };
-      add("Pages", "home", "Home", "page home", go("#top"));
+      // Every destination is a V2 page or section; nothing here leads to the classic design.
+      add("Pages", "home", "Home", "page home", go("/v2#top"));
       (data.nav || []).forEach(function (n) { add("Pages", n.icon, n.label, "page " + n.description, go(n.to), n.description); });
       add("Pages", "plane", "Contact", "page contact email message", go("#contact"));
-      (data.projects || []).forEach(function (p) { add("Projects", "folder-git", p.title, "project " + p.tags.join(" "), go("/projects/" + p.slug)); });
-      live.articles.slice(0, 30).forEach(function (a) { add("Articles", "file-text", a.title, "article", go("/articles")); });
-      live.updates.slice(0, 30).forEach(function (u) { add("Updates", "megaphone", u.title, "update " + u.kind, go("/updates/" + u.id)); });
+      (data.projects || []).forEach(function (p) { add("Projects", "folder-git", p.title, "project " + p.tags.join(" "), go("/v2#work")); });
+      live.articles.slice(0, 30).forEach(function (a) { add("Articles", "file-text", a.title, "article", ext(articleUrl(a))); });
+      live.updates.slice(0, 30).forEach(function (u) { add("Updates", "megaphone", u.title, "update " + u.kind, go(updateHref(u))); });
       add("Actions", "file-download", "Download CV", "action download cv resume", ext("/ILLIAS_OLANREWAJU_CV.pdf"));
       add("Actions", "calendar-mark", "Book a call", "action book a call meeting calendly", ext("https://calendly.com/olanrewajuillias/30min"));
       add("Actions", "academic", "Google Scholar profile", "action google scholar publications", ext("https://scholar.google.com/citations?user=4lVtohYAAAAJ&hl=en"));
@@ -508,5 +567,189 @@
     document.addEventListener("keydown", function (e) {
       if (e.key.toLowerCase() === "k" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); if (dlg.open) dlg.close(); else openSearch(); }
     });
+  }
+
+  /* ── Page hero stats (inner pages) ───────────────────────────────────────────────────────────────────── */
+  function setStat(key, value) { var el = $('[data-stat="' + key + '"]'); if (el) el.textContent = value; }
+  /** Pill filters: [{ value, label, count }] into `group`; onPick(value) when one is chosen. */
+  function renderFilters(group, options, onPick) {
+    group.innerHTML = options.map(function (o, i) {
+      return '<button class="seg-btn' + (i === 0 ? " on" : "") + '" type="button" data-value="' + esc(o.value) + '" aria-pressed="' + (i === 0) + '">' +
+        esc(o.label) + '<span class="ct">' + o.count + "</span></button>";
+    }).join("");
+    $$(".seg-btn", group).forEach(function (b) {
+      b.addEventListener("click", function () {
+        $$(".seg-btn", group).forEach(function (o) { var on = o === b; o.classList.toggle("on", on); o.setAttribute("aria-pressed", String(on)); });
+        onPick(b.getAttribute("data-value"));
+      });
+    });
+  }
+
+  /* ── Moments page (/v2/moments): the classic Gallery's data (api/moments.js, src/data/gallery.ts) ──────── */
+  var momentsEl = $("#moments");
+  if (momentsEl) {
+    var allMoments = [], shownMoments = [], momentIdx = 0;
+    var fallbackMoments = function () { try { return JSON.parse($("#moments-fallback").textContent); } catch (e) { return []; } };
+    var momentMedia = function (m, inDialog) {
+      var pos = m.focus ? ' style="object-position:' + esc(m.focus) + '"' : "";
+      if (m.type === "video") {
+        if (inDialog) return '<video src="' + esc(m.src) + '"' + (m.poster ? ' poster="' + esc(m.poster) + '"' : "") + " controls autoplay playsinline></video>";
+        return (m.poster ? '<img src="' + esc(m.poster) + '" alt=""' + pos + ' loading="lazy">' : '<video src="' + esc(m.src) + '#t=0.5" muted playsinline preload="metadata"' + pos + "></video>") +
+          '<span class="m-play">' + ic("play") + "</span>";
+      }
+      return '<img src="' + esc(m.src) + '" alt="' + esc(m.caption || m.title) + '"' + pos + (inDialog ? "" : ' loading="lazy"') + ">";
+    };
+    var renderMoments = function (category) {
+      shownMoments = allMoments.filter(function (m) { return category === "all" || m.category === category; });
+      if (!shownMoments.length) { momentsEl.innerHTML = '<p class="state">Nothing here yet.</p>'; return; }
+      momentsEl.innerHTML = shownMoments.map(function (m, i) {
+        return '<button class="moment" type="button" data-i="' + i + '" aria-label="Open ' + esc(m.title) + '"><span class="media">' + momentMedia(m, false) +
+          '<span class="m-cat">' + esc(m.category) + "</span>" + (m.date ? '<span class="m-date">' + esc(m.date) + "</span>" : "") +
+          '</span><span class="moment-body"><span class="m-title">' + esc(m.title) + "</span>" +
+          (m.location ? '<span class="m-loc">' + ic("map-point") + esc(m.location) + "</span>" : "") +
+          (m.caption ? '<span class="m-cap">' + esc(m.caption) + "</span>" : "") + "</span></button>";
+      }).join("");
+    };
+    var momentDlg = $("#moment-dialog");
+    var showMoment = function (i) {
+      momentIdx = (i + shownMoments.length) % shownMoments.length;
+      var m = shownMoments[momentIdx];
+      $("#moment-title").textContent = m.title;
+      $("#moment-media").innerHTML = momentMedia(m, true);
+      $("#moment-meta").innerHTML = "<span>" + ic("tag") + esc(m.category) + "</span>" +
+        (m.date ? "<span>" + ic("calendar-date") + esc(m.date) + "</span>" : "") +
+        (m.location ? "<span>" + ic("map-point") + esc(m.location) + "</span>" : "");
+      $("#moment-caption").textContent = m.caption || "";
+      var many = shownMoments.length > 1;
+      $("#moment-prev").hidden = !many; $("#moment-next").hidden = !many;
+    };
+    momentsEl.addEventListener("click", function (e) {
+      var card = e.target.closest(".moment");
+      if (!card || !momentDlg) return;
+      showMoment(Number(card.getAttribute("data-i")));
+      openDialog(momentDlg);
+    });
+    if (momentDlg) {
+      $("#moment-prev").addEventListener("click", function () { showMoment(momentIdx - 1); });
+      $("#moment-next").addEventListener("click", function () { showMoment(momentIdx + 1); });
+      momentDlg.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowLeft") showMoment(momentIdx - 1);
+        if (e.key === "ArrowRight") showMoment(momentIdx + 1);
+      });
+      // Stop a playing video when the dialog closes.
+      momentDlg.addEventListener("close", function () { $("#moment-media").innerHTML = ""; });
+    }
+    getJSON("/api/moments")
+      .then(function (j) { return j.moments || []; })
+      .catch(function () { return fallbackMoments(); })
+      .then(function (list) {
+        allMoments = list;
+        var cats = [], places = {};
+        list.forEach(function (m) {
+          if (cats.indexOf(m.category) < 0) cats.push(m.category);
+          if (m.location) places[m.location.toLowerCase()] = true;
+        });
+        setStat("count", list.length);
+        setStat("categories", cats.length);
+        setStat("places", Object.keys(places).length);
+        setStat("photos", list.filter(function (m) { return m.type !== "video"; }).length);
+        var count = function (c) { return list.filter(function (m) { return m.category === c; }).length; };
+        renderFilters($("#moment-filters"), [{ value: "all", label: "All moments", count: list.length }].concat(
+          cats.map(function (c) { return { value: c, label: c, count: count(c) }; })), renderMoments);
+        renderMoments("all");
+      });
+  }
+
+  /* ── Updates page (/v2/updates): every update, filters, email sign-up (UpdatesPage.tsx, SubscribeForm.tsx) ── */
+  var updatesList = $("#updates-list");
+  if (updatesList) {
+    var allUpdates = [];
+    var monthYear = function (iso) { return new Date(iso).toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "Africa/Lagos" }); };
+    var rowHTML = function (u, today) {
+      var status = eventStatus(u, today);
+      var kind = u.kind === "event"
+        ? '<span class="chip u-kind ' + (status === "happening" ? "happening" : "event") + '">' + (status ? statusLabel[status] : "Event") + "</span>"
+        : '<span class="chip u-kind">Post</span>';
+      var gallery = (u.images || []).map(function (im) { return '<img src="' + esc(im.url) + '" alt="' + esc(im.alt || "") + '" loading="lazy">'; })
+        .concat((u.videos || []).map(function (v) { return '<video src="' + esc(v.url) + '"' + (v.posterUrl ? ' poster="' + esc(v.posterUrl) + '"' : "") + ' controls playsinline preload="metadata"></video>'; }));
+      return '<details class="u-row sheet" id="u-' + esc(u.id) + '"><summary><span class="u-head"><span class="u-date">' + esc(displayDate(u)) + "</span>" + kind +
+        '</span><span class="u-main"><h3>' + esc(u.title) + "</h3>" + (u.body ? '<span class="u-ex">' + esc(u.body) + "</span>" : "") +
+        '</span><span class="circle"><svg class="i"><use href="#i-arrow-right"/></svg></span></summary><div class="u-body">' +
+        (u.body ? '<p class="u-text">' + esc(u.body) + "</p>" : "") +
+        (gallery.length ? '<div class="u-gallery">' + gallery.join("") + "</div>" : "") +
+        (u.location ? '<div class="up-meta"><span>' + ic("map-point") + esc(u.location) + "</span></div>" : "") +
+        '<div class="u-acts">' + (u.linkUrl ? '<a class="btn btn-dark btn-sm" href="' + esc(u.linkUrl) + '" target="_blank" rel="noopener">Open link ' + ic("arrow-right-up", "i nudge") + "</a>" : "") +
+        '<button class="btn btn-line btn-sm" type="button" data-share="' + esc(u.id) + '"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>Copy link</button></div></div></details>';
+    };
+    var renderUpdates = function (kind) {
+      var shown = allUpdates.filter(function (u) { return kind === "all" || u.kind === kind; });
+      var today = todayInLagos();
+      updatesList.innerHTML = shown.length ? shown.map(function (u) { return rowHTML(u, today); }).join("") : '<p class="state">Nothing here yet. Check back soon.</p>';
+    };
+    var openFromHash = function () {
+      if (location.hash.indexOf("#u-") !== 0) return;
+      var row = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      if (!row) return;
+      row.open = true;
+      row.scrollIntoView({ block: "start", behavior: reduceMotion ? "auto" : "smooth" });
+    };
+    updatesList.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-share]");
+      if (!b) return;
+      var url = location.origin + "/v2/updates#u-" + encodeURIComponent(b.getAttribute("data-share"));
+      (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(url) : Promise.reject())
+        .then(function () { toast("Link copied"); }, function () { toast(url); });
+    });
+    var filterBtns = $$("#update-filters .seg-btn");
+    filterBtns.forEach(function (b) {
+      b.addEventListener("click", function () {
+        filterBtns.forEach(function (o) { var on = o === b; o.classList.toggle("on", on); o.setAttribute("aria-pressed", String(on)); });
+        renderUpdates(b.getAttribute("data-kind"));
+      });
+    });
+    loadUpdates().then(function (list) {
+      allUpdates = list;
+      var events = list.filter(function (u) { return u.kind === "event"; }).length;
+      var newest = list.map(function (u) { return u.createdAt; }).sort().pop();
+      setStat("latest", newest ? monthYear(newest) : "–");
+      setStat("count", list.length);
+      setStat("events", events);
+      setStat("posts", list.length - events);
+      [["all", list.length], ["event", events], ["post", list.length - events]].forEach(function (c) {
+        var el = $('[data-ct="' + c[0] + '"]'); if (el) el.textContent = c[1];
+      });
+      renderUpdates("all");
+      openFromHash();
+    }).catch(function () {
+      updatesList.innerHTML = '<p class="state">Updates couldn’t be loaded right now. Please try again later.</p>';
+    });
+    addEventListener("hashchange", openFromHash);
+
+    // Where the confirm / unsubscribe links in emails land (api/subscribe.js sends ?subscription=…).
+    var notes = {
+      confirmed: ["You’re subscribed. You’ll get an email when I post something new.", false],
+      unsubscribed: ["You’ve been unsubscribed and won’t get any more emails.", false],
+      invalid: ["That link is no longer valid. Sign up again below if you’d like updates.", true],
+      error: ["Something went wrong with that link. Please try again later.", true],
+    };
+    var note = notes[new URLSearchParams(location.search).get("subscription") || ""];
+    if (note) { var noteEl = $("#sub-note"); noteEl.textContent = note[0]; noteEl.classList.toggle("bad", note[1]); noteEl.hidden = false; }
+
+    var subForm = $("#sub-form");
+    if (subForm) {
+      var subStarted = Date.now(), subMsg = $("#sub-msg"), subSend = $("#sub-send");
+      var say = function (text, bad) { subMsg.textContent = text; subMsg.classList.toggle("bad", !!bad); subMsg.hidden = false; };
+      subForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var email = $("#sub-email").value.trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { say("Enter a valid email address.", true); $("#sub-email").focus(); return; }
+        subSend.disabled = true;
+        fetch("/api/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email, website: $("#sub-website").value, startedAt: subStarted }) })
+          .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || "Something went wrong. Please try again."); }); })
+          .then(function () { subForm.hidden = true; say("Check your inbox for a confirmation link to finish subscribing."); })
+          .catch(function (err) { say(err.message, true); })
+          .then(function () { subSend.disabled = false; });
+      });
+    }
   }
 })();
