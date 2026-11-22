@@ -235,7 +235,7 @@ const Navbar = () => {
         isScrolled || isMobileMenuOpen ? "glass-card py-3 md:py-4" : "bg-transparent py-4 md:py-6"
       }`}
     >
-      <DesignSwitchBanner collapsed={isScrolled || isMobileMenuOpen} />
+      <DesignSwitchBanner collapsed={isMobileMenuOpen} />
       <div className="container mx-auto flex items-center justify-between gap-3 px-4 sm:px-6">
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Link to="/" className="text-base font-bold gradient-text sm:text-xl xl:text-2xl whitespace-nowrap">

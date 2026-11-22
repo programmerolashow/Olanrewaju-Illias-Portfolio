@@ -44,7 +44,9 @@
   var CHANGE_EVENT = "oi:ui-version";
   var V2_PATH = "/v2";
   /** Classic paths that also exist in V2, at V2_PATH + path ("/" is the home page, at V2_PATH itself). */
-  var PAIRED = ["/", "/services", "/moments", "/updates", "/recommendations"];
+  var PAIRED = ["/", "/services", "/moments", "/updates", "/recommendations", "/projects"];
+  /** Classic paths under which every page also exists in V2 (one per project). */
+  var PAIRED_PREFIXES = ["/projects/"];
   var DAY = 864e5;
 
   var at = function (iso) {
@@ -132,7 +134,8 @@
   function pathFor(version, pathname) {
     var p = clean(pathname);
     var classic = isV2Path(p) ? p.slice(V2_PATH.length) || "/" : p;
-    if (PAIRED.indexOf(classic) < 0) return null;
+    var paired = PAIRED.indexOf(classic) >= 0 || PAIRED_PREFIXES.some(function (pre) { return classic.indexOf(pre) === 0 && classic.length > pre.length; });
+    if (!paired) return null;
     if (version === "v1") return classic;
     return classic === "/" ? V2_PATH : V2_PATH + classic;
   }

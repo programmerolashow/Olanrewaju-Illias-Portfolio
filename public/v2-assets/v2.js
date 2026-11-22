@@ -513,7 +513,7 @@
       add("Pages", "home", "Home", "page home", go("/v2#top"));
       (data.nav || []).forEach(function (n) { add("Pages", n.icon, n.label, "page " + n.description, go(n.to), n.description); });
       add("Pages", "plane", "Contact", "page contact email message", go("#contact"));
-      (data.projects || []).forEach(function (p) { add("Projects", "folder-git", p.title, "project " + p.tags.join(" "), go("/v2#work")); });
+      (data.projects || []).forEach(function (p) { add("Projects", "folder-git", p.title, "project " + p.tags.join(" "), go("/v2/projects/" + p.slug)); });
       live.articles.slice(0, 30).forEach(function (a) { add("Articles", "file-text", a.title, "article", ext(articleUrl(a))); });
       live.updates.slice(0, 30).forEach(function (u) { add("Updates", "megaphone", u.title, "update " + u.kind, go(updateHref(u))); });
       add("Actions", "file-download", "Download CV", "action download cv resume", ext("/ILLIAS_OLANREWAJU_CV.pdf"));
@@ -861,4 +861,32 @@
       recStarted = Date.now(); $("#rec-done").hidden = true; recForm.hidden = false; rf("name").focus();
     });
   }
+
+  /* ── Projects page (/v2/projects): filter the featured cards and the list by category group ───────────── */
+  var projFilter = $('[data-filter="projects"]');
+  if (projFilter) {
+    $$(".seg-btn", projFilter).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var g = b.getAttribute("data-value");
+        $$(".seg-btn", projFilter).forEach(function (o) { var on = o === b; o.classList.toggle("on", on); o.setAttribute("aria-pressed", String(on)); });
+        var any = false;
+        ["featured", "more"].forEach(function (list) {
+          var shown = 0;
+          $$('[data-list="' + list + '"] [data-group]').forEach(function (el) {
+            var show = g === "all" || el.getAttribute("data-group") === g;
+            el.hidden = !show; if (show) shown++;
+          });
+          $('[data-list="' + list + '"]').hidden = !shown;
+          $('[data-heading="' + list + '"]').hidden = !shown;
+          if (shown) any = true;
+        });
+        $("[data-empty]").hidden = any;
+      });
+    });
+  }
+
+  /* ── Project pages: copy a code sample ─────────────────────────────────────────────────────────────────── */
+  $$("[data-copy-code]").forEach(function (b) {
+    b.addEventListener("click", function () { copyText($("code", b.closest("figure")), "Code copied"); });
+  });
 })();

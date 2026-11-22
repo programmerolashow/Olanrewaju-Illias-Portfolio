@@ -1,0 +1,272 @@
+/**
+ * V2 pages generated at build time from the same data the classic (React) pages use, so the two designs can't
+ * drift: /v2/projects and every /v2/projects/<slug> (src/data/projects.ts). vite.config.ts turns each into a file
+ * in dist/ (and serves it in dev) through fillV2, which adds the shared partials and the link-preview tags.
+ * Hand-written V2 pages (public/v2.html, public/v2/*.html) use the same shell markers.
+ */
+import { projects, type CaseStudy, type CodeSample, type Project, type SubProduct } from "../src/data/projects";
+
+export const esc = (value: unknown) =>
+  String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+
+const SPRITE = "/v2-assets/icons.svg";
+/** An icon from the external sprite (Solar). */
+const ic = (id: string, cls = "i") => `<svg class="${cls}" aria-hidden="true"><use href="${SPRITE}#i-${id}"/></svg>`;
+/** An icon from the inline sprite every page carries (v2/partials/sprite.html). */
+const il = (id: string, cls = "i") => `<svg class="${cls}" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+
+/** A whole V2 document: shared head, header, contact card and footer around `main`. */
+export const shell = (main: string, extra = "") => `<!doctype html>
+<html lang="en">
+<head>
+<!--v2:head-->
+</head>
+<body>
+
+<!--v2:sprite-->
+<!--v2:header-->
+
+<main id="top">
+${main}
+<!--v2:contact-->
+</main>
+
+<!--v2:footer-->
+${extra}
+</body>
+</html>
+`;
+
+export interface Stat {
+  value: string | number;
+  label: string;
+  /** data-stat key, for numbers filled in by the page script. */
+  key?: string;
+}
+
+/** The dark page header every inner page opens with (styles: .p-stage in v2.css). */
+export const pageHero = (o: { eyebrow: string; title: string; lead: string; stats?: Stat[]; actions?: string; crumb?: string }) => `  <section class="p-hero">
+    <div class="wrap">
+      <div class="p-stage">
+        <div class="p-stage-in">
+          <div>
+            ${o.crumb ?? ""}<p class="eyebrow rise">${o.eyebrow}</p>
+            <h1 class="p-title rise d1">${o.title}</h1>
+            <p class="p-lead rise d2">${o.lead}</p>
+            ${o.actions ? `<div class="hero-cta rise d2">${o.actions}</div>` : ""}
+          </div>
+          ${
+            o.stats?.length
+              ? `<div class="p-stats rise d3">${o.stats
+                  .map((s) => `<div class="p-stat"><div class="n"${s.key ? ` data-stat="${s.key}"` : ""}>${esc(s.value)}</div><div class="l">${esc(s.label)}</div></div>`)
+                  .join("")}</div>`
+              : ""
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+`;
+
+/* ── Projects ────────────────────────────────────────────────────────────────────────────────────────────── */
+
+/** Projects with a typographic cover in v2.css (.art-<slug>); the rest show their screenshot. */
+const ART: Record<string, { sub: string; word: string }> = {
+  maiukha: { sub: "AI career coach", word: "Maiukha" },
+  chekueit: { sub: "Security verification", word: "Chekue<br>IT" },
+  bankspace: { sub: "Digital banking", word: "Bank<br>Space" },
+  betalife: { sub: "Your campus. Your world.", word: "BetaLife" },
+  zoomtrans: { sub: "Move smarter. Pay easier.", word: "ZoomTrans" },
+};
+
+/** "Fintech / Full-Stack Web Application" → "Fintech": the filter group. */
+const group = (p: Project) => (p.category ?? "Other").split("/")[0].trim();
+
+const cover = (p: Project | SubProduct, eager = false) => {
+  const art = ART[p.slug];
+  if (art) return `<span class="art art-${p.slug}"><span class="art-sub">${esc(art.sub)}</span><span class="art-word">${art.word}</span></span>`;
+  if (p.image)
+    return `<img src="${esc(p.image)}" alt="${esc(p.title)} screenshot"${p.imageFocus ? ` style="object-position:${esc(p.imageFocus)}"` : ""}${eager ? "" : ' loading="lazy"'}>`;
+  return `<span class="art art-generic"><span class="art-word">${esc(p.title)}</span></span>`;
+};
+
+const chips = (tags: string[]) => `<div class="chips">${tags.map((t) => `<span class="chip">${esc(t)}</span>`).join("")}</div>`;
+
+const projectLinks = (p: Project) =>
+  [
+    `<a class="btn btn-quiet btn-sm" href="/v2/projects/${p.slug}">Project details</a>`,
+    p.live ? `<a class="btn btn-line btn-sm" href="${esc(p.live)}" target="_blank" rel="noopener">Live ${ic("arrow-right-up", "i nudge")}</a>` : "",
+    p.github ? `<a class="btn btn-line btn-sm" href="${esc(p.github)}" target="_blank" rel="noopener">${il("github")}Code</a>` : "",
+  ].join("");
+
+const featuredCard = (p: Project, big: boolean) => `        <article class="case${big ? " big" : ""}" data-group="${esc(group(p))}">
+          <a class="media" href="/v2/projects/${p.slug}" aria-label="${esc(p.title)}: project details">
+            ${cover(p)}
+            <span class="tag">${esc(p.category ?? "Project")}</span><span class="go">${il("arrow-up", "i nudge")}</span>
+          </a>
+          <div class="cap-row"><h3>${esc(p.title)}</h3>${p.status ? `<span class="yr">${esc(p.status)}</span>` : ""}</div>
+          <p>${esc(p.description)}</p>
+          ${chips(p.tags)}
+          <div class="case-links">${projectLinks(p)}</div>
+        </article>`;
+
+const moreRow = (p: Project) => `        <a class="post" href="/v2/projects/${p.slug}" data-group="${esc(group(p))}"><span class="tr">${esc(p.category ?? "Project")}</span><span class="ti">${esc(p.title)}</span><span class="dt">${esc(p.tags.slice(0, 2).join(" · "))}</span><span class="circle">${il("arrow-up", "i nudge")}</span></a>`;
+
+export const projectsPage = () => {
+  const featured = projects.filter((p) => p.featured);
+  const more = projects.filter((p) => !p.featured);
+  const groups = [...new Set(projects.map(group))];
+  const count = (g: string) => projects.filter((p) => group(p) === g).length;
+  const filters = [`<button class="seg-btn on" type="button" data-value="all" aria-pressed="true">All<span class="ct">${projects.length}</span></button>`]
+    .concat(groups.map((g) => `<button class="seg-btn" type="button" data-value="${esc(g)}" aria-pressed="false">${esc(g)}<span class="ct">${count(g)}</span></button>`))
+    .join("");
+  const main =
+    pageHero({
+      eyebrow: "Projects",
+      title: "Things I’ve <em>built.</em>",
+      lead: "Featured builds first, then smaller projects worth a look. Each one links to its write-up, and to its source code and live demo where they’re public.",
+      stats: [
+        { value: projects.length, label: "Projects" },
+        { value: featured.length, label: "Featured" },
+        { value: projects.filter((p) => p.live).length, label: "Live demos" },
+        { value: projects.filter((p) => p.github).length, label: "Open source" },
+      ],
+    }) +
+    `
+  <section class="block near" id="work">
+    <div class="wrap">
+      <div class="filter-bar">
+        <div class="seg" role="group" aria-label="Filter projects" data-filter="projects">${filters}</div>
+        <p class="small">Open a project for its write-up, decisions and stack.</p>
+      </div>
+      <h2 class="sub-head" style="margin-top:8px" data-heading="featured">Featured</h2>
+      <div class="work" data-list="featured">
+${featured.map((p, i) => featuredCard(p, i === 0 || (i === featured.length - 1 && featured.length % 2 === 0))).join("\n")}
+      </div>
+      <h2 class="sub-head" data-heading="more">More projects</h2>
+      <div class="posts" data-list="more">
+${more.map(moreRow).join("\n")}
+      </div>
+      <p class="state" data-empty hidden>No projects in this group.</p>
+    </div>
+  </section>
+`;
+  return shell(main);
+};
+
+/* Project page: the classic ProjectDetailPage's sections, in V2's material. */
+
+const section = (heading: string, body: string, level: "h2" | "h4" = "h2") =>
+  `<section class="cs-sec"><${level} class="${level === "h2" ? "cs-h" : "cs-h sm"}">${esc(heading)}</${level}>${body}</section>`;
+
+const codeBlock = (s: CodeSample) => `<figure class="code sheet"><figcaption><span>${esc(s.title)} <span class="lang">· ${esc(s.language)}</span></span><button class="btn btn-line btn-sm" type="button" data-copy-code>${il("copy")}Copy</button></figcaption><pre><code>${esc(s.code)}</code></pre>${
+  s.note || s.source
+    ? `<p class="code-note">${esc(s.note ?? "")}${s.note && s.source ? " · " : ""}${s.source ? `<a href="${esc(s.source)}" target="_blank" rel="noopener">View source</a>` : ""}</p>`
+    : ""
+}</figure>`;
+
+const caseStudy = (cs: CaseStudy, nested = false) => {
+  const lvl = nested ? "h4" : "h2";
+  const item = nested ? "h5" : "h3";
+  const out: string[] = [];
+  if (cs.metrics?.length)
+    out.push(`<dl class="metrics">${cs.metrics.map((m) => `<div class="metric"><dt>${esc(m.label)}</dt><dd class="n">${esc(m.value)}</dd>${m.asOf || m.source ? `<dd class="s">${esc([m.asOf, m.source].filter(Boolean).join(" · "))}</dd>` : ""}</div>`).join("")}</dl>`);
+  if (cs.problem) out.push(section("The problem", `<p>${esc(cs.problem)}</p>`, lvl));
+  if (cs.role) out.push(section("My role", `<p>${esc(cs.role)}</p>`, lvl));
+  if (cs.challenges?.length)
+    out.push(section("Engineering challenges and lessons", `<div class="cs-items">${cs.challenges.map((c) => `<div><${item}>${esc(c.title)}</${item}><p>${esc(c.detail)}</p></div>`).join("")}</div>`, lvl));
+  if (cs.features?.length)
+    out.push(section("Feature areas", `<ul class="feats">${cs.features.map((f) => `<li><span>${esc(f.name)}</span><span class="chip${f.status === "Implemented" ? " ok" : ""}">${esc(f.status)}</span></li>`).join("")}</ul>`, lvl));
+  if (cs.architecture?.length)
+    out.push(section("How it fits together", `<ol class="arch">${cs.architecture.map((n) => `<li><span>${esc(n)}</span></li>`).join("")}</ol>`, lvl));
+  if (cs.decisions?.length)
+    out.push(
+      section(
+        "Key technical decisions",
+        `<div class="cs-items">${cs.decisions
+          .map(
+            (d) =>
+              `<div class="decision sheet"><${item}>${esc(d.decision)}</${item}><dl>${d.alternatives ? `<div><dt>Considered</dt><dd>${esc(d.alternatives)}</dd></div>` : ""}<div><dt>Why</dt><dd>${esc(d.why)}</dd></div>${d.tradeOff ? `<div><dt>Trade-off</dt><dd>${esc(d.tradeOff)}</dd></div>` : ""}</dl></div>`,
+          )
+          .join("")}</div>`,
+        lvl,
+      ),
+    );
+  if (cs.code?.length) out.push(section("Code highlights", `<div class="cs-items">${cs.code.map(codeBlock).join("")}</div>`, lvl));
+  if (cs.timeline?.length)
+    out.push(section("Timeline", `<ol class="tl">${cs.timeline.map((m) => `<li><span>${esc(m.label)}</span>${m.date ? `<span class="d">${esc(m.date)}</span>` : ""}</li>`).join("")}</ol>`, lvl));
+  if (cs.outcome) out.push(section("Outcome", `<p>${esc(cs.outcome)}</p>`, lvl));
+  if (cs.improvements?.length) out.push(section("Potential improvements", `<ul class="ticks">${cs.improvements.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`, lvl));
+  return out.join("\n");
+};
+
+const productSection = (p: SubProduct) => `<article class="product panel" id="${esc(p.slug)}"><div class="sheet pad cs-body">
+  <h3 class="cs-h">${esc(p.title)}</h3>
+  ${p.category || p.status ? `<div class="chips">${p.category ? `<span class="chip">${esc(p.category)}</span>` : ""}${p.status ? `<span class="chip ok">Status: ${esc(p.status)}</span>` : ""}</div>` : ""}
+  <p>${esc(p.description)}</p>
+  ${p.tags.length ? chips(p.tags) : ""}
+  ${p.live ? `<a class="btn btn-line btn-sm" style="justify-self:start" href="${esc(p.live)}" target="_blank" rel="noopener">Visit ${esc(p.title)} ${ic("arrow-right-up", "i nudge")}</a>` : ""}
+  ${p.image ? `<div class="media">${cover(p)}</div>` : ""}
+  ${p.caseStudy ? caseStudy(p.caseStudy, true) : ""}
+</div></article>`;
+
+export const projectPage = (p: Project) => {
+  const i = projects.indexOf(p);
+  const prev = projects[(i - 1 + projects.length) % projects.length];
+  const next = projects[(i + 1) % projects.length];
+  const cs = p.caseStudy ?? {};
+  const body = caseStudy(cs);
+  const products = p.products ?? [];
+  const stats: Stat[] = [];
+  if (p.status) stats.push({ value: p.status, label: "Status" });
+  if (cs.features?.length) stats.push({ value: cs.features.length, label: "Feature areas" });
+  if (cs.decisions?.length) stats.push({ value: cs.decisions.length, label: "Key decisions" });
+  if (products.length) stats.push({ value: products.length, label: "Products inside" });
+  stats.push({ value: p.tags.length, label: "Technologies" });
+  if (cs.challenges?.length) stats.push({ value: cs.challenges.length, label: "Lessons written up" });
+  const actions = [
+    p.live ? `<a class="btn btn-accent" href="${esc(p.live)}" target="_blank" rel="noopener">Live demo ${il("arrow-up", "i nudge")}</a>` : "",
+    p.github ? `<a class="btn btn-line" href="${esc(p.github)}" target="_blank" rel="noopener">${il("github")}Source code</a>` : "",
+    !p.live && !p.github ? `<a class="btn btn-line" href="#contact">Ask me about it</a>` : "",
+  ].join("");
+  const media = p.video
+    ? `<div class="media cs-media video"><video src="${esc(p.video)}"${p.image ? ` poster="${esc(p.image)}"` : ""} controls playsinline preload="metadata" aria-label="${esc(p.title)} video"></video></div>`
+    : `<div class="media cs-media">${cover(p, true)}</div>`;
+  const main =
+    pageHero({
+      crumb: `<a class="crumb rise" href="/v2/projects">${il("arrow-right", "i back")}All projects</a>`,
+      eyebrow: esc(p.category ?? "Project"),
+      title: esc(p.title),
+      lead: esc(p.description),
+      stats: stats.slice(0, 4),
+      actions,
+    }) +
+    `
+  <section class="block near">
+    <div class="wrap">
+      ${media}
+      <div class="cs-grid">
+        <div class="cs-body">
+${body}
+${products.length ? section(`Products in ${p.title}`, `<div class="cs-items">${products.map(productSection).join("")}</div>`) : ""}
+${!body && !products.length ? `<p>Try the live demo or browse the source code to see how it’s built.</p>` : ""}
+        </div>
+        <aside class="cs-side panel">
+          <div class="panel-head"><h3>Tech stack</h3><span class="small">${p.tags.length}</span></div>
+          <div class="sheet pad">${chips(p.tags)}</div>
+          ${
+            products.length
+              ? `<div class="panel-head"><h3>Products</h3></div><div class="sheet pad"><ul class="side-links">${products.map((s) => `<li><a href="#${esc(s.slug)}">${il("arrow-right")}${esc(s.title)}</a></li>`).join("")}</ul></div>`
+              : ""
+          }
+        </aside>
+      </div>
+      <nav class="pn" aria-label="More projects">
+        <a class="pn-l sheet" href="/v2/projects/${prev.slug}"><span class="k">Previous</span><span class="t">${esc(prev.title)}</span></a>
+        <a class="pn-r sheet" href="/v2/projects/${next.slug}"><span class="k">Next</span><span class="t">${esc(next.title)}</span></a>
+      </nav>
+    </div>
+  </section>
+`;
+  return shell(main);
+};
