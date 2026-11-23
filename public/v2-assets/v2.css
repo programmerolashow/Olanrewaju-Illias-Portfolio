@@ -133,11 +133,14 @@ html:has(.design-strip:not(:empty)) { scroll-padding-top: 9rem; }
 .marquee-name { position: absolute; z-index: 1; left: 0; right: 0; bottom: 104px; font: 800 clamp(56px, 14vw, 200px)/0.8 var(--font-poster); letter-spacing: -0.06em; color: rgb(255 255 255 / 0.06); white-space: nowrap; text-align: center; pointer-events: none; user-select: none; }
 @media (max-width: 818px) {
   .stage, .stage-grid { min-height: 0; }
-  .stage-grid { grid-template-rows: auto; padding: 24px 20px 20px; }
+  /* Same composition as desktop, smaller: intro on the left, the photo beside it on the right, bio and numbers
+     along the bottom. */
+  .stage-grid { grid-template-columns: minmax(0, 1fr) 40%; grid-template-rows: auto auto; padding: 24px 20px 20px; gap: 20px 8px; }
+  .stage-top { grid-column: 1; grid-row: 1; }
   .exp { display: none; }
-  .photo-slot { height: 380px; position: relative; margin: 0 -20px; }
-  .hero-photo { height: 100%; transform: translateX(-50%); }
-  .stage-bottom { flex-direction: column; align-items: stretch; }
+  .photo-slot { grid-column: 2; grid-row: 1; position: relative; min-height: 260px; margin: -24px -20px 0 0; -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent); mask-image: linear-gradient(to bottom, #000 78%, transparent); }
+  .hero-photo { height: 100%; left: 50%; transform: translateX(-50%); }
+  .stage-bottom { grid-column: 1 / -1; grid-row: 2; }
   .hstats { justify-content: space-between; gap: 14px; }
   .hstat { min-width: 0; flex: 1; }
   .hstat .n { font-size: 28px; }
@@ -162,6 +165,8 @@ section.block { padding-block: 120px 0; }
 /* Who I am */
 .who { display: grid; gap: 40px; align-items: center; }
 @media (min-width: 819px) { .who { grid-template-columns: 360px minmax(0, 1fr); gap: 72px; } }
+/* Stacked (one column): the portrait is narrower than the column, so centre it. */
+@media (max-width: 818px) { .portrait { width: 100%; margin-inline: auto; } }
 .portrait { position: relative; max-width: 360px; }
 .portrait-frame { border-radius: var(--r-card); overflow: hidden; aspect-ratio: 4 / 5; background: linear-gradient(170deg, rgb(var(--g100)) 30%, rgb(var(--accent) / 0.35)); }
 .portrait-frame img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
