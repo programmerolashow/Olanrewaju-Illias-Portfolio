@@ -194,6 +194,14 @@
     ".oi-strip .oi-strip-x{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:999px;display:grid;place-items:center;color:rgb(255 255 255/.7);transition:background-color .15s,color .15s}" +
     ".oi-strip .oi-strip-x:hover{background:rgb(255 255 255/.15);color:#fff}" +
     ".oi-strip :focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:999px}" +
+    // Phones: a compact two-line strip (title + actions), left-aligned; the explanation and the minor link are
+    // dropped so the banner doesn't push the page down.
+    "@media (max-width:639px){.oi-strip{border-radius:12px}" +
+    ".oi-strip-row{justify-content:flex-start;gap:2px 10px;padding:7px 40px 7px 12px;text-align:left}" +
+    ".oi-strip-eyebrow{font-size:10px;padding:0 6px}" +
+    ".oi-strip p,.oi-strip button,.oi-strip a{font-size:13px;line-height:1.45}" +
+    ".oi-strip p span,.oi-strip .oi-strip-minor{display:none}" +
+    ".oi-strip .oi-strip-x{right:6px;width:26px;height:26px}}" +
     "@keyframes oi-strip-in{from{opacity:0}to{opacity:1}}" +
     "@media (prefers-reduced-motion:reduce){.oi-strip{animation:none}}";
 
@@ -250,7 +258,7 @@
       // WhatsApp first (as Qorelly), email beside it.
       cta: { label: "Share feedback", href: feedbackUrl() },
       links: (ph === "retired" ? [] : [{ label: "Switch back to classic", run: function () { set("v1"); } }]).concat([
-        { label: "Email instead", href: feedbackEmailUrl() },
+        { label: "Email instead", href: feedbackEmailUrl(), minor: true },
       ]),
     };
   }
@@ -314,7 +322,7 @@
     c.links.forEach(function (link) {
       var b;
       if (link.href) {
-        b = el("a", "oi-strip-link", link.label);
+        b = el("a", "oi-strip-link" + (link.minor ? " oi-strip-minor" : ""), link.label);
         b.href = link.href;
       } else {
         b = el("button", "oi-strip-link", link.label);
