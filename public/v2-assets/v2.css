@@ -958,6 +958,11 @@ svg.i.up { transform: rotate(-90deg); } svg.i.down { transform: rotate(90deg); }
 .spin { width: 16px; height: 16px; border-radius: 999px; border: 2px solid currentColor; border-right-color: transparent; animation: spin .7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* No visible scrollbars anywhere in V2 (page, menus, tab bars, dialogs); everything still scrolls by touch,
+   wheel, trackpad and keyboard. */
+html, body, * { scrollbar-width: none; -ms-overflow-style: none; }
+::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
 /* ── Responsive fixes ───────────────────────────────────────────────────────────────────────────────────── */
 .site-head .head-cta { height: 42px; }
 /* Grid items default to min-width:auto, so one non-wrapping child (a tab bar, a form row) could stretch a card
